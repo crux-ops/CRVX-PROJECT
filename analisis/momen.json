@@ -1,0 +1,30 @@
+{
+  "_catatan": "Kalender MOMEN (event langit/musim). v5: boost bila jendela < 45 hari. Perbarui tiap kuartal; sumber di tiap entri.",
+  "events": [
+    {"tanggal": "2026-10-11", "nama": "Hari tanpa bayangan (Semarang 11.25 WIB; Jakarta 9 Okt, Surabaya 12 Okt, Yogyakarta 13 Okt)",
+     "tema": ["hari tanpa bayangan", "matahari", "bayangan"], "sumber": "BMKG - kulminasi utama II 2026 (21 Sep - 21 Okt)"},
+    {"tanggal": "2026-10-21", "nama": "Puncak hujan meteor Orionid (21-22 Okt)", "tema": ["meteor", "komet"],
+     "sumber": "Farmers' Almanac / fastool (IMO 2026)"},
+    {"tanggal": "2026-11-01", "nama": "Awal musim hujan di banyak wilayah Indonesia (perkiraan umum, cek BMKG)",
+     "tema": ["hujan", "petir", "awan", "pelangi", "banjir"], "sumber": "pola musim BMKG (perkiraan)"},
+    {"tanggal": "2026-11-17", "nama": "Puncak hujan meteor Leonid (17-18 Nov)", "tema": ["meteor"],
+     "sumber": "Farmers' Almanac / fastool"},
+    {"tanggal": "2026-11-24", "nama": "Supermoon + okultasi Pleiades oleh Bulan", "tema": ["bulan", "bintang"],
+     "sumber": "fastool.io events 2026-2027"},
+    {"tanggal": "2026-12-14", "nama": "Puncak hujan meteor Geminid (13-14 Des, terkuat tahunan)", "tema": ["meteor", "asteroid"],
+     "sumber": "fastool (IMO 2026) / Farmers' Almanac"},
+    {"tanggal": "2026-12-21", "nama": "Solstis Desember + hujan meteor Ursid (21-23 Des)", "tema": ["matahari", "musim", "meteor"],
+     "sumber": "Farmers' Almanac"},
+    {"tanggal": "2027-01-03", "nama": "Puncak hujan meteor Quadrantid (3-4 Jan)", "tema": ["meteor"],
+     "sumber": "spaceinformer / telescopeadvisor 2027"},
+    {"tanggal": "2027-04-22", "nama": "Puncak hujan meteor Lyrid (22-23 Apr)", "tema": ["meteor", "komet"],
+     "sumber": "telescopeadvisor 2027"},
+    {"tanggal": "2027-05-05", "nama": "Puncak hujan meteor Eta Aquarid (5-6 Mei, sisa komet Halley)", "tema": ["meteor", "komet"],
+     "sumber": "spaceinformer / telescopeadvisor 2027"},
+    {"tanggal": "2027-08-02", "nama": "Gerhana Matahari total 2 Agustus 2027 (bukan dari Indonesia)", "tema": ["gerhana", "matahari", "bulan"],
+     "sumber": "telescopeadvisor 2027"},
+    {"tanggal": "2027-08-12", "nama": "Puncak hujan meteor Perseid (12-13 Agu)", "tema": ["meteor", "komet"],
+     "sumber": "telescopeadvisor 2027"},
+    {"tanggal": "2027-08-14", "nama": "Oposisi Saturnus", "tema": ["saturnus", "planet"], "sumber": "telescopeadvisor 2027"}
+  ]
+}

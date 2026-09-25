@@ -1,0 +1,24 @@
+# Uji RINGAN saja (selftest < 5 menit). TIDAK ada render video, TIDAK ada jadwal cron, TIDAK ada scraping.
+# Aturan GitHub: runner Actions hanya untuk membangun/menguji perangkat lunak (lihat AGEN.md §3).
+name: uji
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: uji-${{ github.ref }}
+  cancel-in-progress: true
+jobs:
+  selftest:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - run: pip install -r requirements.txt
+      - run: bash tools/uji_semua.sh

@@ -27,3 +27,6 @@ __pycache__/
 credentials*.json
 .netrc
 .git-credentials
+
+# data uji sementara analisis
+analisis/data/_uji*/

@@ -14,7 +14,7 @@ Urutan per klip (episodes/<slug>/audio_raw/<id>.wav -> build/<slug>/audio_proc/<
          tempo utuh (durasi bicara referensi ~= mentah / faktor).
 TIDAK ADA gate, expander, atau peredam napas (aturan keras §2.3). REDAM_NAPAS diabaikan.
 
-Pakai:  python3 process_audio.py <slug> [--only intro,f1]
+Pakai:  python3 process_audio.py <slug> [--only intro,f1] [--long]
 Uji:    python3 process_audio.py --uji
 Env:    TARGET_WPS (1.90) ATEMPO_MIN (0.88) ATEMPO_MAX (1.08) SIL_DB (-49) PAD_AWAL (0.08) PAD_AKHIR (0.25)
 """
@@ -188,8 +188,8 @@ def qc_klip(out, ref, raw, info, cfg):
 
 
 # -------------------------------------------------------------------------------------- episode
-def proses_episode(slug, only=None):
-    ep, content, cfg, bdir = mu.muat_episode(slug)
+def proses_episode(slug, only=None, jenis="shorts"):
+    ep, content, cfg, bdir = mu.muat_episode(slug, jenis)
     if cfg.b("REDAM_NAPAS"):
         print("[PERINGATAN] REDAM_NAPAS diabaikan: peredam napas dilarang (aturan keras §2.3).")
     pdir = bdir / "audio_proc"
@@ -332,12 +332,13 @@ def main():
     ap.add_argument("slug", nargs="?")
     ap.add_argument("--only", default="")
     ap.add_argument("--uji", action="store_true")
+    ap.add_argument("--long", action="store_true", help="video panjang (long/<slug>)")
     a = ap.parse_args()
     if a.uji:
         raise SystemExit(_uji())
     if not a.slug:
         ap.error("slug wajib (atau --uji)")
-    proses_episode(a.slug, set(filter(None, a.only.split(","))) or None)
+    proses_episode(a.slug, set(filter(None, a.only.split(","))) or None, "long" if a.long else "shorts")
 
 
 if __name__ == "__main__":

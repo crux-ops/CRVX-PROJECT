@@ -4,7 +4,7 @@
 > Spesifikasi lengkap dari pemilik: `PROMPT_KLIKTAHU.txt` (sumber kebenaran; file ini ringkasan + status).
 
 ## 0. Status singkat
-- Fase: **membangun ulang mesin dari nol** (belum ada episode baru). Episode berikutnya: **Ep50** (Shorts), **Long03**.
+- Fase: **mesin SELESAI dibangun ulang (tahap 1-8 lulus uji)**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
 - Jangan membuat video episode sebelum pemilik memberi perintah.
 
 | Tahap | Isi | Status |
@@ -13,9 +13,9 @@
 | 2 | pipeline audio + sfx + QC keutuhan | SELESAI (uji: isi hilang 0 ms, uji negatif lulus) |
 | 3 | render.py + diagrams.py + mesin_util + check_layout | SELESAI (demo 3 adegan, audit bersih) |
 | 4 | mesin_v11 + mesin_fx | SELESAI (selftest + montase; 0.33 s/frame/proses) |
-| 5 | qc_mp4 + tools/render_lokal.sh (demo end-to-end) | belum |
-| 6 | mesin Long | belum |
-| 7 | mesin analisis v3-v6 + --uji | belum |
+| 5 | qc_mp4 + tools/render_lokal.sh (demo end-to-end) | SELESAI (demo 15.2 s, QC MP4 lulus) |
+| 6 | mesin Long | SELESAI (demo 2 bab 28.7 s, QC MP4 lulus) |
+| 7 | mesin analisis v3-v6 + --uji | SELESAI (uji offline lulus; sapuan nyata TERBLOKIR di sandbox) |
 | 8 | audisi suara narator -> kunci ID suara | SELESAI (dimajukan, voice-00) |
 
 ## 1. Identitas channel (tetap)
@@ -88,6 +88,17 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - Kinetik skala 1.5 -> 1 membuat kata menumpuk tetangga -> tiap kata dipotong di JENDELA slotnya sendiri.
 - Frame 0 intro harus sudah berisi (kata pertama mulai di t negatif, visual generik intro dimajukan 0.45 s).
 - Selftest gerak harus membandingkan juga fase AKHIR (t 3.5 vs 5.8), bukan hanya saat animasi masuk.
+- ffmpeg 7: `-c copy -f null` TIDAK mencetak 'frame=' -> hitung frame via `-f framecrc` (qc_mp4.hitung_frame).
+  Dengan `set -euo pipefail`, grep kosong mematikan skrip DIAM-DIAM -> render_lokal.sh punya `trap ERR`.
+  Jalankan dari start_process dengan `bash -o pipefail -c "... | tee log"` agar kode keluar tidak tertutup tee.
+- QC "VO mulai tepat" = lag korelasi-silang MP4 vs stem VO (bukan sampel pertama di atas ambang: SFX transisi
+  berbunyi ~0.7 s sebelum narator -> dulu terbaca -680 ms palsu).
+- Render per potongan (CHUNK=600) + penanda .ok = bisa dilanjutkan; terukur 0.22-0.26 s/frame efektif
+  (2 vCPU, termasuk encoder) -> Shorts 150 s ~35-40 menit. Long 0.25-0.30 s/frame -> 10 menit ~80-90 menit.
+- Long: semua HUD di dalam margin 40 px (x 48..1872); zona aman teks 16:9 = 5% (x 96..1824, y 90..1026).
+  Audit MP4 membuang titik kecil (bintang latar) lewat opening morfologi; teks diaudit lewat kotak teks.
+- Odometer: nol di depan hanya disembunyikan di kiri digit satuan (4,2 pernah tampil ",7").
+- Analisis: pencocokan "sudah dibahas" harus KATA UTUH ("ai" != "baterai"); entri "Long:" = boleh jadi Shorts.
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -100,6 +111,14 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - 2026-09-25: Tahap 4 - mesin_fx (finishing adaptif, kamera nois/beat, kaca cair, bayang, bokeh, mesh, odometer,
   14 transisi fase), mesin_v11 (kinetik + stabilo, stiker, penanda FAKTA, events/BEATS, layout intro/fact/outro),
   mesin_v11_ep00 (pola modul episode: visual hamburan00 + tabel beat bernama).
+- 2026-09-25: Tahap 5 - qc_mp4.py (stream, durasi, korelasi, VO per adegan, puncak, montase, margin),
+  tools/render_lokal.sh (prep -> audit -> render per potongan ke libx264 BT.709 -> gabung -> mux -> QC -> dist/).
+  Demo KlikTahu_Demo_Langit.mp4 (15.23 s, 12.6 MB) LULUS QC.
+- 2026-09-25: Tahap 6 - long/mesin_long.py (align DP kata, Ctx, komponen, kartu bab, HUD), render_long.py,
+  audio_long.py, long/demo_bintang (visual.py + BEATS terkunci kata + thumbnail.py). Demo 28.7 s LULUS QC.
+- 2026-09-25: Tahap 7 - analisis/ umum + v3 sapuan, v4 peta, v5 real-time (velocity, momen, pabrik metadata),
+  v6 strategi 0-100 (+ kalender 7 episode, sudut, hook, loop performa). Semua --uji lulus. momen.json dari
+  BMKG (hari tanpa bayangan) + kalender astronomi. tools/uji_semua.sh (11 selftest, 13 s) + .github/workflows/uji.yml.
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -112,3 +131,39 @@ python3 mesin_v11.py           # BEATS konsisten, layout kinetik, events
 python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
   && python3 build_audio.py demo_langit && python3 master_audio.py demo_langit
 ```
+
+## 10. Cara pakai (ringkas)
+**Episode Shorts baru (hanya bila pemilik memerintah):**
+1. Analisis -> pilih topik (lihat §11). 2. `episodes/epNN_slug/{content.json, config.env}` (+ `mesin_v11_epNN.py`
+   untuk visual khusus; pola lihat `mesin_v11_ep00.py`). 3. VO: satu klip per adegan `audio_raw/<id>.wav` dengan
+   voice-00 (maks 10 klip TTS per giliran agen). 4. `tools/render_lokal.sh shorts epNN_slug prep` -> periksa
+   `build/<slug>/check_layout.jpg` + `python3 render.py <slug> --times auto --sheet` (baca gambarnya!).
+5. METADATA.md 4 blok + `pustaka/EpNN_Nama/SIAP_TEMPEL.md` + PUSTAKA.md + AGEN.md SEBELUM render.
+6. Render penuh sebagai proses latar: `bash -o pipefail -c "tools/render_lokal.sh shorts <slug> 2>&1 | tee build/log"`
+   -> QC MP4 lulus -> serahkan `dist/<OUT_NAME>/`.
+**Video panjang:** `long/<slug>/{content.json (scenes type "bab": id, judul, accent, vo), config.env, visual.py,
+thumbnail.py, audio_raw/babN.wav}` -> `tools/render_lokal.sh long <slug> [prep]`.
+**Pratinjau cepat:** `python3 render.py <slug> --times 1.0,4.5 --sheet pratinjau/x.jpg`;
+Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
+
+## 11. Mesin analisis (analisis/)
+- `python3 analisis/v6_strategi.py --mode online|manual` (memanggil v5 -> v4 -> v3). Laporan: `analisis/STRATEGI_V6.md`,
+  `REALTIME_V5.md`, `PETA_V4.md`; snapshot `analisis/data/hasil_mendalam_<YYYYMMDD>.json` (di-commit, untuk VELOCITY).
+- Sandbox Arena: Google/YouTube/Wikipedia DIBLOKIR -> mode online gagal (pesan [OFFLINE]). Gunakan `--mode manual`
+  dengan data dari web search agen:
+  - `analisis/data/manual_saran.json`   {"google": {"kenapa pelangi": ["...", ...]}, "youtube": {...}}
+  - `analisis/data/manual_wiki.json`    {"<tema>": {"views60": 12345, "tren": 1.2}}
+  - `analisis/data/manual_pesaing.json` {"<tema>": {"jumlah": 20, "umur_median_hari": 300, "median_views": 150000,
+                                          "judul": ["judul pesaing", ...]}}
+  - `analisis/performa.csv`             episode,pilar,views,retensi   (dari YouTube Studio)
+  Komponen tanpa data = NETRAL 0.5 dan ditandai "(n)" di laporan.
+- Momen dekat (dicek 2026-09-25): **hari tanpa bayangan 9-13 Okt 2026** (Semarang 11 Okt 11.25 WIB, BMKG),
+  Orionid 21-22 Okt, supermoon 24 Nov, Geminid 13-14 Des.
+
+## 12. Tindakan untuk pemilik
+- **Push tertunda (2026-09-25):** token GitHub sandbox kedaluwarsa setelah tahap 4. Commit tahap 5 dan tahap 6-7
+  hanya ada di lokal/snapshot Arena. Setelah koneksi GitHub di Arena diperbaiki: cek `git log`, lalu
+  `git push origin <cabang-sesi>`. Workflow `.github/workflows/uji.yml` mungkin butuh izin 'workflows' untuk di-push.
+- Ubah repo `crux-ops/CRVX-PROJECT` menjadi **Private** (Settings > General > Danger Zone). Agen tidak punya hak admin.
+- Bila ingin sapuan autocomplete nyata: jalankan `python3 analisis/v3_sapuan.py` di komputer dengan internet biasa,
+  commit snapshot `analisis/data/hasil_mendalam_*.json`.

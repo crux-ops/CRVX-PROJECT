@@ -1,0 +1,17 @@
+{
+  "title": "Demo Long: Seberapa Jauh Bintang Terdekat?",
+  "channel": "KlikTahu",
+  "lead_in": 0.9,
+  "tail_bab": 1.0,
+  "demo": true,
+  "scenes": [
+    {
+      "id": "bab1", "type": "bab", "judul": "Tetangga terdekat", "accent": "#FF6B3D",
+      "vo": "Bintang terdekat dari Matahari bernama Proxima Centauri. Jaraknya sekitar empat koma dua tahun cahaya, atau kira-kira empat puluh triliun kilometer dari Bumi."
+    },
+    {
+      "id": "bab2", "type": "bab", "judul": "Cahaya dari masa lalu", "accent": "#2F7BFF",
+      "vo": "Artinya, cahaya Proxima yang kita lihat malam ini sudah berangkat lebih dari empat tahun lalu. Setiap kali menatap bintang, kita sedang melihat masa lalu."
+    }
+  ]
+}
