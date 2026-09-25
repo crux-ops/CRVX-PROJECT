@@ -1,0 +1,29 @@
+# === Hasil render & artefak (JANGAN masuk repo) ===
+build/
+dist/
+frames*/
+audio/
+audio_proc/
+pratinjau/
+*.mp4
+*.m4a
+*.mov
+*.mkv
+# salinan kerja di root
+/timeline.json
+/content.json
+
+# === Python ===
+__pycache__/
+*.pyc
+.pytest_cache/
+
+# === Rahasia (jangan pernah di-commit) ===
+.env
+.env.*
+*.pem
+*.key
+*.p12
+credentials*.json
+.netrc
+.git-credentials
