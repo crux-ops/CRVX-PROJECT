@@ -26,15 +26,14 @@
     {
       "id": "f1",
       "type": "fact",
-      "visual": "spektrum",
+      "visual": "hamburan00",
       "accent": "#2F7BFF",
       "trans": "tinta",
       "badge": "HAMBURAN RAYLEIGH",
       "title": "BIRU PALING MUDAH DIHAMBURKAN",
       "hl": "BIRU",
       "vo": "Biru paling mudah dihamburkan molekul udara ke segala arah.",
-      "speed": 1.0,
-      "sorot": 4
+      "speed": 1.0
     },
     {
       "id": "outro",

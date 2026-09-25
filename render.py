@@ -3,10 +3,11 @@
 
 Lapisan per frame (kanvas supersample SS):
   latar (mesh gradient bergerak + bg_element) -> konten adegan (layout tipe + visual registry)
-  -> kamera (drift organik + dorongan pada beat) -> transisi fase keluar/masuk
-  -> HUD (brand KlikTahu + badge tema + bilah progres bersegmen)  [HUD sengaja di atas kamera/transisi
-     agar stabil & terbaca - elemen kontinuitas antar adegan]
-  -> downscale LANCZOS ke 1080x1920 -> unsharp (SHARPEN) -> finishing FX (mesin_fx).
+  -> kamera (drift organik + dorongan pada beat) DIGABUNG dengan downscale: Image.resize(box=kotak_kamera,
+     LANCZOS) -> 1080x1920 (satu resampling; rotasi hanya saat guncang hook)
+  -> transisi fase keluar/masuk (resolusi output)
+  -> HUD (brand KlikTahu + badge tema + bilah progres bersegmen) [di atas kamera/transisi: stabil & tajam,
+     elemen kontinuitas antar adegan] -> unsharp 3x3 (SHARPEN) -> finishing FX (mesin_fx).
 
 Mesin tampilan: content.mesin == "v11" -> mesin_v11 (tipografi kinetik EDITOR); selain itu layout dasar.
 KT_FX=0 -> tanpa mesin_fx (latar polos, transisi pudar, tanpa finishing) = saklar darurat.
@@ -208,6 +209,9 @@ def layout_dasar(img, ctx):
 def hud(img, T, ctx):
     """brand + badge tema + bilah progres bersegmen (retensi)."""
     ac = ctx.aksen
+    wbrand = 118 + D.txt_w("KlikTahu", 40) - 50 + 22
+    D.rrect(img, 50, 70, 50 + wbrand, 122, 26, D.CREAM, 0.94)
+    D.rrect(img, 54, 145, 1026, 167, 11, D.CREAM, 0.88)
     D.circ(img, 82, 96, 24, ac)
     D.circ(img, 82, 96, 9, D.PUTIH)
     D.txt(img, "Klik", 118, 96, 40, "B", D.INK, 1, "lm", catat=False)
@@ -229,25 +233,29 @@ def hud(img, T, ctx):
 
 
 # ============================================================================ kamera & transisi (cadangan)
-def _kamera_dasar(img, T, ctx):
+def _kamera_dasar_box(T, W, H):
     s = 1.02 + 0.004 * math.sin(T * 0.7)
     dx = 4 * math.sin(T * 0.53) * ST["ss"]
     dy = 4 * math.cos(T * 0.41) * ST["ss"]
-    W, H = img.size
-    a = 1 / s
-    data = (a, 0, W / 2 - a * (W / 2 + dx), 0, a, H / 2 - a * (H / 2 + dy))
-    return img.transform(img.size, Image.AFFINE, data, Image.BILINEAR)
+    hw, hh = W / (2 * s), H / (2 * s)
+    return (W / 2 - dx - hw, H / 2 - dy - hh, W / 2 - dx + hw, H / 2 - dy + hh), 0.0
 
 
-TRANSISI = ["zoomthru", "tinta", "cahaya", "speed", "glint", "split", "zoom", "bands", "iris", "rise", "punch",
-            "slide", "glitch", "whip"]
+@__import__("functools").lru_cache(maxsize=8)
+def _kernel_tajam(persen):
+    """unsharp 3x3 setara (I + k(I - Gauss3x3)), k = SHARPEN/100. ~2x lebih cepat dari UnsharpMask."""
+    k = persen / 100.0
+    g = [1, 2, 1, 2, 4, 2, 1, 2, 1]
+    w = [-k * v / 16 for v in g]
+    w[4] += 1 + k
+    return ImageFilter.Kernel((3, 3), w, scale=1, offset=0)
+
+
 T_OUT, T_IN = 0.22, 0.30
 
 
 def jenis_transisi(k):
-    """transisi MASUK ke adegan k (k>=1): field 'trans' eksplisit atau bergilir otomatis."""
-    sc = ST["content"]["scenes"][k]
-    return sc.get("trans") or TRANSISI[(k * 5 + 3) % len(TRANSISI)]
+    return mu.jenis_transisi(ST["content"], k)
 
 
 def terapkan_transisi(img, ctx):
@@ -260,8 +268,11 @@ def terapkan_transisi(img, ctx):
         fase, u, jenis = "keluar", (t - (dur - T_OUT)) / T_OUT, jenis_transisi(k + 1)
     if fase is None:
         return img
+    # warna penutup SAMA di kedua sisi potongan: aksen adegan yang MASUK
+    k_masuk = k if fase == "masuk" else k + 1
+    aksen = D.col(ST["content"]["scenes"][k_masuk].get("accent", "#2F7BFF"))
     if fx is not None:
-        return fx.transisi(img, jenis, fase, u, ctx.aksen, seed=k)
+        return fx.transisi(img, jenis, fase, u, aksen, seed=k_masuk)
     a = (1 - u) if fase == "masuk" else u
     return Image.blend(img, Image.new("RGB", img.size, D.CREAM), D.eio(a))
 
@@ -280,16 +291,21 @@ def render_frame(fi):
     else:
         layout_dasar(img, ctx)
     fx = ST["fx"]
-    if fx is not None:
-        img = fx.kamera(img, T, ctx, ST["beats"], ST["ss"])
-    else:
-        img = _kamera_dasar(img, T, ctx)
-    img = terapkan_transisi(img, ctx)
-    hud(img, T, ctx)
-    if img.size != (W0, H0):
-        img = img.resize((W0, H0), Image.LANCZOS)
+    W, H = img.size
+    # kamera = kotak sumber downscale LANCZOS (zoom + geser dalam satu resampling)
+    box, rot = fx.kamera_box(T, ctx, ST["beats"], W, H, ST["ss"]) if fx is not None else _kamera_dasar_box(T, W, H)
+    if abs(rot) > 0.01:
+        img = img.rotate(rot, Image.BILINEAR)
+    img = img.resize((W0, H0), Image.LANCZOS, box=box)
+    # transisi + HUD di resolusi output (lebih murah; teks HUD tajam tanpa resampling)
+    D.set_ss(1.0)
+    try:
+        img = terapkan_transisi(img, ctx)
+        hud(img, T, ctx)
+    finally:
+        D.set_ss(ST["ss"])
     if ST["sharpen"] > 0:
-        img = img.filter(ImageFilter.UnsharpMask(radius=1.1, percent=ST["sharpen"], threshold=2))
+        img = img.filter(_kernel_tajam(ST["sharpen"]))
     if fx is not None:
         img = fx.finishing(img, "krem", fi, ctx)
     return img

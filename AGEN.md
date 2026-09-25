@@ -12,7 +12,7 @@
 | 1 | struktur repo, requirements, fonts, .gitignore, AGEN.md | SELESAI |
 | 2 | pipeline audio + sfx + QC keutuhan | SELESAI (uji: isi hilang 0 ms, uji negatif lulus) |
 | 3 | render.py + diagrams.py + mesin_util + check_layout | SELESAI (demo 3 adegan, audit bersih) |
-| 4 | mesin_v11 + mesin_fx | belum |
+| 4 | mesin_v11 + mesin_fx | SELESAI (selftest + montase; 0.33 s/frame/proses) |
 | 5 | qc_mp4 + tools/render_lokal.sh (demo end-to-end) | belum |
 | 6 | mesin Long | belum |
 | 7 | mesin analisis v3-v6 + --uji | belum |
@@ -78,6 +78,16 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - Limiter harus sadar TRUE-PEAK (interpolasi 4x, `mesin_util.puncak_antar_sampel`): tanpa itu master
   -1.2 dBFS punya true-peak -0.3 dBTP dan bisa lewat batas setelah AAC.
 - SFX tidak bisa didengar agen: periksa lewat spektrogram (`pratinjau/sfx_spektrogram.png`).
+- Kamera = kotak sumber `Image.resize(box=..., LANCZOS)` (zoom+geser digabung ke downscale). Transform affine
+  di kanvas SS memakan 138 ms/frame -> dibuang; rotasi hanya saat guncang hook. Transisi + HUD digambar di
+  resolusi output (D.set_ss(1.0)). Unsharp = kernel 3x3 setara (2x lebih cepat). Hasil: 0.33 s/frame/proses.
+- Bloom adaptif harus pakai persentil-90 + porsi piksel terang, bukan rata-rata saja: frame setengah biru
+  (penutup transisi) membuat area krem terbakar putih. Ada uji khusus di `mesin_fx.py`.
+- Warna penutup transisi = aksen adegan MASUK untuk KEDUA fase (kalau tidak, warna melompat di potongan).
+- HUD berwarna aksen hilang di atas penutup transisi -> pil krem di belakang brand + alas bilah progres.
+- Kinetik skala 1.5 -> 1 membuat kata menumpuk tetangga -> tiap kata dipotong di JENDELA slotnya sendiri.
+- Frame 0 intro harus sudah berisi (kata pertama mulai di t negatif, visual generik intro dimajukan 0.45 s).
+- Selftest gerak harus membandingkan juga fase AKHIR (t 3.5 vs 5.8), bukan hanya saat animasi masuk.
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -87,6 +97,9 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - 2026-09-25: Tahap 3 - diagrams.py (primitif SDF anti-alias, teks ter-cache + KOTAK_TEKS, ikon bentuk, 10 visual
   generik), render.py (lapisan frame, CLI --range/--outdir/--pipe/--times/--sheet, multiproses), check_layout.py
   (audit margin/zona + --uji negatif), mesin_util (preview_times, ink_report, sheet).
+- 2026-09-25: Tahap 4 - mesin_fx (finishing adaptif, kamera nois/beat, kaca cair, bayang, bokeh, mesh, odometer,
+  14 transisi fase), mesin_v11 (kinetik + stabilo, stiker, penanda FAKTA, events/BEATS, layout intro/fact/outro),
+  mesin_v11_ep00 (pola modul episode: visual hamburan00 + tabel beat bernama).
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -94,6 +107,8 @@ python3 sfx.py                 # katalog SFX + cek deterministik
 python3 process_audio.py --uji # QC keutuhan (sintetis + uji negatif + klip TTS asli)
 python3 diagrams.py            # selftest semua visual (gerak, zona teks)
 python3 check_layout.py --uji  # audit zona harus menangkap pelanggaran sengaja
+python3 mesin_fx.py            # finishing, 14 transisi (identitas di ujung fase), material
+python3 mesin_v11.py           # BEATS konsisten, layout kinetik, events
 python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
   && python3 build_audio.py demo_langit && python3 master_audio.py demo_langit
 ```

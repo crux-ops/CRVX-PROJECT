@@ -172,7 +172,14 @@ def ring(img, cx, cy, r, lebar, warna, a=1.0, a0=None, a1=None):
     if r <= 0 or lebar <= 0 or a <= 0.004:
         return
     X, Y, R, Wd = S(cx), S(cy), S(r), S(lebar) / 2
-    bb = _bbox(img, X - R - Wd - 1, Y - R - Wd - 1, X + R + Wd + 1, Y + R + Wd + 1)
+    busur = a0 is not None and a1 is not None and (a1 - a0) < 359.9
+    if busur and a1 > a0:
+        # kotak pembatas busur saja (bukan seluruh lingkaran) -> jauh lebih murah untuk busur pendek
+        angs = np.radians(np.linspace(a0, a1, max(3, int((a1 - a0) / 10) + 2)))
+        px_, py_ = X + R * np.sin(angs), Y - R * np.cos(angs)
+        bb = _bbox(img, px_.min() - Wd - 2, py_.min() - Wd - 2, px_.max() + Wd + 2, py_.max() + Wd + 2)
+    else:
+        bb = _bbox(img, X - R - Wd - 1, Y - R - Wd - 1, X + R + Wd + 1, Y + R + Wd + 1)
     if not bb:
         return
     xs, ys = _grid(*bb)
@@ -228,8 +235,30 @@ def rrect(img, x0, y0, x1, y1, r, warna, a=1.0, garis=None, lebar=0):
         tempel(img, warna, X0, Y0, m, a)
 
 
+@lru_cache(maxsize=128)
+def _rrect_garis_mask(w, h, r, lw):
+    """mask garis tepi kotak membulat (piksel int), ter-cache: panel statis tidak dihitung ulang tiap frame."""
+    pad = int(math.ceil(lw / 2)) + 2
+    xs, ys = _grid(0, 0, w + 2 * pad, h + 2 * pad)
+    cx, cy = pad + w / 2, pad + h / 2
+    hx, hy = w / 2 - r, h / 2 - r
+    qx, qy = np.abs(xs - cx) - hx, np.abs(ys - cy) - hy
+    d = np.sqrt(np.maximum(qx, 0) ** 2 + np.maximum(qy, 0) ** 2) + np.minimum(np.maximum(qx, qy), 0) - r
+    return _mask_from(0.5 - (np.abs(d) - lw / 2)), pad
+
+
 def rrect_garis(img, x0, y0, x1, y1, r, warna, lebar, a=1.0):
-    """hanya garis tepi kotak membulat (SDF)."""
+    """hanya garis tepi kotak membulat (SDF, mask ter-cache per ukuran)."""
+    X0, Y0 = int(round(S(x0))), int(round(S(y0)))
+    w, h = int(round(S(x1))) - X0, int(round(S(y1))) - Y0
+    if w <= 2 or h <= 2 or a <= 0.004:
+        return
+    m, pad = _rrect_garis_mask(w, h, float(min(round(S(r), 1), w / 2, h / 2)), float(round(S(lebar), 1)))
+    tempel(img, warna, X0 - pad, Y0 - pad, m, a)
+
+
+def _rrect_garis_lama(img, x0, y0, x1, y1, r, warna, lebar, a=1.0):
+    """(versi tanpa cache, disimpan untuk referensi uji)"""
     X0, Y0, X1, Y1 = S(x0), S(y0), S(x1), S(y1)
     R, Wd = S(r), S(lebar) / 2
     bb = _bbox(img, X0 - Wd - 1, Y0 - Wd - 1, X1 + Wd + 1, Y1 + Wd + 1)
@@ -866,9 +895,19 @@ def v_angka(img, t, dur, sc):
     a = seg(t, 0.2, 0.5)
     ring(img, PX, 1120, 330, 26, campur(CREAM, INK, 0.08), a)
     ring(img, PX, 1120, 330, 26, ac, a, 0, 360 * u)
-    glow(img, PX, 1120, 360, ac, 0.18 * a)
+    glow(img, PX, 1120, 360, ac, (0.16 + 0.06 * math.sin(t * 3.1)) * a)
+    ang = t * 1.4  # titik mengorbit + garis putus berputar: tetap bergerak setelah hitungan selesai
+    circ(img, PX + 330 * math.sin(ang), 1120 - 330 * math.cos(ang), 20, PUTIH, a)
+    circ(img, PX + 330 * math.sin(ang), 1120 - 330 * math.cos(ang), 12, ac, a)
+    for i in range(24):
+        a0 = (i * 15 + t * 12) % 360
+        ring(img, PX, 1120, 392, 6, ac, 0.25 * a, a0, a0 + 6)
     size = int(sc.get("angka_size", 150))
-    odometer(img, nilai, PX, 1170, size, INK, a, "m", "B", u, int(sc.get("desimal", 0)))
+    try:
+        import mesin_fx
+        mesin_fx.odometer(img, nilai, PX, 1170, size, INK, a, "m", "B", u, int(sc.get("desimal", 0)))
+    except ImportError:
+        odometer(img, nilai, PX, 1170, size, INK, a, "m", "B", u, int(sc.get("desimal", 0)))
     if sc.get("satuan"):
         txt(img, sc["satuan"], PX, 1270, 54, "SB", ac, a, "ms")
     if sc.get("label"):
@@ -964,10 +1003,12 @@ def v_daftar(img, t, dur, sc):
     for i, it in enumerate(items):
         t0 = 0.3 + i * max(0.5, (dur * 0.6) / max(1, n))
         u = eob(seg(t, t0, t0 + 0.5))
-        y = y0 + i * 230
+        y = y0 + i * 230 + 4 * math.sin(t * 1.6 + i * 1.1) * seg(t, t0 + 0.5, t0 + 1.0)  # mengambang halus
         x = lerp(-300, 140, u)
         rrect(img, x + 10, y - 80 + 12, x + 790 + 10, y + 80 + 12, 40, INK, 0.12 * u)
         rrect(img, x, y - 80, x + 790, y + 80, 40, PUTIH, u, INK, 5)
+        ph = (t * 0.6 + i * 0.33) % 1.0  # denyut cincin di lingkaran centang
+        ring(img, x + 95, y, 52 + 34 * ph, 5, ac, 0.45 * (1 - ph) * seg(t, t0 + 0.6, t0 + 0.9))
         circ(img, x + 95, y, 52, ac, u)
         centang(img, x + 95, y + 4, 62, PUTIH, 13, seg(t, t0 + 0.25, t0 + 0.6), u)
         txt(img, it, x + 180, y, 46, "SB", INK, u, "lm")
@@ -1062,8 +1103,8 @@ def _uji(ss=1.0):
             arr = [np.asarray(f, dtype=np.int16) for f in frames]
             if np.abs(arr[4] - np.asarray(_kanvas(ss), np.int16)).max() < 30:
                 err.append("tidak menggambar apa pun")
-            # gerak: frame t=2.5 vs t=3.5 harus beda (tidak diam > 1 s)
-            if np.abs(arr[2] - arr[3]).max() < 12:
+            # gerak: t=2.5 vs 3.5 DAN t=3.5 vs 5.8 (setelah animasi masuk selesai) harus beda
+            if np.abs(arr[2] - arr[3]).max() < 12 or np.abs(arr[3] - arr[4]).max() < 12:
                 err.append("diam > 1 detik")
             imgs.append(frames[3])
             labels.append(nama)

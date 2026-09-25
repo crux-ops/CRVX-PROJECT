@@ -115,6 +115,17 @@ def muat_episode(slug_or_path, jenis="shorts"):
     return p, content, cfg, bdir
 
 
+TRANSISI = ["zoomthru", "tinta", "cahaya", "speed", "glint", "split", "zoom", "bands", "iris", "rise", "punch",
+            "slide", "glitch", "whip"]
+
+
+def jenis_transisi(content, k):
+    """transisi MASUK ke adegan k (k>=1): field 'trans' eksplisit, bila tidak bergilir otomatis.
+    Dipakai render (gambar) DAN mesin_v11.events (SFX) -> selalu sama."""
+    sc = content["scenes"][k]
+    return sc.get("trans") or TRANSISI[(k * 5 + 3) % len(TRANSISI)]
+
+
 def hitung_kata(teks: str) -> int:
     """Jumlah kata yang diucapkan (token berisi huruf/angka)."""
     return len([w for w in re.split(r"\s+", teks.strip()) if re.search(r"[0-9A-Za-zÀ-ÿ]", w)])
