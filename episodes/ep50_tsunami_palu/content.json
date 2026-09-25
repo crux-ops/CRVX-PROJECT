@@ -1,0 +1,181 @@
+{
+ "title": "Kenapa Tsunami Palu Bisa Terjadi?",
+ "channel": "KlikTahu",
+ "topik": "tsunami",
+ "header_badge": "BUMI · TSUNAMI",
+ "bg_element": "gelombang",
+ "lead_in": 0.6,
+ "tail_intro": 0.8,
+ "tail_fact": 0.9,
+ "tail_outro": 1.2,
+ "mesin": "v11",
+ "sumber": [
+  {
+   "penerbit": "Landslides 16:195-200 (Springer) - Sassa & Takagawa",
+   "tahun": 2019,
+   "judul": "Liquefied gravity flow-induced tsunami: first evidence and comparison from the 2018 Indonesia Sulawesi earthquake and tsunami disasters",
+   "url": "https://link.springer.com/article/10.1007/s10346-018-1114-x"
+  },
+  {
+   "penerbit": "Earth and Space Science (AGU) - Ho dkk.",
+   "tahun": 2021,
+   "judul": "Tsunami Induced by the Strike-Slip Fault of the 2018 Palu Earthquake (Mw 7.5), Sulawesi Island, Indonesia",
+   "url": "https://agupubs.onlinelibrary.wiley.com/doi/full/10.1029/2020EA001400"
+  },
+  {
+   "penerbit": "Natural Hazards Research (ScienceDirect)",
+   "tahun": 2023,
+   "judul": "A comprehensive report on the 28th September 2018 Indonesian Tsunami along with its causes",
+   "url": "https://www.sciencedirect.com/science/article/pii/S2666592123000628"
+  },
+  {
+   "penerbit": "NOAA National Ocean Service",
+   "tahun": 2026,
+   "judul": "What is a tsunami?",
+   "url": "https://oceanservice.noaa.gov/facts/tsunami.html"
+  },
+  {
+   "penerbit": "BMKG",
+   "tahun": 2026,
+   "judul": "InaTEWS - Informasi Gempabumi dan Tsunami (peringatan dini resmi)",
+   "url": "https://inatews.bmkg.go.id"
+  },
+  {
+   "penerbit": "BMKG via RRI",
+   "tahun": 2026,
+   "judul": "Guncangan 20 detik atau lebih: jangan menunggu sirene, segera evakuasi mandiri",
+   "url": "https://rri.co.id/ternate/regional/2738933/bmkg-imbau-masyarakat-waspadai-ancaman-gempa-megathrust-di-maluku-utara"
+  }
+ ],
+ "kata_kunci": "kenapa tsunami palu bisa terjadi",
+ "judul": [
+  "Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya",
+  "Peringatan 8 Tahun Tsunami Palu: Kenapa Bisa Terjadi?",
+  "Gempa Mendatar Kok Bisa Tsunami? Ini Penjelasan Ilmiahnya"
+ ],
+ "scenes": [
+  {
+   "id": "intro",
+   "type": "intro",
+   "visual": "geser50",
+   "accent": "#2F7BFF",
+   "shake": 0.5,
+   "lines": [
+    "GEMPA MENDATAR",
+    "KENAPA ADA TSUNAMI?"
+   ],
+   "hl": "TSUNAMI?",
+   "vo": "Gempa seperti ini seharusnya tidak memicu tsunami besar. Tapi di Palu, delapan tahun lalu, tsunami tetap datang, hanya dalam hitungan menit. Kenapa bisa begitu?",
+   "speed": 1.0,
+   "bab": "Gempa mendatar, kok ada tsunami?"
+  },
+  {
+   "id": "f1",
+   "type": "fact",
+   "visual": "sesar50",
+   "accent": "#FF6B3D",
+   "trans": "tinta",
+   "badge": "28 SEPTEMBER 2018",
+   "title": "SESAR PALU-KORO BERGESER MENDATAR",
+   "hl": "MENDATAR",
+   "vo": "Dua puluh delapan September dua ribu delapan belas, gempa magnitudo tujuh koma lima mengguncang Sulawesi Tengah. Sumbernya Sesar Palu-Koro. Dua sisi kerak bumi bergeser mendatar, saling melewati sekitar empat meter.",
+   "speed": 1.0,
+   "bab": "Sesar Palu-Koro, 28 September 2018"
+  },
+  {
+   "id": "f2",
+   "type": "fact",
+   "visual": "naik50",
+   "accent": "#8A5CF6",
+   "trans": "slide",
+   "badge": "BIASANYA",
+   "title": "TSUNAMI BESAR LAHIR DARI SESAR NAIK",
+   "hl": "NAIK",
+   "vo": "Tsunami besar biasanya lahir dari sesar naik. Dasar laut terangkat tiba-tiba dan mendorong seluruh kolom air di atasnya. Sesar mendatar hanya menggeser dasar laut ke samping, jadi airnya nyaris tidak terangkat.",
+   "speed": 1.0,
+   "bab": "Kenapa sesar mendatar jarang memicu tsunami"
+  },
+  {
+   "id": "f3",
+   "type": "fact",
+   "visual": "likuefaksi50",
+   "accent": "#F4B400",
+   "trans": "rise",
+   "badge": "LIKUEFAKSI",
+   "title": "TANAH PANTAI MENCAIR DAN LONGSOR",
+   "hl": "MENCAIR",
+   "vo": "Tapi guncangan kuat membuat pasir jenuh air di pesisir Palu mencair, disebut likuefaksi. Tanah pantai runtuh dan meluncur ke laut, setidaknya di sembilan tempat, dan tiap longsoran mendorong air menjadi gelombang.",
+   "speed": 1.0,
+   "bab": "Likuefaksi dan longsoran pantai"
+  },
+  {
+   "id": "f4",
+   "type": "fact",
+   "visual": "porsi50",
+   "accent": "#1FB57A",
+   "trans": "iris",
+   "badge": "DUA STUDI",
+   "title": "JAWABANNYA GABUNGAN",
+   "hl": "GABUNGAN",
+   "vo": "Satu studi internasional memperkirakan, kurang dari dua puluh persen tinggi gelombang berasal dari gerakan sesar. Studi lain menemukan sesar di dasar teluk tetap berperan besar. Porsinya masih diperdebatkan, tapi jawabannya gabungan.",
+   "speed": 1.0,
+   "bab": "Dua studi: jawabannya gabungan"
+  },
+  {
+   "id": "f5",
+   "type": "fact",
+   "visual": "teluk50",
+   "accent": "#2F7BFF",
+   "trans": "tinta",
+   "badge": "TELUK SEMPIT",
+   "title": "GELOMBANG TERPERANGKAP DAN MENUMPUK",
+   "hl": "MENUMPUK",
+   "vo": "Bentuk Teluk Palu ikut memperparah. Teluknya panjang dan sempit seperti corong, jadi gelombang terperangkap, memantul, dan menumpuk. Sumbernya dekat, sehingga air tiba hanya beberapa menit, di beberapa titik hingga sekitar sepuluh meter.",
+   "speed": 1.0,
+   "bab": "Teluk sempit seperti corong"
+  },
+  {
+   "id": "f6",
+   "type": "fact",
+   "visual": "selamat50",
+   "accent": "#E5484D",
+   "trans": "bands",
+   "badge": "PELAJARAN",
+   "title": "GEMPA KUAT? SEGERA JAUHI PANTAI",
+   "hl": "JAUHI",
+   "vo": "Pelajarannya untuk kita: kalau berada di pantai dan merasakan gempa kuat, atau guncangan sekitar dua puluh detik atau lebih, jangan menunggu sirene. Segera jauhi pantai dan tepi sungai, menuju tempat tinggi.",
+   "speed": 1.0,
+   "bab": "Pelajaran: evakuasi mandiri"
+  },
+  {
+   "id": "rangkuman",
+   "type": "fact",
+   "visual": "tiga50",
+   "accent": "#FF6B3D",
+   "trans": "zoom",
+   "badge": "RANGKUMAN",
+   "title": "TIGA PENYEBAB SEKALIGUS",
+   "hl": "TIGA",
+   "vo": "Jadi, tsunami Palu terjadi karena tiga hal sekaligus: gerakan sesar di dasar teluk, longsoran tanah pantai yang mencair, dan teluk sempit yang menumpuk gelombang.",
+   "speed": 1.0,
+   "bab": "Rangkuman: tiga penyebab"
+  },
+  {
+   "id": "outro",
+   "type": "outro",
+   "accent": "#2F7BFF",
+   "trans": "cahaya",
+   "lines": [
+    "SEKARANG",
+    "KAMU TAHU"
+   ],
+   "cta": "IKUTI",
+   "foot": "Fakta sains & misteri, tiap hari",
+   "foot2": "Simpan video ini · bagikan ke teman",
+   "src": "Sumber: BMKG · NOAA · Landslides 2019 · AGU 2021",
+   "vo": "Mengenang para korban dan penyintas Palu. Sekarang kamu tahu, dan semoga kita semua lebih siap.",
+   "speed": 1.0,
+   "bab": "Penutup"
+  }
+ ]
+}

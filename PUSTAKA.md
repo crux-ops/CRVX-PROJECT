@@ -5,15 +5,15 @@ Mesin analisis membaca file ini + `pustaka/` untuk daftar topik SUDAH dibahas.
 
 ## Episode baru (setelah rebuild)
 
-| Ep | Tanggal rilis | Topik | Judul terpilih | Folder |
-|---|---|---|---|---|
-| - | - | (belum ada) | - | - |
+| Ep | Status | Tanggal tayang | Topik | Judul terpilih | Folder |
+|---|---|---|---|---|---|
+| Ep50 | vo | - | tsunami | Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya | ep50_tsunami_palu |
 
 ## Video panjang baru
 
-| Long | Tanggal rilis | Topik | Judul terpilih | Folder |
-|---|---|---|---|---|
-| - | - | (belum ada) | - | - |
+| Long | Status | Tanggal tayang | Topik | Judul terpilih | Folder |
+|---|---|---|---|---|---|
+| - | - | - | (belum ada) | - | - |
 
 ## Arsip lama (sebelum rebuild, akun lama)
 Shorts Ep01-Ep49 dan Long01-Long02. Detail per nomor tidak tersimpan; tema yang sudah dibahas:

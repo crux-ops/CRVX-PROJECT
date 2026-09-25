@@ -4,11 +4,12 @@
 > Spesifikasi lengkap dari pemilik: `PROMPT_KLIKTAHU.txt` (sumber kebenaran; file ini ringkasan + status).
 
 ## 0. Status singkat
-- Fase: **mesin SELESAI + UPGRADE 2026-09 (U1-U4) lulus uji**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
-- Riset real-time terakhir (25-09-2026 run #2, data nyata mode agen, SEMUA 44 tema segar/long terukur): rekomendasi
-  Ep50 = **tsunami** (sudut "kenapa tsunami Palu bisa terjadi", momen peringatan 8 tahun tsunami Palu 28 Sep; slot Sen
-  28 Sep 11.30 WIB), lalu Ep51 **gunung berapi** (juara skor 67.9, erupsi berlangsung - cek MAGMA dulu). BELUM dipesan
-  pemilik. Lihat `laporan/RISET.md`, `laporan/KALENDER.md`, `laporan/draf/METADATA_tsunami.md` & `METADATA_gunung_berapi.md`.
+- Fase: **PRODUKSI EPISODE**. Pemilik memerintahkan "Buat video shorts!" (25-09-2026) -> **Ep50 tsunami Palu**
+  (`episodes/ep50_tsunami_palu`, sudut "Kenapa tsunami Palu bisa terjadi?", tayang Sen 28 Sep 2026 11.30 WIB =
+  peringatan 8 tahun). Status: naskah + VO voice-00 + audio QC + visual (`mesin_v11_ep50.py`) + check_layout BERSIH +
+  METADATA/SIAP_TEMPEL lulus gerbang -> RENDER. Berikutnya: Ep51 gunung berapi (cek MAGMA dulu), Long03 otak.
+- Keputusan pemilik 25-09-2026: **repo TETAP PUBLIK** (jangan minta diubah ke privat lagi); **analisis pesaing TIDAK
+  perlu** (tanpa YOUTUBE_API_KEY; komponen celah tidak dipakai).
 - Jangan membuat video episode sebelum pemilik memberi perintah.
 
 | Tahap | Isi | Status |
@@ -49,8 +50,9 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
 - Tidak pernah menyimpan token/password di file atau chat. `kanal.toml` hanya berisi NAMA variabel lingkungan
   (divalidasi: nilai yang tampak seperti kunci DITOLAK). Kunci tidak ikut kunci cache/log/snapshot (ada tesnya).
 - CI `.github/workflows/uji.yml`: push ke main & `arena/**`, matriks Python 3.11 + 3.14 + Node 24, < 5 menit, tanpa cron.
-- **Repo `crux-ops/CRVX-PROJECT` saat ini PUBLIK** (dicek 2026-09-25). Agen tidak punya hak admin untuk
-  mengubahnya -> pemilik perlu mengubah ke Private lewat Settings > General > Danger Zone.
+- **Repo `crux-ops/CRVX-PROJECT` PUBLIK atas keputusan pemilik (25-09-2026: "Repo tetap publik!")** - menggantikan
+  aturan "repo privat" di PROMPT_KLIKTAHU.txt §3. Konsekuensi: JANGAN PERNAH commit rahasia (token, kunci, .env,
+  kredensial, data pribadi); `.gitignore` + validasi kanal.toml sudah menjaga ini, tetap periksa `git diff` sebelum commit.
 
 ## 4. Lingkungan sandbox (dicek 2026-09-25)
 - 2 vCPU, RAM 3.8 GB, disk ~20 GB. Python 3.11. `pip install --break-system-packages -r requirements.txt`.
@@ -85,6 +87,7 @@ Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
 - voice_id Arena berlaku per sesi. Di sesi baru: audisi ulang dengan parameter yang SAMA, lalu pilih kandidat
   yang suaranya sama dengan klip referensi `suara/referensi_narator.wav`. Catat voice_id sesi baru di sini.
 - Semua VO Shorts & Long wajib memakai suara ini. Rekam ulang klip = suara yang sama, teks hampir sama.
+- Dipakai: Ep50 (9 klip, 25-09-2026) - QC isi hilang 0 ms, pace 1.90-1.93 kata/detik.
 
 ## 7. Pelajaran & jebakan
 Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
@@ -255,7 +258,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
   ekspor JSONL. Lalu: `python3 -m kliktahu rencana` (KALENDER.md + kalender.ics), `python3 -m kliktahu dasbor --png`.
 - Skor: rumus prompt v3-v6 (kliktahu/skor.py, satu implementasi, dipakai juga analisis/v3-v6) + v7 PELUANG 0-100 =
   26 permintaan + 12 minat + 14 momentum + 16 celah + 12 kecocokan + 10 momen + 5 kesegaran + 5 bukti; KEYAKINAN = porsi
-  bobot berdata nyata. Tanpa kunci YouTube, celah netral -> keyakinan maks ~64%.
+  bobot berdata nyata. Sejak 25-09-2026 `[riset] pesaing = false` (keputusan pemilik): komponen celah KELUAR dari rumus,
+  bobot lain dinormalisasi (/0.84) -> peringkat sama, keyakinan tidak lagi terkunci 64% (run berikutnya ~76%).
+  Parameter `tanpa` ada di Python & TypeScript (paritas 784 kasus). Nyalakan lagi: `pesaing = true` + YOUTUBE_API_KEY.
 - Hasil 25-09-2026 run #1 (17 tema): 1 gunung berapi 73.1 | 2 pesawat 65.2 | 3 pelangi 63.1 (arsip run1).
 - Hasil 25-09-2026 run #2 (SEMUA 44 tema segar/long; normalisasi permintaan ikut berubah): 1 gunung berapi 67.9 |
   2 tsunami 65.7 | 3 otak 62.5 | 4 kuku 59.4 | 5 segitiga bermuda 57.7 | 6 pesawat 57.3 | 7 burung 56.7 | 8 darah 55.6.
@@ -271,9 +276,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
 - (Selesai 2026-09-25 15.20 UTC) push tertunda 13.00 UTC dipulihkan: sandbox reset lagi ke commit awal -> tambah
   refspec arena, `git fetch`, `git reset --mixed origin/arena/...`, commit dibuat ulang dari working tree (mypy tanpa
   pin, apostrof ka'bah, catatan AGEN), paket dipasang ulang (`pip install -r requirements-dev.txt`, `npm ci`), uji LULUS.
-- Ubah repo `crux-ops/CRVX-PROJECT` menjadi **Private** (Settings > General > Danger Zone). Agen tidak punya hak admin.
-- (Opsional, untuk keyakinan riset > 64%) buat kunci YouTube Data API v3 gratis (Google Cloud Console), lalu di komputer
-  sendiri: `export YOUTUBE_API_KEY=...` (JANGAN ditulis di file/chat). Sama untuk `BRAVE_API_KEY` / `SEARXNG_URL`.
+- (Diputuskan 25-09-2026) repo tetap PUBLIK; analisis pesaing / YOUTUBE_API_KEY TIDAK diperlukan.
+- Ep50: unggah `dist/KlikTahu_Ep50_Tsunami_Palu/` (MP4 + SIAP_TEMPEL.md) Sen 28 Sep 2026 11.30 WIB, lalu
+  `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
 - (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
   `python3 -m kliktahu pustaka impor-studio <file.csv>` -> bobot pilar menyesuaikan otomatis.
 - (Opsional) cermin awan Bolt Database/Supabase: jalankan `skema/postgres.sql`, set env URL+KEY, `python3 -m kliktahu sinkron dorong`.
