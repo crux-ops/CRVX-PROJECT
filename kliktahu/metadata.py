@@ -95,14 +95,22 @@ def _bersih(s: str) -> str:
     return re.sub(r"[<>]", "", teks.ascii_saja(s)).strip()
 
 
-def frasa_layak(frasa: Sequence[str], k: kanal_mod.Kanal) -> list[str]:
-    """frasa pencarian yang boleh dipakai di judul/tag: bersih, tidak diblokir, tidak sensitif, 2-8 kata."""
+KATA_KORBAN = ("korban", "tewas", "meninggal", "mayat", "jenazah")  # topik bencana: tidak dijadikan judul/tag
+
+
+def frasa_layak(frasa: Sequence[str], k: kanal_mod.Kanal, tema: str = "") -> list[str]:
+    """frasa pencarian yang boleh dipakai di judul/tag: bersih, tidak diblokir, tidak sensitif, 2-8 kata, tanpa token
+    satu huruf yang tak bermakna ('kenapa tsunami pakai t'); topik bencana: tanpa kata korban (hormat)."""
     out = []
     for f in frasa:
         f = teks.norm(f)
         if not f or teks.diblokir(f, k.aturan.blokir) or teks.sensitif(f, k.aturan.sensitif):
             continue
         if teks.kena(f, k.aturan.hindari_hook) or not 2 <= len(f.split()) <= 8:
+            continue
+        if any(len(w) == 1 and not w.isdigit() for w in f.split()):
+            continue
+        if tema in BENCANA and any(w in KATA_KORBAN for w in f.split()):
             continue
         out.append(f)
     return teks.unik_fuzzy(out, 0.92)
@@ -305,11 +313,21 @@ def _mmss(detik: float) -> str:
     return f"{d // 3600}:{d % 3600 // 60:02d}:{d % 60:02d}" if d >= 3600 else f"{d // 60}:{d % 60:02d}"
 
 
+BAB_MIN_DETIK = 10.0  # syarat bab YouTube: tiap bab >= 10 detik, bab pertama 0:00, minimal 3 bab
+
+
 def bab_dari_timeline(konten: dict[str, Any], timeline: dict[str, Any]) -> list[tuple[float, str]]:
+    """bab/timestamp dari timeline. Label: field 'bab' adegan (bila ada) > badge/judul. Bab yang lebih pendek dari
+    10 detik digabung ke bab sebelumnya (YouTube menolak SEMUA bab bila ada yang < 10 detik)."""
     lab = {}
     n_fakta = 0
     for sc in konten.get("scenes", []):
         tp = sc.get("type")
+        if sc.get("bab"):
+            lab[sc["id"]] = str(sc["bab"])
+            if tp == "fact":
+                n_fakta += 1
+            continue
         if tp == "intro":
             lab[sc["id"]] = "Pertanyaan"
         elif tp == "fact":
@@ -325,6 +343,15 @@ def bab_dari_timeline(konten: dict[str, Any], timeline: dict[str, Any]) -> list[
             out.append((float(sc["start"]), _bersih(lab[sc["id"]])))
     if out:
         out[0] = (0.0, out[0][1])
+    total = float(timeline.get("total") or 0.0)
+    if total > 0:  # buang bab yang terlalu pendek (digabung ke bab sebelumnya)
+        rapi: list[tuple[float, str]] = []
+        for i, (t0, nama) in enumerate(out):
+            t1 = out[i + 1][0] if i + 1 < len(out) else total
+            if rapi and t1 - t0 < BAB_MIN_DETIK:
+                continue
+            rapi.append((t0, nama))
+        out = rapi
     return out
 
 
@@ -409,11 +436,17 @@ def buat(
     k = k or kanal_mod.muat()
     t = TEMA.get(tema)
     inti = t.inti if t else tema
-    fr = frasa_layak(frasa, k)
+    fr = frasa_layak(frasa, k, tema)
+    if not kata_kunci and konten and konten.get("kata_kunci"):
+        kata_kunci = str(konten["kata_kunci"])
     kk = teks.norm(kata_kunci) if kata_kunci else kata_kunci_utama(fr, inti)
-    calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "", hormat=tema in BENCANA)
-    bernilai = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in calon]
-    pilih = pilih_beragam(bernilai, 3, inti=inti)
+    tetap = [_bersih(j) for j in (konten or {}).get("judul", []) if isinstance(j, str) and j.strip()]
+    if len(tetap) >= 3:  # episode: 3 judul dipilih agen SESUAI ISI video (tetap dinilai & di-lint)
+        pilih = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in tetap[:3]]
+    else:
+        calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "", hormat=tema in BENCANA)
+        bernilai = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in calon]
+        pilih = pilih_beragam(bernilai, 3, inti=inti)
     tagar = buat_hashtag(tema, inti, format_, k)
     bab = bab_dari_timeline(konten, timeline) if konten and timeline else []
     src = list(sumber) or (sumber_dari_konten(konten) if konten else [])
@@ -645,7 +678,12 @@ def tulis_siap_tempel(p: Paket, path: Path | str, kode: str, k: kanal_mod.Kanal,
         ", ".join(p.tag),
         "",
         "## Komentar sematan",
-        _bersih(k.metadata.komentar_sematan),
+        _bersih(
+            f"Kenali jalur evakuasi di sekitarmu dan bagikan video ini ke keluarga. Info resmi & peringatan dini: "
+            f"{BENCANA[p.tema]}."
+            if p.tema in BENCANA
+            else k.metadata.komentar_sematan
+        ),
         "",
         "## Jam unggah (WIB)",
         jam or " atau ".join(k.jadwal.slot_wib),

@@ -127,7 +127,9 @@ def test_pengurai_format_asli():
 def test_mesin_uji_menyeluruh(riset_uji):
     h, d, tmp = riset_uji
     assert h.statistik["tema_dianalisis"] == 62 and not h.statistik["host_offline"]
-    assert all(v.startswith("ok") for v in h.statistik["sumber"].values()), h.statistik["sumber"]
+    sumber = h.statistik["sumber"]
+    assert sumber["pesaing"].startswith("tidak dipakai")  # keputusan pemilik: [riset] pesaing = false
+    assert all(v.startswith("ok") for n, v in sumber.items() if n != "pesaing"), sumber
     assert h.keputusan and h.keputusan.status in ("segar", "long")
     tema = [r["tema"] for r in h.baris]
     assert "kucing" not in tema and "petir" not in tema  # sudah dibahas -> tidak diperingkat
@@ -334,3 +336,15 @@ def test_sudut_sadar_momen_dan_hook_hormat_bencana(k):
     assert not any("seru" in h or "kamu kira" in h for h in hook)
     biasa = {"tema": "pelangi", "sinyal": {"frasa": ["kenapa pelangi melengkung"]}}
     assert mesin._hook(biasa, k) == ["Kenapa pelangi melengkung? Jawabannya lebih seru dari yang kamu kira."]
+
+
+def test_mesin_uji_dengan_pesaing_bila_dinyalakan(tmp_path):
+    """jalur analisis pesaing tetap teruji walau kanal mematikannya (bisa dinyalakan lagi: [riset] pesaing = true)."""
+    from dataclasses import replace
+
+    d = DB(tmp_path / "p.db")
+    d.kanal = replace(d.kanal, riset=replace(d.kanal.riset, pesaing=True))
+    h = mesin.jalankan("uji", HARI, db=d, folder_laporan=tmp_path / "l", ekspor=False, log=lambda s: None)
+    assert h.statistik["sumber"]["pesaing"].startswith("ok")
+    assert any(r["komponen"]["celah"] != 0.5 for r in h.baris)  # komponen celah dipakai
+    assert "16 celah pesaing" in h.laporan.read_text(encoding="utf-8")

@@ -256,3 +256,55 @@ def test_perencana_keputusan_dulu_lalu_tenggat_terdekat(db, tmp_path, monkeypatc
     assert rows[0]["judul_kerja"] == "kuku" and rows[0]["alasan"].startswith("KEPUTUSAN riset")
     ts = next(r for r in rows if r["judul_kerja"] == "tsunami")
     assert "momen" not in ts["alasan"] and ts["tanggal"] > "2026-09-28"  # diisi peringkat biasa, bukan "momen" telat
+
+
+def test_metadata_episode_bab_judul_tetap_tag_hormat(k, tmp_path):
+    konten = {
+        "judul": [
+            "Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya",
+            "Peringatan 8 Tahun Tsunami Palu: Kenapa Bisa Terjadi?",
+            "Gempa Mendatar Kok Bisa Tsunami? Ini Penjelasan Ilmiahnya",
+        ],
+        "kata_kunci": "kenapa tsunami palu bisa terjadi",
+        "scenes": [
+            {"id": "intro", "type": "intro", "bab": "Gempa mendatar, kok ada tsunami?"},
+            {"id": "f1", "type": "fact", "badge": "28 SEPTEMBER 2018", "bab": "Sesar Palu-Koro"},
+            {"id": "f2", "type": "fact", "badge": "LIKUEFAKSI"},
+            {"id": "outro", "type": "outro", "bab": "Penutup"},
+        ],
+    }
+    tl = {
+        "total": 60.0,
+        "scenes": [
+            {"id": "intro", "start": 0},
+            {"id": "f1", "start": 14.4},
+            {"id": "f2", "start": 32.0},
+            {"id": "outro", "start": 50.1},
+        ],
+    }
+    bab = M.bab_dari_timeline(konten, tl)
+    assert bab == [(0.0, "Gempa mendatar, kok ada tsunami?"), (14.4, "Sesar Palu-Koro"), (32.0, "Likuefaksi")]
+    fr = [
+        "kenapa tsunami palu bisa terjadi",
+        "kenapa tsunami aceh banyak korban",
+        "kenapa tsunami pakai t",
+        "kenapa tsunami surut dulu",
+    ]
+    p = M.buat(
+        "tsunami",
+        fr,
+        "shorts",
+        k,
+        konten=konten,
+        timeline=tl,
+        final=True,
+        sumber=[{"penerbit": "BMKG", "judul": "InaTEWS", "url": "https://inatews.bmkg.go.id"}],
+    )
+    assert p.lulus, p.galat
+    assert p.judul == konten["judul"] and p.deskripsi.startswith(
+        "Kenapa tsunami Palu bisa terjadi?"
+    )  # nama diri kapital
+    assert not any("korban" in x or x.endswith(" t") for x in p.tag)  # hormat + tanpa token satu huruf
+    st = M.tulis_siap_tempel(p, tmp_path / "SIAP_TEMPEL.md", "Ep50", k, jam="2026-09-28 11:30 WIB (kalender)")
+    isi = st.read_text(encoding="ascii")
+    assert "jalur evakuasi" in isi and "kaget" not in isi and "2026-09-28 11:30" in isi

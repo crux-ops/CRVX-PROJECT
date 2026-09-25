@@ -116,6 +116,11 @@ def kasus(n: int = 40, benih: int = 20260925) -> list[dict[str, Any]]:
         tambah("v7_peluang", [kom], list(S.v7_peluang({k: tuple(v) if v else None for k, v in kom.items()})))
         fs = [r.randint(0, 9), round(r.uniform(0, 2), 2), float(r.randint(0, 1)), round(r.uniform(30, 90), 1)]
         tambah("format_saran", fs, S.format_saran(*fs))
+    for i in range(24):  # komponen tidak dipakai kanal (analisis pesaing dimatikan pemilik)
+        kom = {nama: _opsional(r, [round(r.random(), 4), round(r.random(), 4)], 0.3) for nama in S.BOBOT_V7}
+        tanpa = ["celah"] if i % 3 else ["celah", "bukti"]
+        hasil = S.v7_peluang({k: tuple(v) if v else None for k, v in kom.items()}, tanpa)
+        tambah("v7_peluang", [kom, tanpa], list(hasil))
     return out
 
 

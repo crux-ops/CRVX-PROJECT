@@ -72,3 +72,44 @@ def test_momen_skor_tema():
     live = momen.Momen(h, "Gempa M6.2 Sukabumi", ["gempa bumi"], "live", "BMKG", 0.8)
     assert momen.skor_momen(live, h) == pytest.approx(0.8)
     assert momen.skor_momen(live, h + dt.timedelta(days=4)) == 0
+
+
+def test_v7_tanpa_pesaing_peringkat_sama_keyakinan_tidak_terkunci(k):
+    """pemilik mematikan analisis pesaing -> komponen celah keluar dari rumus (bobot lain dinormalisasi)."""
+    from kliktahu import skor as S
+
+    assert k.riset.pesaing is False  # kanal.toml: keputusan pemilik 25-09-2026
+    tema = {
+        "a": {
+            "permintaan": (0.71, 1.0),
+            "minat": (0.61, 1.0),
+            "momentum": (0.54, 0.2),
+            "kecocokan": (0.61, 0.65),
+            "waktu": (0.95, 1.0),
+            "kesegaran": (1.0, 1.0),
+        },
+        "b": {
+            "permintaan": (0.56, 1.0),
+            "minat": (0.81, 1.0),
+            "momentum": (1.0, 0.2),
+            "kecocokan": (0.61, 0.65),
+            "waktu": (0.70, 1.0),
+            "kesegaran": (0.95, 1.0),
+        },
+        "c": {
+            "permintaan": (1.0, 1.0),
+            "minat": (0.54, 1.0),
+            "momentum": (0.56, 0.2),
+            "kecocokan": (0.56, 0.65),
+            "waktu": (0.0, 1.0),
+            "kesegaran": (1.0, 1.0),
+        },
+    }
+    lama = {n: S.v7_peluang(kom) for n, kom in tema.items()}
+    baru = {n: S.v7_peluang(kom, ("celah",)) for n, kom in tema.items()}
+    assert sorted(tema, key=lambda n: -lama[n][0]) == sorted(tema, key=lambda n: -baru[n][0])  # peringkat sama
+    for n in tema:
+        assert baru[n][0] == pytest.approx((lama[n][0] - 16 * 0.5) / 0.84)  # celah netral 0.5 dikeluarkan
+        assert baru[n][1] == pytest.approx(lama[n][1] / 0.84) and baru[n][1] > 0.75 > lama[n][1]
+        assert baru[n][2]["celah"] == 0.5
+    assert S.v7_peluang({}, tuple(S.BOBOT_V7)) == (50.0, 0.0, {n: 0.5 for n in S.BOBOT_V7})

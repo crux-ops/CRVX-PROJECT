@@ -27,6 +27,7 @@ def test_kanal_sah_dan_aturan_keras(k):
         (lambda d: d["metadata"].__setitem__("maks_tag_karakter", 600), "batas keras"),
         (lambda d: d["jadwal"].__setitem__("slot_wib", ["25:00"]), "HH:MM"),
         (lambda d: d["pilar"].pop("misteri"), "keenam pilar"),
+        (lambda d: d["riset"].__setitem__("pesaing", "tidak"), "pesaing harus true/false"),
     ],
 )
 def test_kanal_menolak_konfigurasi_salah(ubah, pesan):

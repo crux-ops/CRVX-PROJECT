@@ -82,6 +82,8 @@ maks_paralel_per_host = 3
 jeda_min_detik = 0.35               # jarak minimum antar permintaan ke host yang sama (sopan)
 cache_jam = 12                      # hasil HTTP disimpan sekian jam (tidak memukul server berulang)
 maks_youtube_tema = 20              # berapa tema teratas yang dicek pesaingnya via YouTube Data API (kuota)
+pesaing = false                     # keputusan pemilik 25-09-2026: analisis pesaing TIDAK perlu (komponen celah
+                                    # keluar dari rumus v7, bobot lain dinormalisasi; YOUTUBE_API_KEY tidak dipakai)
 user_agent = "KlikTahuRiset/2.0 (riset konten edukasi; +https://github.com/crux-ops/CRVX-PROJECT)"
 env_youtube_key = "YOUTUBE_API_KEY" # NAMA variabel lingkungan, BUKAN kuncinya
 env_brave_key = "BRAVE_API_KEY"

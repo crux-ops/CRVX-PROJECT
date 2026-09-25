@@ -171,22 +171,31 @@ export function bukti(nKredibel: number | null): Nilai | null {
   return nKredibel === null ? null : [Math.min(1, nKredibel / 4), 1];
 }
 
+/** tanpa = komponen yang TIDAK DIPAKAI kanal (mis. "celah" bila analisis pesaing dimatikan): bobotnya dikeluarkan
+ *  dan bobot lain dinormalisasi ulang (paritas persis dengan kliktahu/skor.py v7_peluang). */
 export function v7Peluang(
   komponen: Readonly<Partial<Record<NamaKomponen, Nilai | null>>>,
+  tanpa: readonly string[] = [],
 ): [number, number, Record<NamaKomponen, number>] {
+  const buang = new Set(tanpa);
   const x = {} as Record<NamaKomponen, number>;
   let total = 0;
   let yakin = 0;
+  let wsum = 0;
   for (const nama of URUT_V7) {
     const w = BOBOT_V7[nama];
     const v = komponen[nama] ?? null;
     const xi = v === null ? 0.5 : jepit(v[0]);
     const ci = v === null ? 0 : jepit(v[1]);
-    x[nama] = xi;
+    x[nama] = buang.has(nama) ? 0.5 : xi;
+    if (buang.has(nama)) continue;
     total += w * xi;
     yakin += w * ci;
+    wsum += w;
   }
-  return [100 * total, yakin, x];
+  if (buang.size === 0) return [100 * total, yakin, x];
+  if (wsum <= 0) return [50, 0, x];
+  return [(100 * total) / wsum, yakin / wsum, x];
 }
 
 export function formatSaran(jaring: number, kedalaman: number, ever: number, v7: number): "long" | "shorts" {

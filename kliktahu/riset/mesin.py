@@ -347,7 +347,7 @@ def jalankan(
     for x in detail:
         tugas[f"wiki|{x}"] = partial(src.wiki, x)
         tugas[f"berita|{x}"] = partial(src.berita, x)
-    if src.pesaing_tersedia():
+    if k.riset.pesaing and src.pesaing_tersedia():
         for x in detail[: k.riset.maks_youtube_tema]:
             tugas[f"pesaing|{x}"] = partial(src.pesaing, x)
     for x in detail[:6]:
@@ -368,7 +368,11 @@ def jalankan(
         ok = sum(1 for v in vals if v is not None and not isinstance(v, Exception))
         err = [v for v in vals if isinstance(v, Exception)]
         stat["sumber"][jenis] = (
-            "tidak dikonfigurasi" if not vals else f"ok ({ok}/{len(vals)})" + (f", gagal: {err[0]}" if err else "")
+            "tidak dipakai (keputusan pemilik: [riset] pesaing = false)"
+            if jenis == "pesaing" and not k.riset.pesaing
+            else "tidak dikonfigurasi"
+            if not vals
+            else f"ok ({ok}/{len(vals)})" + (f", gagal: {err[0]}" if err else "")
         )
     for x in detail:
         r = baris[x]
@@ -440,7 +444,7 @@ def jalankan(
             "kesegaran": S.kesegaran(r["status"], mirip if mirip < 1.0 else 0.0),
             "bukti": S.bukti(n_kred),
         }
-        r["v7_peluang"], r["keyakinan"], r["komponen"] = S.v7_peluang(kom)
+        r["v7_peluang"], r["keyakinan"], r["komponen"] = S.v7_peluang(kom, () if k.riset.pesaing else ("celah",))
         r["sudut"] = _sudut(r, k)
         r["hook"] = _hook(r, k)
     rows.sort(key=lambda r: -r["v7_peluang"])
@@ -646,11 +650,18 @@ def tulis_laporan(h: HasilRiset, folder: Path) -> Path:
     folder.mkdir(parents=True, exist_ok=True)
     (folder / "arsip").mkdir(exist_ok=True)
     kep = h.keputusan
+    tanpa_pesaing = str(h.statistik.get("sumber", {}).get("pesaing", "")).startswith("tidak dipakai")
+    rumus = (
+        "Peluang v7 (0-100) = 26 permintaan + 12 minat Wikipedia + 14 momentum + 12 kecocokan + 10 momen "
+        "+ 5 kesegaran + 5 bukti ilmiah, dinormalisasi (celah pesaing 16 TIDAK dipakai - keputusan pemilik). "
+        if tanpa_pesaing
+        else "Peluang v7 (0-100) = 26 permintaan + 12 minat Wikipedia + 14 momentum + 16 celah pesaing + 12 kecocokan "
+        "+ 10 momen + 5 kesegaran + 5 bukti ilmiah. "
+    )
     L = [
         f"# RISET REAL-TIME v7 - {h.tanggal} (mode {h.mode}, run #{h.run_id})",
         "",
-        "Peluang v7 (0-100) = 26 permintaan + 12 minat Wikipedia + 14 momentum + 16 celah pesaing + 12 kecocokan "
-        "+ 10 momen + 5 kesegaran + 5 bukti ilmiah. Keyakinan = porsi bobot yang didukung data nyata "
+        rumus + "Keyakinan = porsi bobot (yang dipakai) yang didukung data nyata "
         "(komponen tanpa data = netral 0.5). Kolom v3-v6 = rumus prompt pemilik (PROMPT_KLIKTAHU.txt §8).",
         "",
     ]

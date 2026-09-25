@@ -30,7 +30,8 @@ Render dilakukan di sandbox/komputer lokal (`tools/render_lokal.sh`), BUKAN di G
 - **Data sama untuk semua tema**: autocomplete Google + YouTube ("kenapa <kata inti>") + pageview Wikipedia (judul kanonik).
   Frasa dihitung hanya bila MEMBAHAS tema (kata utuh, alias, tolak homonim, kata ambigu butuh konteks); topik diblokir
   dibuang dari data, kata sensitif tidak pernah masuk judul/tag/hook.
-- **Skor v7** 0-100 (permintaan, minat, momentum, celah, kecocokan, momen, kesegaran, bukti) + **keyakinan** = porsi data nyata.
+- **Skor v7** 0-100 (permintaan, minat, momentum, kecocokan, momen, kesegaran, bukti; celah pesaing hanya bila
+  `[riset] pesaing = true`) + **keyakinan** = porsi bobot yang didukung data nyata.
 - **Momen yang tidak datang dua kali** didahulukan bila selisih <= 8 poin DAN masih terkejar jeda produksi; bila juara
   skor dilewati, alasannya ditulis di `laporan/RISET.md`.
 - **Tema bencana** (gempa, tsunami, gunung api, badai) selalu mode hormat: tanpa kata sensasi, info resmi BMKG/PVMBG di

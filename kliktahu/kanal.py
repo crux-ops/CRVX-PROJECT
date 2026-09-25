@@ -94,6 +94,7 @@ class Riset:
     env_searxng_url: str
     env_openalex_mailto: str
     derau: tuple[str, ...] = ()
+    pesaing: bool = True  # False = analisis pesaing YouTube tidak dipakai (keputusan pemilik) -> komponen celah keluar
 
     def rahasia(self, nama_env: str) -> str | None:
         """nilai variabel lingkungan (kunci API) - TIDAK pernah dicetak/disimpan."""
@@ -272,6 +273,7 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
         maks_youtube_tema=_ambil(r, "riset", "maks_youtube_tema", int),
         user_agent=_ambil(r, "riset", "user_agent", str),
         derau=tuple(x.lower() for x in r.get("derau", []) if isinstance(x, str)),
+        pesaing=_pesaing(r),
         **env,
     )
     if not 1 <= riset.maks_paralel <= 32 or not 1 <= riset.maks_paralel_per_host <= 8:
@@ -325,6 +327,14 @@ def muat(path: Path | str | None = None) -> Kanal:
     return _muat_cache(str(p), mt)
 
 
+def _pesaing(r: dict) -> bool:
+    """r = tabel [riset]."""
+    v = r.get("pesaing", True)
+    if not isinstance(v, bool):
+        raise KanalError("[riset] pesaing harus true/false")
+    return v
+
+
 def ringkas(k: Kanal) -> list[tuple[str, str]]:
     """baris (label, nilai) untuk ditampilkan CLI/dasbor. Kunci API hanya 'ada'/'belum' (tidak pernah nilainya)."""
     ada = lambda n: "ada" if k.riset.rahasia(n) else "belum diisi"
@@ -347,7 +357,8 @@ def ringkas(k: Kanal) -> list[tuple[str, str]]:
         ("Merek", f"{k.merek.font}, CREAM {k.merek.cream}, INK {k.merek.ink}, aksen {' '.join(k.merek.aksen)}"),
         (
             "Kunci API (env)",
-            f"{k.riset.env_youtube_key}: {ada(k.riset.env_youtube_key)}, "
+            f"{k.riset.env_youtube_key}: "
+            f"{ada(k.riset.env_youtube_key) if k.riset.pesaing else 'tidak dipakai (pesaing = false)'}, "
             f"{k.riset.env_brave_key}: {ada(k.riset.env_brave_key)}, "
             f"{k.riset.env_searxng_url}: {ada(k.riset.env_searxng_url)}",
         ),

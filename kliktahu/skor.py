@@ -185,17 +185,30 @@ def bukti(n_kredibel: int | None) -> Nilai | None:
     return None if n_kredibel is None else (min(1.0, n_kredibel / 4.0), 1.0)
 
 
-def v7_peluang(komponen: Mapping[str, Nilai | None]) -> tuple[float, float, dict[str, float]]:
-    """-> (peluang 0..100, keyakinan 0..1, x per komponen). Komponen tanpa data = netral 0.5, keyakinan 0."""
+def v7_peluang(
+    komponen: Mapping[str, Nilai | None], tanpa: Iterable[str] = ()
+) -> tuple[float, float, dict[str, float]]:
+    """-> (peluang 0..100, keyakinan 0..1, x per komponen). Komponen tanpa data = netral 0.5, keyakinan 0.
+    `tanpa` = komponen yang TIDAK DIPAKAI kanal (mis. 'celah' bila analisis pesaing dimatikan pemilik): bobotnya
+    dikeluarkan dan bobot lain dinormalisasi ulang, sehingga keyakinan tidak terkunci oleh sumber yang sengaja
+    tidak dipakai. Peringkat tidak berubah (komponen itu netral untuk semua tema); x-nya tetap dilaporkan 0.5."""
+    buang = set(tanpa)
     x: dict[str, float] = {}
-    total = yakin = 0.0
+    total = yakin = wsum = 0.0
     for nama, w in BOBOT_V7.items():
         v = komponen.get(nama)
         xi, ci = (0.5, 0.0) if v is None else (_j(float(v[0])), _j(float(v[1])))
-        x[nama] = xi
+        x[nama] = 0.5 if nama in buang else xi
+        if nama in buang:
+            continue
         total += w * xi
         yakin += w * ci
-    return 100.0 * total, yakin, x
+        wsum += w
+    if not buang:
+        return 100.0 * total, yakin, x
+    if wsum <= 0:
+        return 50.0, 0.0, x
+    return 100.0 * total / wsum, yakin / wsum, x
 
 
 def format_saran(jaring: float, kedalaman: float, ever: float, v7: float) -> str:

@@ -204,7 +204,9 @@ def cmd_metadata(a: argparse.Namespace) -> int:
             M.tulis_md(p, Path(tujuan) / "METADATA.md", f"{kode} {tema} ({a.format})")
             pus = ROOT / "pustaka" / f"{kode}_{tema.replace(' & ', '_').replace(' ', '_').title()}"
             M.tulis_md(p, pus / "METADATA.md", f"{kode} {tema} ({a.format})")
-            M.tulis_siap_tempel(p, pus / "SIAP_TEMPEL.md", kode, k)
+            ren = db.daftar("rencana", "episode_kode = ?", (kode,), urut="tanggal, jam")
+            jam = f"{ren[0]['tanggal']} {ren[0]['jam']} WIB (kalender)" if ren else None
+            M.tulis_siap_tempel(p, pus / "SIAP_TEMPEL.md", kode, k, jam=jam)
             e = db.episode(kode)
             db.simpan_metadata(p.baris_db(t["id"] if t else None, e["id"] if e else None))
             db.commit()
