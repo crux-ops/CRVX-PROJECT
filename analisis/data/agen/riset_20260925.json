@@ -1,6 +1,6 @@
 {
- "_catatan": "Data NYATA diambil agen Arena 25-09-2026 dengan fetch_page/web_search (internet sandbox diblokir). Autocomplete: suggestqueries.google.com client=firefox hl=id gl=id (ds=yt untuk YouTube), kueri persis seperti kunci. Wikipedia: wikimedia.org REST pageviews monthly agent=user, September = 1-24 Sep. 'Merinding' tidak diukur Wikipedia (judul artikel id belum dipastikan); 'Hari_tanpa_bayangan' tidak ada artikelnya (404). Pesaing YouTube belum diukur (butuh YOUTUBE_API_KEY) -> komponen celah netral.",
- "diambil": "2026-09-25T19:30:00+07:00",
+ "_catatan": "Data NYATA diambil agen Arena 25-09-2026 dengan fetch_page/web_search (internet sandbox diblokir), dua sesi: (1) 19.30 WIB - 17 tema; (2) 22.20-22.50 WIB - 27 tema segar lain (sapuan lengkap: semua tema segar/long kini terukur). Autocomplete: suggestqueries.google.com client=firefox hl=id gl=id (ds=yt untuk YouTube), kueri persis seperti kunci; tiap tema diukur SAMA ('kenapa <kata inti>' di Google DAN YouTube) agar adil. Aturan tabrakan awalan: bila >= 50% saran hanya BERAWALAN kata inti (kenapa ai -> 'kenapa air ...' 10/10, kenapa mars -> 'marselino/marshanda' 8/10, kenapa gua -> 'guanlin/guardian' 7/10) kueri diambil ulang dengan spasi di akhir ('kenapa ai ') dan disimpan di kunci tanpa spasi. Wikipedia: wikimedia.org REST pageviews monthly agent=user, September = 1-24 Sep; judul KANONIK dicek via API MediaWiki (redirects=1): Astronaut->Antariksawan, Makhluk luar angkasa->Kehidupan_ekstraterestrial, Deja vu->Deja_vu beraksen, Cicak->Cecak, Oven gelombang mikro->Pemanggang_gelombang_mikro. 'Merinding' tidak diukur Wikipedia; 'Hari_tanpa_bayangan' tidak ada artikelnya (404). Pesaing YouTube belum diukur (butuh YOUTUBE_API_KEY) -> komponen celah netral. Momen live: erupsi gunung api (PVMBG) dan rilis skenario megathrust BMKG 23-9-2026 (tsunami).",
+ "diambil": "2026-09-25T22:50:00+07:00",
  "alat": "Arena agent fetch_page (Google/YouTube Autocomplete, Wikimedia REST, Google Trends RSS) + web_search (berita PVMBG)",
  "saran": {
   "google": {
@@ -201,6 +201,306 @@
     "kenapa saturnus bisa mengapung di air",
     "kenapa saturnus disebut planet cincin",
     "kenapa saturnus kehilangan cincin"
+   ],
+   "kenapa bersin": [
+    "kenapa bersin terus",
+    "kenapa bersin terus menerus",
+    "kenapa bersin",
+    "kenapa bersin bau",
+    "kenapa bersin keluar darah",
+    "kenapa bersin terus dan pilek",
+    "kenapa bersin berkali kali",
+    "kenapa bersin tidak jadi",
+    "kenapa bersin enak",
+    "kenapa bersin harus mengucapkan alhamdulillah"
+   ],
+   "kenapa otak": [
+    "kenapa otak lemot",
+    "kenapa otak sering lupa",
+    "kenapa otak tidak bisa fokus",
+    "kenapa otak susah berpikir",
+    "kenapa otak kiri sakit",
+    "kenapa otak terasa sakit",
+    "kenapa otak terasa kosong",
+    "kenapa otak dan mulut tidak sinkron",
+    "kenapa otak kanan sakit",
+    "kenapa otak bisa mengecil"
+   ],
+   "kenapa tulang": [
+    "kenapa tulang ekor sakit",
+    "kenapa tulang belakang sakit",
+    "kenapa tulang rusuk kiri sakit",
+    "kenapa tulang punggung sakit",
+    "kenapa tulang ekor sakit saat duduk",
+    "kenapa tulang rusuk kanan sakit",
+    "kenapa tulang ekor sakit saat hamil",
+    "kenapa tulang punggung belakang sakit",
+    "kenapa tulang terasa ngilu",
+    "kenapa tulang badan sakit semua"
+   ],
+   "kenapa darah": [
+    "kenapa darah haid berwarna hitam",
+    "kenapa darah haid menggumpal",
+    "kenapa darah haid berwarna coklat",
+    "kenapa darah haid berwarna coklat kehitaman dan keluar sedikit",
+    "kenapa darah haid keluar sedikit",
+    "kenapa darah rendah",
+    "kenapa darah berwarna merah",
+    "kenapa darah haid bau",
+    "kenapa darah haid keluar banyak",
+    "kenapa darah haid bau busuk"
+   ],
+   "kenapa kuku": [
+    "kenapa kuku bergelombang",
+    "kenapa kuku kuning",
+    "kenapa kuku berwarna ungu",
+    "kenapa kuku kaki menghitam",
+    "kenapa kuku ada putih putihnya",
+    "kenapa kuku cepat panjang",
+    "kenapa kuku kaki kuning",
+    "kenapa kuku menghitam",
+    "kenapa kuku ada garis hitam",
+    "kenapa kuku kaki bergelombang"
+   ],
+   "kenapa lapar": [
+    "kenapa lapar terus",
+    "kenapa lapar terus padahal sudah makan",
+    "kenapa lapar tengah malam",
+    "kenapa lapar terus padahal sudah makan banyak",
+    "kenapa lapar bikin pusing",
+    "kenapa lapar tidak bisa tidur",
+    "kenapa lapar bikin sakit kepala",
+    "kenapa lapar terus menerus",
+    "kenapa lapar terus padahal baru makan",
+    "kenapa lapar"
+   ],
+   "kenapa mars": [
+    "kenapa mars berwarna merah",
+    "kenapa mars disebut planet merah",
+    "kenapa mars bisa dihuni",
+    "kenapa mars tidak bisa ditinggali",
+    "kenapa mars kehilangan medan magnet",
+    "kenapa mars lebih panas dari bumi",
+    "kenapa mars tidak punya medan magnet",
+    "kenapa mars disebut sebagai planet merah",
+    "mengapa mars",
+    "kenapa mars bisa ditinggali manusia"
+   ],
+   "kenapa galaksi": [
+    "kenapa galaksi bima sakti disebut milky way",
+    "kenapa galaksi andromeda akan menabrak bima sakti",
+    "kenapa galaksi bisa terbentuk",
+    "kenapa galaksi kita dinamakan bima sakti",
+    "kenapa galaksi kita disebut milky way",
+    "kenapa galaksi sombrero mematikan",
+    "kenapa galaksi dinamakan bima sakti",
+    "kenapa galaksi berbentuk spiral",
+    "kenapa galaksi berputar",
+    "kenapa galaksi gelap"
+   ],
+   "kenapa astronot": [
+    "kenapa astronot harus bisa bahasa rusia",
+    "kenapa astronot bisa melayang di angkasa",
+    "kenapa astronot tidak bisa jalan",
+    "kenapa astronot tidak menggunakan pensil",
+    "kenapa astronot nasa harus bisa bahasa rusia",
+    "kenapa astronot tidak boleh makan kacang",
+    "kenapa astronot indonesia gagal",
+    "kenapa astronot tidak boleh kentut",
+    "kenapa astronot harus di karantina sebelum ke bulan",
+    "kenapa astronot suka musik"
+   ],
+   "kenapa alien": [
+    "kenapa alien stage tidak ada round 4",
+    "kenapa alien di film war of the world mati",
+    "kenapa alien datang ke bumi",
+    "kenapa alien makan berantakan",
+    "kenapa alien kalau makan berantakan",
+    "kenapa alien makannya berantakan",
+    "kenapa alien lebih pintar dari manusia",
+    "kenapa alien tidak datang ke bumi",
+    "kenapa alien warna hijau"
+   ],
+   "kenapa asteroid": [
+    "kenapa asteroid bisa jatuh ke bumi",
+    "kenapa asteroid chicxulub menabrak bumi",
+    "kenapa asteroid menabrak bumi",
+    "kenapa asteroid bisa menabrak bumi",
+    "kenapa asteroid",
+    "kenapa asteroid tersebut dinamakan apophis",
+    "kenapa asteroid bisa terbentuk",
+    "kenapa asteroid bisa jatuh",
+    "kenapa asteroid tidak menabrak bumi",
+    "kenapa asteroid chicxulub"
+   ],
+   "kenapa tsunami": [
+    "kenapa tsunami bisa terjadi",
+    "kenapa tsunami aceh bisa terjadi",
+    "kenapa tsunami",
+    "kenapa tsunami surut dulu",
+    "kenapa tsunami aceh banyak korban",
+    "kenapa tsunami berbahaya",
+    "kenapa tsunami pakai t",
+    "kenapa tsunami aceh 2004 bisa terjadi",
+    "kenapa tsunami palu bisa terjadi"
+   ],
+   "kenapa angin": [
+    "kenapa angin kencang hari ini",
+    "kenapa angin tidak terlihat",
+    "kenapa angin akhir akhir ini sangat kencang",
+    "kenapa angin bisa bergerak",
+    "kenapa angin duduk bisa terjadi",
+    "kenapa angin bisa masuk dalam tubuh",
+    "kenapa angin tidak bisa dilihat",
+    "kenapa angin kemarau dingin",
+    "kenapa angin kipas terasa panas",
+    "kenapa angin kencang"
+   ],
+   "kenapa gurun": [
+    "kenapa gurun panas",
+    "kenapa gurun pasir bisa terbentuk",
+    "kenapa gurun lut sangat panas",
+    "kenapa gurun bisa meluas",
+    "kenapa gurun dingin saat malam",
+    "kenapa gurun siang panas malam dingin",
+    "kenapa gurun bisa terbentuk",
+    "kenapa gurun sahara panas",
+    "kenapa gurun tidak hujan"
+   ],
+   "kenapa gua": [
+    "kenapa gua bisa terbentuk",
+    "kenapa gua maria banyak",
+    "kenapa gua susah tidur",
+    "kenapa gua wni",
+    "kenapa gua sering kentut",
+    "kenapa gua kek look tong tutup",
+    "kenapa gua",
+    "kenapa gua ganteng",
+    "kenapa gua jelek",
+    "kenapa gua ganteng banget"
+   ],
+   "kenapa anjing": [
+    "kenapa anjing haram",
+    "kenapa anjing najis dalam islam",
+    "kenapa anjing menggonggong tengah malam",
+    "kenapa anjing tidak mau makan",
+    "kenapa anjing tidak boleh makan coklat",
+    "kenapa anjing menggonggong saat adzan",
+    "kenapa anjing kawin susah lepas",
+    "kenapa anjing selalu menjulurkan lidahnya",
+    "kenapa anjing tidak mau makan dan lemas",
+    "kenapa anjing takut sama kucing"
+   ],
+   "kenapa lebah": [
+    "kenapa lebah menghasilkan madu",
+    "kenapa lebah mati setelah menyengat",
+    "kenapa lebah takut asap",
+    "kenapa lebah suka lampu",
+    "kenapa lebah masuk rumah",
+    "kenapa lebah tidak boleh dibunuh",
+    "kenapa lebah bisa menghasilkan madu",
+    "kenapa lebah mengumpulkan madu",
+    "kenapa lebah madu tidak menyengat",
+    "kenapa lebah mendekati kita"
+   ],
+   "kenapa burung": [
+    "kenapa burung lovebird tidak boleh dilepas",
+    "kenapa burung garuda menghadap ke kanan",
+    "kenapa burung bisa terbang",
+    "kenapa burung garuda menjadi lambang negara indonesia",
+    "kenapa burung hantu disebut burung hantu",
+    "kenapa burung tidak kesetrum",
+    "kenapa burung perkutut bunyi di malam hari",
+    "kenapa burung dodo punah",
+    "kenapa burung terbang ke selatan saat musim dingin",
+    "kenapa burung gereja dinamakan burung gereja"
+   ],
+   "kenapa gajah": [
+    "kenapa gajah takut tikus",
+    "kenapa gajah besar",
+    "kenapa gajah punya belalai",
+    "kenapa gajah suka gula merah",
+    "kenapa gajah itu besar",
+    "kenapa gajah haram",
+    "kenapa gajah sumatera terancam punah",
+    "kenapa gajah tidak boleh dimakan",
+    "kenapa gajah kalah sama semut",
+    "kenapa gajah tidak bisa melompat"
+   ],
+   "kenapa cicak": [
+    "kenapa cicak bunyi terus",
+    "kenapa cicak bisa menempel di dinding",
+    "kenapa cicak harus dibunuh",
+    "kenapa cicak bersuara",
+    "kenapa cicak harus dibunuh menurut islam",
+    "kenapa cicak ngeliatin kita terus",
+    "kenapa cicak memutuskan ekornya",
+    "kenapa cicak jatuh di kepala",
+    "kenapa cicak diam diam merayap",
+    "kenapa cicak berbunyi di malam hari"
+   ],
+   "kenapa microwave": [
+    "kenapa microwave tidak panas",
+    "kenapa microwave tiba tiba mati",
+    "kenapa microwave tidak menyala",
+    "kenapa microwave tidak sehat",
+    "kenapa microwave lebih mahal dari oven",
+    "kenapa microwave berbunyi",
+    "kenapa microwave tidak berputar",
+    "kenapa microwave keluar api",
+    "kenapa microwave keluar asap",
+    "kenapa microwave sharp tidak panas"
+   ],
+   "kenapa stonehenge": [
+    "kenapa stonehenge terkenal"
+   ],
+   "kenapa borobudur": [
+    "kenapa borobudur tidak masuk 7 keajaiban dunia",
+    "kenapa borobudur tidak termasuk keajaiban dunia",
+    "kenapa borobudur bukan keajaiban dunia",
+    "kenapa borobudur tidak termasuk 7 keajaiban dunia",
+    "kenapa borobudur fakta palsu",
+    "kenapa borobudur bukan 7 keajaiban dunia",
+    "kenapa borobudur tidak boleh naik",
+    "kenapa borobudur masuk 7 keajaiban dunia",
+    "kenapa borobudur dikeluarkan dari 7 keajaiban dunia",
+    "kenapa borobudur tidak masuk keajaiban dunia"
+   ],
+   "kenapa ai": [
+    "kenapa ai menghabiskan air",
+    "kenapa ai butuh air",
+    "kenapa ai menguras air bersih",
+    "kenapa ai di ig ada masalah",
+    "kenapa ai bisa menjawab semua pertanyaan",
+    "kenapa ai diciptakan",
+    "kenapa ai google namanya gemini",
+    "kenapa ai merusak lingkungan",
+    "kenapa ai menggunakan air bersih",
+    "kenapa ai boros air"
+   ],
+   "kenapa deja vu": [
+    "kenapa deja vu bisa terjadi"
+   ],
+   "kenapa atlantis": [
+    "kenapa atlantis tenggelam",
+    "kenapa atlantis hilang",
+    "kenapa atlantis land surabaya tutup",
+    "kenapa atlantis land sepi",
+    "kenapa atlantis",
+    "kenapa atlantis land surabaya sepi",
+    "kenapa indonesia disebut atlantis"
+   ],
+   "kenapa laut": [
+    "kenapa laut asin",
+    "kenapa laut berwarna biru",
+    "kenapa laut ada ombaknya",
+    "kenapa laut merah disebut laut merah",
+    "kenapa laut berombak",
+    "kenapa lautan lebih luas dari daratan",
+    "kenapa laut mati disebut laut mati",
+    "kenapa laut mati kadar garamnya tinggi",
+    "kenapa lautaro martinez tidak main",
+    "kenapa laut bisa surut"
    ]
   },
   "youtube": {
@@ -352,6 +652,240 @@
    "kenapa saturnus": [
     "kenapa saturnus punya cincin",
     "kenapa planet saturnus ada cincinnya"
+   ],
+   "kenapa bersin": [
+    "kenapa bersin",
+    "kenapa bersin bersin terus",
+    "kenapa bersin harus mengucapkan alhamdulillah",
+    "kenapa bersin bau",
+    "kenapa bersin terus menerus",
+    "kenapa bersin tutup mata",
+    "kenapa bersin bau busuk",
+    "kenapa bintang bersinar",
+    "kenapa kucing bersin terus menerus",
+    "kenapa selalu bersin terus menerus"
+   ],
+   "kenapa otak": [
+    "kenapa otak lemot",
+    "kenapa otak susah fokus",
+    "kenapa otak kita suka asmr",
+    "kenapa otak susah berpikir",
+    "kenapa otak sering lupa",
+    "kenapa otak terasa kosong",
+    "kenapa otak jadi lemot",
+    "kenapa otak bisa pusing",
+    "kenapa otak susah mengingat",
+    "kenapa otak saya tidak bisa berpikir"
+   ],
+   "kenapa tulang": [
+    "kenapa tulang belakang sering sakit",
+    "kenapa tulang belakang terasa sakit",
+    "kenapa tulang ekor sakit",
+    "kenapa tulang belikat sering sakit",
+    "kenapa tulang punggung sering sakit",
+    "kenapa tulang ekor terasa sakit",
+    "kenapa tulang bokong sakit",
+    "kenapa tulang pinggul terasa sakit",
+    "kenapa tulang kaki sering sakit",
+    "kenapa tulang rusuk sebelah kanan sakit"
+   ],
+   "kenapa darah": [
+    "kenapa darah haid menggumpal",
+    "kenapa darah haid keluar sedikit",
+    "kenapa darah haid berwarna hitam",
+    "kenapa darah",
+    "kenapa darah bekam kental",
+    "kenapa darah haid warna hitam",
+    "kenapa darah haid keluar banyak",
+    "kenapa darah haid bergumpal",
+    "kenapa darah haid hitam",
+    "kenapa darah haid berlendir"
+   ],
+   "kenapa kuku": [
+    "kenapa kuku jempol kaki rusak",
+    "kenapa kuku tangan rusak",
+    "kenapa kuku kaki hitam",
+    "kenapa kuku bisa tumbuh",
+    "kenapa kuku kaki berwarna kuning",
+    "kenapa kuku jempol kaki hitam",
+    "kenapa kuku bisa cantengan",
+    "kenapa kuku jempol kaki bau",
+    "kenapa kuku kaki bau",
+    "kenapa kuku jempol kaki sakit"
+   ],
+   "kenapa lapar": [
+    "kenapa lapar terus",
+    "kenapa lapar",
+    "kenapa lapar terus padahal sudah makan",
+    "kenapa lapar tengah malam",
+    "kenapa gampang lapar",
+    "kenapa saat lapar perut berbunyi",
+    "kenapa sering lapar",
+    "kenapa kalau lapar kepala pusing",
+    "kenapa saya lapar terus",
+    "kenapa kucing lapar terus"
+   ],
+   "kenapa mars": [],
+   "kenapa galaksi": [
+    "kenapa dinamakan galaksi bima sakti"
+   ],
+   "kenapa astronot": [
+    "kenapa astronot tidak bisa jalan",
+    "kenapa luar angkasa hitam"
+   ],
+   "kenapa alien": [
+    "kenapa fang alien",
+    "kenapa lemon dijuluki alien",
+    "kenapa lemon disebut alien"
+   ],
+   "kenapa asteroid": [],
+   "kenapa tsunami": [
+    "kenapa tsunami bisa terjadi",
+    "kenapa tsunami",
+    "kenapa terjadi tsunami di aceh",
+    "kenapa ada tsunami",
+    "kenapa bisa terjadi tsunami aceh",
+    "kenapa aceh dilanda tsunami",
+    "kenapa bisa terjadinya tsunami",
+    "kenapa bisa ada tsunami",
+    "kenapa aceh tsunami",
+    "kenapa bisa tsunami"
+   ],
+   "kenapa angin": [
+    "kenapa angin tidak terlihat",
+    "kenapa angin",
+    "kenapa angin kencang",
+    "kenapa angin kompresor cepat habis",
+    "kenapa angin duduk mematikan",
+    "kenapa angin ac bau",
+    "kenapa angin ac tidak kencang",
+    "kenapa angin kencang hari ini",
+    "kenapa angin bisa terbentuk",
+    "kenapa angin kencang akhir akhir ini"
+   ],
+   "kenapa gurun": [
+    "kenapa kadal gurun halal",
+    "kenapa ada gurun pasir",
+    "kenapa meepo susah"
+   ],
+   "kenapa gua": [
+    "kenapa gue episode 3",
+    "kenapa gue episode 2",
+    "kenapa gue diciptakan",
+    "kenapa gue full movie",
+    "kenapa gue trailer",
+    "kenapa gue alur cerita",
+    "kenapa gue film",
+    "kenapa gue makan seluruh world temen gue",
+    "kenapa gue episode 1 part 3",
+    "kenapa gue jelek"
+   ],
+   "kenapa anjing": [
+    "kenapa anjing haram",
+    "kenapa anjing najis",
+    "kenapa anjing kawin susah lepas",
+    "kenapa anjing",
+    "kenapa anjing takut kucing",
+    "kenapa anjing takut sama kucing",
+    "kenapa anjing tidak mau makan",
+    "kenapa anjing itu haram",
+    "kenapa anjing selalu menjulurkan lidahnya",
+    "kenapa anjing gak mau makan"
+   ],
+   "kenapa lebah": [
+    "kenapa lebah mati setelah menyengat",
+    "kenapa lebah madu tidak menyengat",
+    "kenapa lebah mengumpulkan madu",
+    "kenapa lebah membuat madu",
+    "kenapa lebah menghasilkan madu",
+    "kenapa lebah bisa menghasilkan madu",
+    "kenapa lebah takut sama asap",
+    "kenapa lebah",
+    "kenapa lebah mengikuti ratu",
+    "kenapa lebah takut asap"
+   ],
+   "kenapa burung": [
+    "kenapa burung bisa terbang",
+    "kenapa burung",
+    "kenapa burung beo bisa bicara",
+    "kenapa burung tidak tersengat listrik",
+    "kenapa burung murai tidak mau bunyi",
+    "kenapa burung perkutut bunyi malam hari",
+    "kenapa burung sogon mangap mangap",
+    "kenapa burung sogon tidak mau bunyi",
+    "kenapa burung sogon gembung",
+    "kenapa burung murai batu sering mangap"
+   ],
+   "kenapa gajah": [
+    "kenapa gajah",
+    "kenapa gajah pintar",
+    "kenapa gajah takut tikus",
+    "kenapa gajah haram",
+    "kenapa gajah bisa melukis",
+    "kenapa gajah ada belalainya",
+    "kenapa gajah ada belalainya lapor pak",
+    "kenapa kaki gajah dirantai",
+    "kenapa kampung gajah bangkrut",
+    "kenapa gading gajah mahal"
+   ],
+   "kenapa cicak": [
+    "kenapa cicak harus dibunuh",
+    "kenapa cicak bisa menempel di dinding",
+    "kenapa cicak",
+    "kenapa cicak boleh dibunuh",
+    "kenapa cicak suka berakin orang",
+    "kenapa cicak kalau dibunuh dapat pahala",
+    "kenapa cicak diam diam merayap",
+    "kenapa cicak memutuskan ekornya",
+    "kenapa cicak tidak jatuh",
+    "kenapa cicak jatuh di kepala"
+   ],
+   "kenapa microwave": [
+    "kenapa microwave sharp tidak panas",
+    "kenapa microwave samsung tidak panas",
+    "kenapa microwave berasap",
+    "kenapa microwave tiba tiba mati",
+    "kenapa microwave berbunyi",
+    "kenapa microwave tidak panas",
+    "kenapa microwave tidak mau panas"
+   ],
+   "kenapa stonehenge": [],
+   "kenapa borobudur": [
+    "kenapa borobudur tidak masuk keajaiban dunia"
+   ],
+   "kenapa ai": [
+    "kenapa ai butuh air",
+    "kenapa ai menghabiskan air",
+    "kenapa ai gemini tidak bisa edit foto",
+    "kenapa ai dibenci",
+    "kenapa ai diciptakan",
+    "kenapa ai membutuhkan air",
+    "kenapa ai butuh ram",
+    "kenapa ai grok di blokir",
+    "kenapa air boros air",
+    "kenapa ai hoshino bisa hamil"
+   ],
+   "kenapa deja vu": [
+    "kenapa bisa dejavu",
+    "kenapa sering dejavu"
+   ],
+   "kenapa atlantis": [
+    "kenapa atlantis tenggelam",
+    "kenapa kota atlantis hilang",
+    "atlantis yg hilang",
+    "atlantis hilang"
+   ],
+   "kenapa laut": [
+    "kenapa laut asin",
+    "kenapa laut berombak",
+    "kenapa laut bisa pasang surut",
+    "kenapa laut berwarna biru",
+    "kenapa laut",
+    "kenapa laut ada ombak",
+    "kenapa laut selatan ombaknya besar",
+    "kenapa lautan lebih luas dari daratan",
+    "kenapa lautan mengerikan",
+    "kenapa laut warnanya biru"
    ]
   }
  },
@@ -505,6 +1039,276 @@
     "2026-09": 60
    },
    "hari_bulan_ini": 24
+  },
+  "bersin": {
+   "judul": "Bersin",
+   "bulanan": {
+    "2026-06": 63,
+    "2026-07": 56,
+    "2026-08": 58,
+    "2026-09": 41
+   },
+   "hari_bulan_ini": 24
+  },
+  "otak": {
+   "judul": "Otak",
+   "bulanan": {
+    "2026-06": 316,
+    "2026-07": 345,
+    "2026-08": 364,
+    "2026-09": 333
+   },
+   "hari_bulan_ini": 24
+  },
+  "tulang & sendi": {
+   "judul": "Sendi",
+   "bulanan": {
+    "2026-06": 122,
+    "2026-07": 112,
+    "2026-08": 123,
+    "2026-09": 116
+   },
+   "hari_bulan_ini": 24
+  },
+  "darah": {
+   "judul": "Darah",
+   "bulanan": {
+    "2026-06": 329,
+    "2026-07": 363,
+    "2026-08": 303,
+    "2026-09": 299
+   },
+   "hari_bulan_ini": 24
+  },
+  "kuku": {
+   "judul": "Kuku",
+   "bulanan": {
+    "2026-06": 308,
+    "2026-07": 297,
+    "2026-08": 215,
+    "2026-09": 256
+   },
+   "hari_bulan_ini": 24
+  },
+  "lapar & haus": {
+   "judul": "Lapar",
+   "bulanan": {
+    "2026-06": 15,
+    "2026-07": 33,
+    "2026-08": 36,
+    "2026-09": 22
+   },
+   "hari_bulan_ini": 24
+  },
+  "planet mars": {
+   "judul": "Mars",
+   "bulanan": {
+    "2026-06": 1215,
+    "2026-07": 999,
+    "2026-08": 1219,
+    "2026-09": 887
+   },
+   "hari_bulan_ini": 24
+  },
+  "galaksi": {
+   "judul": "Galaksi",
+   "bulanan": {
+    "2026-06": 647,
+    "2026-07": 717,
+    "2026-08": 713,
+    "2026-09": 582
+   },
+   "hari_bulan_ini": 24
+  },
+  "astronot": {
+   "judul": "Antariksawan",
+   "bulanan": {
+    "2026-06": 248,
+    "2026-07": 283,
+    "2026-08": 219,
+    "2026-09": 197
+   },
+   "hari_bulan_ini": 24
+  },
+  "alien": {
+   "judul": "Kehidupan_ekstraterestrial",
+   "bulanan": {
+    "2026-06": 486,
+    "2026-07": 493,
+    "2026-08": 319,
+    "2026-09": 276
+   },
+   "hari_bulan_ini": 24
+  },
+  "asteroid": {
+   "judul": "Asteroid",
+   "bulanan": {
+    "2026-06": 284,
+    "2026-07": 263,
+    "2026-08": 239,
+    "2026-09": 209
+   },
+   "hari_bulan_ini": 24
+  },
+  "tsunami": {
+   "judul": "Tsunami",
+   "bulanan": {
+    "2026-06": 894,
+    "2026-07": 820,
+    "2026-08": 1589,
+    "2026-09": 1379
+   },
+   "hari_bulan_ini": 24
+  },
+  "angin & badai": {
+   "judul": "Badai",
+   "bulanan": {
+    "2026-06": 168,
+    "2026-07": 280,
+    "2026-08": 211,
+    "2026-09": 120
+   },
+   "hari_bulan_ini": 24
+  },
+  "gurun": {
+   "judul": "Gurun",
+   "bulanan": {
+    "2026-06": 430,
+    "2026-07": 396,
+    "2026-08": 570,
+    "2026-09": 524
+   },
+   "hari_bulan_ini": 24
+  },
+  "gua": {
+   "judul": "Gua",
+   "bulanan": {
+    "2026-06": 150,
+    "2026-07": 152,
+    "2026-08": 233,
+    "2026-09": 166
+   },
+   "hari_bulan_ini": 24
+  },
+  "anjing": {
+   "judul": "Anjing",
+   "bulanan": {
+    "2026-06": 1791,
+    "2026-07": 2408,
+    "2026-08": 2237,
+    "2026-09": 1523
+   },
+   "hari_bulan_ini": 24
+  },
+  "lebah & semut": {
+   "judul": "Lebah",
+   "bulanan": {
+    "2026-06": 437,
+    "2026-07": 619,
+    "2026-08": 977,
+    "2026-09": 812
+   },
+   "hari_bulan_ini": 24
+  },
+  "burung": {
+   "judul": "Burung",
+   "bulanan": {
+    "2026-06": 1143,
+    "2026-07": 1375,
+    "2026-08": 1291,
+    "2026-09": 1134
+   },
+   "hari_bulan_ini": 24
+  },
+  "gajah": {
+   "judul": "Gajah",
+   "bulanan": {
+    "2026-06": 1606,
+    "2026-07": 2070,
+    "2026-08": 4123,
+    "2026-09": 1742
+   },
+   "hari_bulan_ini": 24
+  },
+  "cicak": {
+   "judul": "Cecak",
+   "bulanan": {
+    "2026-06": 496,
+    "2026-07": 789,
+    "2026-08": 830,
+    "2026-09": 522
+   },
+   "hari_bulan_ini": 24
+  },
+  "kulkas & microwave": {
+   "judul": "Pemanggang_gelombang_mikro",
+   "bulanan": {
+    "2026-06": 39,
+    "2026-07": 31,
+    "2026-08": 36,
+    "2026-09": 30
+   },
+   "hari_bulan_ini": 24
+  },
+  "ai": {
+   "judul": "Kecerdasan_buatan",
+   "bulanan": {
+    "2026-06": 1304,
+    "2026-07": 3025,
+    "2026-08": 1649,
+    "2026-09": 1589
+   },
+   "hari_bulan_ini": 24
+  },
+  "stonehenge": {
+   "judul": "Stonehenge",
+   "bulanan": {
+    "2026-06": 471,
+    "2026-07": 524,
+    "2026-08": 506,
+    "2026-09": 515
+   },
+   "hari_bulan_ini": 24
+  },
+  "borobudur": {
+   "judul": "Borobudur",
+   "bulanan": {
+    "2026-06": 4371,
+    "2026-07": 5351,
+    "2026-08": 5733,
+    "2026-09": 5007
+   },
+   "hari_bulan_ini": 24
+  },
+  "deja vu": {
+   "judul": "Déjà_vu",
+   "bulanan": {
+    "2026-06": 343,
+    "2026-07": 431,
+    "2026-08": 300,
+    "2026-09": 310
+   },
+   "hari_bulan_ini": 24
+  },
+  "atlantis": {
+   "judul": "Atlantis",
+   "bulanan": {
+    "2026-06": 666,
+    "2026-07": 826,
+    "2026-08": 1911,
+    "2026-09": 953
+   },
+   "hari_bulan_ini": 24
+  },
+  "laut": {
+   "judul": "Laut",
+   "bulanan": {
+    "2026-06": 556,
+    "2026-07": 924,
+    "2026-08": 1024,
+    "2026-09": 762
+   },
+   "hari_bulan_ini": 24
   }
  },
  "tren_harian": [
@@ -547,6 +1351,16 @@
    ],
    "urgensi": 0.7,
    "sumber": "PVMBG via afu.id (5-9-2026) & gosumbar.com (13-9-2026); lonjakan pageview Wikipedia 'Gunung berapi' Sep 2026"
+  },
+  {
+   "tanggal": "2026-09-23",
+   "selesai": "2026-09-26",
+   "nama": "BMKG merilis skenario terburuk megathrust Aceh-Andaman M9,2 (tsunami hingga 10 m) - BUKAN prediksi, imbauan mitigasi; sebulan setelah gempa M7,8 Flores 15 Agu 2026 memicu tsunami 1,61 m",
+   "tema": [
+    "tsunami"
+   ],
+   "urgensi": 0.5,
+   "sumber": "CNN Indonesia 23-24 Sep 2026 (Instagram BMKG); Wikipedia en '2026 Flores earthquake' (136 korban, tsunami 1,61 m di Reok); lonjakan pageview Wikipedia 'Tsunami' Agu-Sep 2026"
   }
  ]
 }

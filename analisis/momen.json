@@ -1,6 +1,8 @@
 {
   "_catatan": "Kalender MOMEN KURASI (yang tidak bisa dihitung). Fase bulan/supermoon, ekuinoks/solstis, hujan meteor, dan hari tanpa bayangan per kota DIHITUNG otomatis oleh kliktahu/astro.py (tidak perlu ditulis di sini). Momen live (gempa BMKG, badai geomagnetik NOAA, asteroid JPL, erupsi EONET, Google Trends) diambil mesin riset. Perbarui tiap kuartal; cantumkan sumber.",
   "events": [
+    {"tanggal": "2026-09-28", "nama": "Peringatan 8 tahun tsunami Palu (gempa M7,5 Palu-Donggala 28 Sep 2018; bahas sains dengan hormat)", "tema": ["tsunami", "gempa bumi"],
+     "sumber": "sejarah: gempa M7,5 Palu-Donggala 28 Sep 2018 (BMKG/USGS); saran Google 'kenapa tsunami palu bisa terjadi'"},
     {"tanggal": "2026-10-04", "selesai": "2026-10-10", "nama": "Pekan Antariksa Dunia (World Space Week) 4-10 Okt", "tema": ["antariksa", "astronot", "planet mars", "galaksi"],
      "sumber": "Resolusi Majelis Umum PBB 54/68 (tahunan)"},
     {"tanggal": "2026-10-09", "selesai": "2026-10-13", "nama": "Hari tanpa bayangan kota-kota Jawa (BMKG: Jakarta 9 Okt 11.40, Semarang 11 Okt 11.25, Surabaya 12 Okt, Yogyakarta 13 Okt WIB)",

@@ -10,10 +10,11 @@ UID:06b38755ff5d4aa0@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20260928T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep50 (shorts): gunung berapi
-DESCRIPTION:momen: Erupsi beruntun gunung api Indonesia: Anak Krakatau (lav
- a fountain\, dentuman sampai Serang)\, Semeru & Merapi Siaga\, Sinabung na
- ik Siaga (PVMBG\; cek status terbaru) (2026-09-04)\; peluang 73.1
+SUMMARY:KlikTahu Ep50 (shorts): tsunami
+DESCRIPTION:KEPUTUSAN riset: peluang 65.7\; momen: Peringatan 8 tahun tsuna
+ mi Palu (gempa M7\,5 Palu-Donggala 28 Sep 2018\; bahas sains dengan hormat
+ ) (2026-09-28)\; saran paling lambat 2026-09-27 jatuh di luar slot -> slot
+  pertama yang tersedia
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -21,8 +22,10 @@ UID:71e4a000f929898c@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20260929T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep51 (shorts): merinding
-DESCRIPTION:peringkat #4 peluang 60.5
+SUMMARY:KlikTahu Ep51 (shorts): gunung berapi
+DESCRIPTION:momen: Erupsi beruntun gunung api Indonesia: Anak Krakatau (lav
+ a fountain\, dentuman sampai Serang)\, Semeru & Merapi Siaga\, Sinabung na
+ ik Siaga (PVMBG\; cek status terbaru) (2026-09-04)\; peluang 67.9
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -30,8 +33,8 @@ UID:dc2c0955addd65f8@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20260930T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep52 (shorts): pelangi
-DESCRIPTION:peringkat #3 peluang 63.0
+SUMMARY:KlikTahu Ep52 (shorts): kuku
+DESCRIPTION:peringkat #4 peluang 59.4
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -39,8 +42,9 @@ UID:459a8dee0cc4ea05@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261001T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep53 (shorts): segitiga bermuda
-DESCRIPTION:peringkat #5 peluang 60.4
+SUMMARY:KlikTahu Ep53 (shorts): galaksi
+DESCRIPTION:momen: Pekan Antariksa Dunia (World Space Week) 4-10 Okt (2026-
+ 10-04)\; peluang 54.3
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -48,8 +52,8 @@ UID:c1e3bd51ecf28eef@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261002T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep54 (shorts): es & salju
-DESCRIPTION:peringkat #6 peluang 59.3
+SUMMARY:KlikTahu Ep54 (shorts): segitiga bermuda
+DESCRIPTION:peringkat #5 peluang 57.6
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -57,8 +61,8 @@ UID:007af7071e26af42@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261003T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Long03 (long): pesawat
-DESCRIPTION:deep-dive evergreen\; peluang 65.2\, jaring v4 0
+SUMMARY:KlikTahu Long03 (long): otak
+DESCRIPTION:deep-dive evergreen\; peluang 62.5\, jaring v4 0
 CATEGORIES:KlikTahu,Long
 END:VEVENT
 BEGIN:VEVENT
@@ -66,8 +70,8 @@ UID:b5f4aed05e8b31bd@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261005T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep55 (shorts): ular & reptil
-DESCRIPTION:peringkat #7 peluang 57.8
+SUMMARY:KlikTahu Ep55 (shorts): pesawat
+DESCRIPTION:peringkat #6 peluang 57.3
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -75,8 +79,8 @@ UID:26ca2a1ec85a2950@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261006T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep56 (shorts): uban & rambut
-DESCRIPTION:peringkat #9 peluang 55.8
+SUMMARY:KlikTahu Ep56 (shorts): burung
+DESCRIPTION:peringkat #7 peluang 56.7
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -84,8 +88,8 @@ UID:50f147b01d6ee929@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261007T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep57 (shorts): hiu
-DESCRIPTION:peringkat #8 peluang 57.6
+SUMMARY:KlikTahu Ep57 (shorts): darah
+DESCRIPTION:peringkat #8 peluang 55.6
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -93,8 +97,8 @@ UID:c5fe8a01d4d85ed8@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261008T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep58 (shorts): menguap
-DESCRIPTION:peringkat #10 peluang 53.3
+SUMMARY:KlikTahu Ep58 (shorts): pelangi
+DESCRIPTION:peringkat #9 peluang 55.4
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -102,8 +106,8 @@ UID:17069dca84d82173@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261009T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep59 (shorts): lubang hitam
-DESCRIPTION:peringkat #12 peluang 49.2
+SUMMARY:KlikTahu Ep59 (shorts): tulang & sendi
+DESCRIPTION:peringkat #11 peluang 53.3
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -111,8 +115,8 @@ UID:26450158be96cd8a@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261012T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep60 (shorts): cegukan
-DESCRIPTION:peringkat #11 peluang 51.0
+SUMMARY:KlikTahu Ep60 (shorts): planet mars
+DESCRIPTION:peringkat #12 peluang 52.9
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -120,8 +124,8 @@ UID:b73961b077175460@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261013T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep61 (shorts): gurita
-DESCRIPTION:peringkat #13 peluang 47.8
+SUMMARY:KlikTahu Ep61 (shorts): es & salju
+DESCRIPTION:peringkat #13 peluang 52.7
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -129,8 +133,8 @@ UID:b125d443056b4afe@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261014T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep62 (shorts): piramida
-DESCRIPTION:peringkat #14 peluang 46.4
+SUMMARY:KlikTahu Ep62 (shorts): astronot
+DESCRIPTION:peringkat #14 peluang 52.7
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -138,8 +142,8 @@ UID:3a016b47d6a053e5@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261015T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep63 (shorts): saturnus & cincin
-DESCRIPTION:peringkat #15 peluang 43.9
+SUMMARY:KlikTahu Ep63 (shorts): merinding
+DESCRIPTION:peringkat #15 peluang 52.6
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -147,8 +151,8 @@ UID:81a58a40a16007b2@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261016T043000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep64 (shorts): hari tanpa bayangan
-DESCRIPTION:peringkat #16 peluang 41.2
+SUMMARY:KlikTahu Ep64 (shorts): ai
+DESCRIPTION:peringkat #16 peluang 52.4
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 BEGIN:VEVENT
@@ -156,8 +160,44 @@ UID:68f4d127feb2e9b1@kliktahu
 DTSTAMP:20260925T000000Z
 DTSTART:20261019T113000Z
 DURATION:PT30M
-SUMMARY:KlikTahu Ep65 (shorts): aurora
-DESCRIPTION:peringkat #17 peluang 40.4
+SUMMARY:KlikTahu Ep65 (shorts): ular & reptil
+DESCRIPTION:peringkat #17 peluang 52.2
+CATEGORIES:KlikTahu,Shorts
+END:VEVENT
+BEGIN:VEVENT
+UID:1f1e745690035714@kliktahu
+DTSTAMP:20260925T000000Z
+DTSTART:20261020T043000Z
+DURATION:PT30M
+SUMMARY:KlikTahu Ep66 (shorts): laut
+DESCRIPTION:peringkat #18 peluang 51.6
+CATEGORIES:KlikTahu,Shorts
+END:VEVENT
+BEGIN:VEVENT
+UID:7ab3207daeef0fdc@kliktahu
+DTSTAMP:20260925T000000Z
+DTSTART:20261021T113000Z
+DURATION:PT30M
+SUMMARY:KlikTahu Ep67 (shorts): hiu
+DESCRIPTION:peringkat #19 peluang 51.6
+CATEGORIES:KlikTahu,Shorts
+END:VEVENT
+BEGIN:VEVENT
+UID:59b58dd0321c9a49@kliktahu
+DTSTAMP:20260925T000000Z
+DTSTART:20261022T043000Z
+DURATION:PT30M
+SUMMARY:KlikTahu Ep68 (shorts): uban & rambut
+DESCRIPTION:peringkat #24 peluang 49.4
+CATEGORIES:KlikTahu,Shorts
+END:VEVENT
+BEGIN:VEVENT
+UID:9dca86408f594a38@kliktahu
+DTSTAMP:20260925T000000Z
+DTSTART:20261023T113000Z
+DURATION:PT30M
+SUMMARY:KlikTahu Ep69 (shorts): lebah & semut
+DESCRIPTION:peringkat #20 peluang 51.6
 CATEGORIES:KlikTahu,Shorts
 END:VEVENT
 END:VCALENDAR
