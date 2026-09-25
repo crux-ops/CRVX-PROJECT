@@ -7,7 +7,7 @@
 
 ## Keputusan riset
 
-**gunung berapi** (bumi) - shorts - peluang 73.1 - keyakinan 64% - tayang paling lambat 2026-09-26
+**gunung berapi** (bumi) - shorts - peluang 73.1 - keyakinan 64% - tayang SECEPATNYA (paling cepat 2026-09-27)
 
 - Permintaan 0.76: 14 frasa pencarian asli, 7 juga muncul di YouTube Autocomplete (v5 skor_views 49.8).
 - Minat Wikipedia 0.81: 3.533 tayangan 60 hari, tren 3.09x.
@@ -73,4 +73,4 @@
 | 2026-10-08 | 11:30 | shorts | Ep58 | menguap | usulan |
 | 2026-10-09 | 18:30 | shorts | Ep59 | lubang hitam | usulan |
 
-Basis data: topik 77, episode 0, run_riset 1, metadata 5, snapshot_pencarian 51, skor 17, momen 26, performa 0, sumber_ilmiah 2, rencana 17
+Basis data: topik 77, episode 0, run_riset 1, metadata 4, snapshot_pencarian 51, skor 17, momen 26, performa 0, sumber_ilmiah 2, rencana 17

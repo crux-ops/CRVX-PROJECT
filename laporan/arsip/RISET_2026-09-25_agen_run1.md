@@ -4,7 +4,7 @@ Peluang v7 (0-100) = 26 permintaan + 12 minat Wikipedia + 14 momentum + 16 celah
 
 ## KEPUTUSAN
 
-**Topik: gunung berapi** (pilar bumi) - format **SHORTS** - peluang **73.1** - keyakinan 64% - tayang paling lambat **2026-09-26**
+**Topik: gunung berapi** (pilar bumi) - format **SHORTS** - peluang **73.1** - keyakinan 64% - tayang **SECEPATNYA** (paling cepat 2026-09-27, momen sedang berlangsung)
 
 - Sudut pembeda: "kenapa gunung meletus ada petir"
 - Hook 3 detik: "Kenapa gunung meletus? Jawabannya lebih seru dari yang kamu kira."
@@ -27,14 +27,14 @@ Alternatif:
 
 ### Peta niche (pilar fokus)
 
-| pilar | peluang 3 teratas | permintaan | celah | contoh |
-|---|---|---|---|---|
-| teknologi | 65.2 | 0.99 | 0.50 | pesawat |
-| bumi | 65.1 | 0.87 | 0.50 | gunung berapi, pelangi, es & salju |
-| tubuh | 56.6 | 0.89 | 0.50 | merinding, uban & rambut, menguap |
-| hewan | 54.4 | 0.69 | 0.50 | ular & reptil, hiu, gurita |
-| misteri | 53.4 | 0.40 | 0.50 | segitiga bermuda, piramida |
-| antariksa | 44.5 | 0.32 | 0.50 | lubang hitam, saturnus & cincin, aurora |
+| pilar | tema dianalisis | peluang 3 teratas | permintaan | celah | contoh |
+|---|---|---|---|---|---|
+| teknologi | 1 | 65.2 | 0.99 | 0.50 | pesawat |
+| bumi | 4 | 65.1 | 0.87 | 0.50 | gunung berapi, pelangi, es & salju |
+| tubuh | 4 | 56.6 | 0.89 | 0.50 | merinding, uban & rambut, menguap |
+| hewan | 3 | 54.4 | 0.69 | 0.50 | ular & reptil, hiu, gurita |
+| misteri | 2 | 53.4 | 0.40 | 0.50 | segitiga bermuda, piramida |
+| antariksa | 3 | 44.5 | 0.32 | 0.50 | lubang hitam, saturnus & cincin, aurora |
 
 ## Papan peringkat
 

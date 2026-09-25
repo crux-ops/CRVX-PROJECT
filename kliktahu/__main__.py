@@ -93,7 +93,15 @@ def cmd_riset(a: argparse.Namespace) -> int:
         print(
             f"\nKEPUTUSAN{' (SEMENTARA)' if k.sementara else ''}: {k.tema} ({k.pilar}) - {k.format.upper()} - peluang "
             f"{k.peluang} - keyakinan {k.keyakinan:.0%}"
-            + (f" - tayang paling lambat {k.tayang_paling_lambat}" if k.tayang_paling_lambat else "")
+            + (
+                (
+                    f" - tayang SECEPATNYA (paling cepat {k.tayang_paling_lambat})"
+                    if k.segera
+                    else f" - tayang paling lambat {k.tayang_paling_lambat}"
+                )
+                if k.tayang_paling_lambat
+                else ""
+            )
         )
         for x in k.alasan:
             print("  -", x)

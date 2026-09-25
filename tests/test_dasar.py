@@ -104,3 +104,14 @@ def test_db_ekspor_impor_bolak_balik(db, tmp_path):
     m = d2.impor(tmp_path / "ek")
     assert m == n and d2.episode("Long03")["judul"] == "Aurora dari nol"
     assert DB(tmp_path / "baru.db").versi == skema.VERSI_SKEMA  # migrasi idempoten saat dibuka ulang
+
+
+def test_skema_cek_toleran_libm_tapi_ketat_masukan():
+    import json
+
+    d = json.loads((skema.ROOT / skema.FIXTURE_PARITAS).read_text(encoding="utf-8"))
+    e = json.loads(json.dumps(d))
+    e["kasus"][0]["out"] = e["kasus"][0]["out"] * (1 + 1e-15)  # beda digit terakhir (libm lintas platform)
+    f = json.loads(json.dumps(d))
+    f["kasus"][0]["in"][0]["jml"] += 1  # masukan berubah = melenceng sungguhan
+    assert skema._sama_toleran(e, d) and not skema._sama_toleran(f, d)

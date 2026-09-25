@@ -24,6 +24,14 @@ FONT = ROOT / "fonts"
 PILAR = ("tubuh", "antariksa", "bumi", "hewan", "teknologi", "misteri")
 
 
+def _tayang(kp: dict[str, Any]) -> str:
+    if not kp.get("tayang_paling_lambat"):
+        return ""
+    if kp.get("segera"):
+        return f" - tayang SECEPATNYA (paling cepat {kp['tayang_paling_lambat']})"
+    return f" - tayang paling lambat {kp['tayang_paling_lambat']}"
+
+
 def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
     k = db.kanal
     hari_ini = hari_ini or hari_ini_wib()
@@ -183,8 +191,7 @@ def markdown(d: dict[str, Any]) -> str:
             "## Keputusan riset",
             "",
             f"**{kp['tema']}** ({kp['pilar']}) - {kp['format']} - peluang {kp['peluang']} - "
-            f"keyakinan {kp['keyakinan']:.0%}"
-            + (f" - tayang paling lambat {kp['tayang_paling_lambat']}" if kp.get("tayang_paling_lambat") else ""),
+            f"keyakinan {kp['keyakinan']:.0%}" + _tayang(kp),
             "",
             *[f"- {a}" for a in kp["alasan"]],
             "",
@@ -365,7 +372,7 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
     kp = d["keputusan"]
     kal = (
         f"Keputusan: {kp['tema']} ({kp['format']}) - peluang {kp['peluang']} - keyakinan {kp['keyakinan']:.0%}"
-        + (f" - tayang paling lambat {kp['tayang_paling_lambat']}" if kp.get("tayang_paling_lambat") else "")
+        + _tayang(kp)
         if kp
         else "Keputusan: belum ada riset - jalankan python3 -m kliktahu riset"
     )

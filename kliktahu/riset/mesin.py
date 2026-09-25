@@ -575,7 +575,15 @@ def tulis_laporan(h: HasilRiset, folder: Path) -> Path:
             "",
             f"**Topik: {kep.tema}** (pilar {kep.pilar}) - format **{kep.format.upper()}** - peluang **{kep.peluang}** "
             f"- keyakinan {kep.keyakinan:.0%}"
-            + (f" - tayang paling lambat **{kep.tayang_paling_lambat}**" if kep.tayang_paling_lambat else ""),
+            + (
+                (
+                    f" - tayang **SECEPATNYA** (paling cepat {kep.tayang_paling_lambat}, momen sedang berlangsung)"
+                    if kep.segera
+                    else f" - tayang paling lambat **{kep.tayang_paling_lambat}**"
+                )
+                if kep.tayang_paling_lambat
+                else ""
+            ),
             "",
         ]
         if kep.sudut:
@@ -602,12 +610,12 @@ def tulis_laporan(h: HasilRiset, folder: Path) -> Path:
             "",
             "### Peta niche (pilar fokus)",
             "",
-            "| pilar | peluang 3 teratas | permintaan | celah | contoh |",
-            "|---|---|---|---|---|",
+            "| pilar | tema dianalisis | peluang 3 teratas | permintaan | celah | contoh |",
+            "|---|---|---|---|---|---|",
         ]
         for n in kep.niche:
             L.append(
-                f"| {n['pilar']} | {n['peluang_top3']} | {n['permintaan']:.2f} | {n['celah']:.2f} | "
+                f"| {n['pilar']} | {n['n']} | {n['peluang_top3']} | {n['permintaan']:.2f} | {n['celah']:.2f} | "
                 f"{', '.join(n['contoh'])} |"
             )
     L += [

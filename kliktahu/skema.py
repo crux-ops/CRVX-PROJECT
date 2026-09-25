@@ -575,10 +575,34 @@ def tulis(root: Path = ROOT) -> list[str]:
     return ditulis
 
 
+FIXTURE_PARITAS = "skema/ts/fixture/skor_paritas.json"
+
+
+def _sama_toleran(a: object, b: object, tol: float = 1e-12) -> bool:
+    """bandingkan JSON: angka boleh beda di digit terakhir (libm tanh/log10 beda antar platform), selain itu persis."""
+    if isinstance(a, bool) or isinstance(b, bool):
+        return a == b
+    if isinstance(a, (int, float)) and isinstance(b, (int, float)):
+        return abs(a - b) <= tol * max(1.0, abs(b))
+    if isinstance(a, list) and isinstance(b, list):
+        return len(a) == len(b) and all(_sama_toleran(x, y, tol) for x, y in zip(a, b))
+    if isinstance(a, dict) and isinstance(b, dict):
+        return a.keys() == b.keys() and all(_sama_toleran(a[k], b[k], tol) for k in a)
+    return a == b
+
+
 def cek(root: Path = ROOT) -> list[str]:
     """daftar berkas turunan yang TIDAK sama dengan skema (kosong = sinkron)."""
-    return [
-        rel
-        for rel, isi in berkas().items()
-        if not (root / rel).exists() or (root / rel).read_text(encoding="utf-8") != isi
-    ]
+    beda = []
+    for rel, isi in berkas().items():
+        f = root / rel
+        if not f.exists():
+            beda.append(rel)
+            continue
+        ada = f.read_text(encoding="utf-8")
+        if rel == FIXTURE_PARITAS:
+            if not _sama_toleran(json.loads(ada), json.loads(isi)):
+                beda.append(rel)
+        elif ada != isi:
+            beda.append(rel)
+    return beda

@@ -38,6 +38,7 @@ class Keputusan:
     tayang_paling_lambat: str | None
     niche: list[dict[str, Any]] = field(default_factory=list)
     sementara: bool = False
+    segera: bool = False  # momen SEDANG berlangsung -> tayang secepatnya (paling cepat H+siap produksi)
 
     def dict(self) -> dict[str, Any]:
         return asdict(self)
@@ -115,10 +116,12 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
                 break
     t = TEMA[juara["tema"]]
     fmt = S.format_saran(juara.get("jaring", 0), juara.get("kedalaman", 0), t.ever, juara["v7_peluang"])
-    tayang = None
+    tayang, segera = None, False
     if juara.get("momen_tanggal"):
+        siap = k.jadwal.siap_shorts_hari if fmt == "shorts" else k.jadwal.siap_long_hari
         tg = dt.date.fromisoformat(juara["momen_tanggal"]) - dt.timedelta(days=k.jadwal.momen_hari_sebelum)
-        tayang = max(tg, hari_ini + dt.timedelta(days=1)).isoformat()
+        tayang = max(tg, hari_ini + dt.timedelta(days=siap)).isoformat()
+        segera = juara.get("momen_jenis") in ("live", "agen") and juara["momen_tanggal"] <= hari_ini.isoformat()
     peringatan = []
     if t.pilar in k.aturan.pilar_kesehatan:
         peringatan.append(f"Topik kesehatan: wajib '{k.aturan.disclaimer_kesehatan}' di outro & deskripsi.")
@@ -172,4 +175,5 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
         tayang_paling_lambat=tayang,
         niche=niche(calon),
         sementara=juara["keyakinan"] < 0.5,
+        segera=segera,
     )
