@@ -163,9 +163,15 @@ def cocok(m: Momen, t: Tema) -> bool:
 def skor_momen(m: Momen, hari_ini: dt.date, jendela: int = 45) -> float:
     sisa = (m.tanggal - hari_ini).days
     if m.jenis in ("live", "agen") and m.urgensi > 0:
-        if -3 <= sisa <= 0 or (m.selesai and m.tanggal <= hari_ini <= m.selesai):
-            return round(m.urgensi * (1 - min(3, abs(min(sisa, 0))) / 4), 3)
-        return round(skor.v5_momen(sisa, jendela) * (0.5 + 0.5 * m.urgensi), 3)
+        akhir = m.selesai or m.tanggal
+        if m.tanggal <= hari_ini <= akhir:  # sedang berlangsung -> penuh
+            return round(m.urgensi, 3)
+        lewat = (hari_ini - akhir).days
+        if 0 < lewat <= 3:  # baru lewat -> meluruh dalam 3 hari
+            return round(m.urgensi * (1 - lewat / 4), 3)
+        if sisa > 0:  # prakiraan (mis. badai geomagnetik 2 hari lagi)
+            return round(skor.v5_momen(sisa, jendela) * (0.5 + 0.5 * m.urgensi), 3)
+        return 0.0
     if m.selesai and m.tanggal <= hari_ini <= m.selesai:
         sisa = 0
     return round(skor.v5_momen(sisa, jendela), 3)

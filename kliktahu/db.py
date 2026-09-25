@@ -373,7 +373,13 @@ class DB:
         return self.upsert("momen", m, ("tanggal", "nama"))
 
     def momen_antara(self, d1: dt.date, d2: dt.date) -> list[dict[str, Any]]:
-        return self.daftar("momen", "tanggal BETWEEN ? AND ?", (d1.isoformat(), d2.isoformat()), urut="tanggal, nama")
+        """momen yang BERIRISAN dengan [d1, d2] (termasuk peristiwa berlangsung yang mulai sebelum d1)."""
+        return self.daftar(
+            "momen",
+            "tanggal <= ? AND COALESCE(selesai, tanggal) >= ?",
+            (d2.isoformat(), d1.isoformat()),
+            urut="tanggal, nama",
+        )
 
     def upsert_performa(self, p: dict[str, Any]) -> int:
         return self.upsert("performa", p, ("kode", "tanggal"))

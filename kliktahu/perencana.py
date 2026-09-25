@@ -34,9 +34,11 @@ def slot(k: Any, mulai: dt.date, minggu: int) -> list[dict[str, str]]:
     out = []
     hari = sorted(URUT_HARI[: k.jadwal.shorts_per_minggu]) if k.jadwal.shorts_per_minggu <= 7 else list(range(7))
     per_hari = max(1, -(-k.jadwal.shorts_per_minggu // 7))
+    siap_s = mulai + dt.timedelta(days=max(0, k.jadwal.siap_shorts_hari - 1))  # mulai = besok
+    siap_l = mulai + dt.timedelta(days=max(0, k.jadwal.siap_long_hari - 1))
     for i in range(minggu * 7):
         d = mulai + dt.timedelta(days=i)
-        if d.weekday() in hari:
+        if d.weekday() in hari and d >= siap_s:
             for j in range(per_hari):
                 out.append(
                     {
@@ -51,7 +53,7 @@ def slot(k: Any, mulai: dt.date, minggu: int) -> list[dict[str, str]]:
             mulai + dt.timedelta(days=i) for i in range(minggu * 7) if (mulai + dt.timedelta(days=i)).weekday() == 5
         ]
         terakhir = None
-        for d in sabtu:
+        for d in (x for x in sabtu if x >= siap_l):
             if terakhir is None or (d - terakhir).days >= jarak:
                 out.append({"tanggal": d.isoformat(), "jam": k.jadwal.slot_wib[-1], "format": "long"})
                 terakhir = d
@@ -65,7 +67,15 @@ def susun(db: DB, hari_ini: dt.date | None = None, minggu: int = 4, simpan: bool
     akhir = mulai + dt.timedelta(days=minggu * 7 - 1)
     rank, run = _peringkat(db)
     live = [
-        momen.Momen(dt.date.fromisoformat(m["tanggal"]), m["nama"], m["tema"], m["jenis"], m["sumber"], m["urgensi"])
+        momen.Momen(
+            dt.date.fromisoformat(m["tanggal"]),
+            m["nama"],
+            m["tema"],
+            m["jenis"],
+            m["sumber"],
+            m["urgensi"],
+            selesai=dt.date.fromisoformat(m["selesai"]) if m.get("selesai") else None,
+        )
         for m in db.momen_antara(hari_ini - dt.timedelta(days=3), akhir)
         if m["jenis"] in ("live", "agen")
     ]
@@ -96,8 +106,12 @@ def susun(db: DB, hari_ini: dt.date | None = None, minggu: int = 4, simpan: bool
             for i, s in enumerate(bebas)
             if s["format"] == "shorts" and i not in isi and dt.date.fromisoformat(s["tanggal"]) <= max(target, mulai)
         ]
-        if not pilihan:
-            continue
+        segera = m.jenis in ("live", "agen") and m.tanggal <= hari_ini  # sedang berlangsung -> slot PERTAMA
+        if segera or not pilihan:
+            pertama = [i for i, s in enumerate(bebas) if s["format"] == "shorts" and i not in isi]
+            if not pertama or not (segera or target <= mulai):
+                continue
+            pilihan = pertama[:1]
         i = pilihan[-1]
         event_dipakai.add(kunci_ev)
         isi[i] = {

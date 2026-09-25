@@ -129,6 +129,7 @@ class SumberAgen:
                     "agen",
                     m.get("sumber", "agen"),
                     float(m.get("urgensi", 0.5)),
+                    selesai=dt.date.fromisoformat(m["selesai"]) if m.get("selesai") else None,
                 )
             )
         return out, []

@@ -60,6 +60,8 @@ class Jadwal:
     long_per_bulan: int
     momen_hari_sebelum: int
     jendela_momen_hari: int
+    siap_shorts_hari: int = 2
+    siap_long_hari: int = 7
 
 
 @dataclass(frozen=True)
@@ -91,6 +93,7 @@ class Riset:
     env_brave_key: str
     env_searxng_url: str
     env_openalex_mailto: str
+    derau: tuple[str, ...] = ()
 
     def rahasia(self, nama_env: str) -> str | None:
         """nilai variabel lingkungan (kunci API) - TIDAK pernah dicetak/disimpan."""
@@ -217,6 +220,8 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
         long_per_bulan=_ambil(j, "jadwal", "long_per_bulan", int),
         momen_hari_sebelum=_ambil(j, "jadwal", "momen_hari_sebelum", int),
         jendela_momen_hari=_ambil(j, "jadwal", "jendela_momen_hari", int),
+        siap_shorts_hari=int(j.get("siap_shorts_hari", 2)),
+        siap_long_hari=int(j.get("siap_long_hari", 7)),
     )
     if not 1 <= jadwal.shorts_per_minggu <= 14:
         raise KanalError("[jadwal] shorts_per_minggu harus 1..14")
@@ -266,6 +271,7 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
         cache_jam=_ambil(r, "riset", "cache_jam", float),
         maks_youtube_tema=_ambil(r, "riset", "maks_youtube_tema", int),
         user_agent=_ambil(r, "riset", "user_agent", str),
+        derau=tuple(x.lower() for x in r.get("derau", []) if isinstance(x, str)),
         **env,
     )
     if not 1 <= riset.maks_paralel <= 32 or not 1 <= riset.maks_paralel_per_host <= 8:

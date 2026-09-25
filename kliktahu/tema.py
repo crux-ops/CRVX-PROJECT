@@ -323,6 +323,32 @@ SINONIM_MOMEN: dict[str, list[str]] = {
 }
 
 
+# alias relevansi: frasa autocomplete dianggap MEMBAHAS tema bila memuat kata kunci tema ATAU alias ini
+# (Google sering menyelipkan kata lain: "kenapa lubang KNALPOT hitam" bukan soal lubang hitam -> dibuang)
+ALIAS: dict[str, list[str]] = {
+    "lubang hitam": ["black hole"],
+    "gunung berapi": ["gunung bisa meletus", "gunung api", "erupsi", "gunung semeru", "gunung merapi"],
+    "hari tanpa bayangan": ["bayangan"],
+    "meteor & komet": ["bintang jatuh"],
+    "planet mars": ["planet merah"],
+    "saturnus & cincin": ["planet cincin"],
+    "uban & rambut": ["rambut putih", "beruban"],
+    "ai": ["artificial intelligence", "chatgpt"],
+    "es & salju": ["musim salju"],
+}
+
+
+def relevan(frasa: str, t: Tema) -> bool:
+    import re
+
+    from .teks import norm
+
+    f = " " + norm(frasa) + " "
+    return any(
+        re.search(rf"(?<![0-9a-z]){re.escape(norm(k))}(?![0-9a-z])", f) for k in (*t.kata, *ALIAS.get(t.nama, []))
+    )
+
+
 def cari(nama_atau_kata: str) -> Tema | None:
     from .teks import norm
 

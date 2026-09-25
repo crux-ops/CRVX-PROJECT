@@ -39,7 +39,9 @@ long = { lebar = 1920, tinggi = 1080, fps = 30 }
 blokir = ["kentut", "buang angin", "flatus", "ngiler", "iler", "keringat", "bau badan", "bau ketiak", "ketiak bau"]
 # Boleh ada di data riset, tetapi DILARANG muncul di judul, tag, hashtag, dan hook.
 sensitif = ["lgbt", "politik", "partai", "pemilu", "capres", "sara", "porno", "bokep", "judi", "slot", "pinjol",
-            "togel", "kafir", "sesat", "azab", "santet", "pelet"]
+            "togel", "kafir", "sesat", "azab", "santet", "pelet", "islam", "alquran", "quran", "ayat", "sholat",
+            "shalat", "tahajud", "hadis", "hadits", "dalil", "syariat", "kristen", "hindu", "buddha", "kabah",
+            "haram", "halal"]
 hindari_hook = ["haram", "halal", "agama", "dosa", "harga", "murah", "brand", "merek", "game", "judi", "slot"]
 pilar_kesehatan = ["tubuh"]
 disclaimer_kesehatan = "Konten edukasi, bukan pengganti dokter."
@@ -52,6 +54,8 @@ shorts_per_minggu = 5
 long_per_bulan = 1
 momen_hari_sebelum = 3              # topik bermomen tayang N hari SEBELUM event
 jendela_momen_hari = 45             # momen dihitung bila event <= N hari lagi (rumus v5)
+siap_shorts_hari = 2                # waktu produksi minimum: Shorts paling cepat tayang H+2 (naskah, VO, render ~40 menit)
+siap_long_hari = 7                  # video panjang paling cepat H+7 (riset + 10 bab + render ~90 menit)
 
 [metadata]
 hashtag_wajib = ["#KlikTahu", "#FaktaSains"]
@@ -67,6 +71,9 @@ komentar_sematan = "Fakta mana yang paling bikin kamu kaget? Tulis di komentar!"
 
 [riset]
 benih = ["kenapa", "apakah", "bagaimana", "padahal", "tiba-tiba"]
+# DERAU: frasa autocomplete yang memuat istilah ini bukan sains (tim esports, film, sinetron) -> dibuang dari data
+derau = ["ph", "ewc", "msc", "mpl", "mlbb", "esport", "esports", "sinetron", "drakor", "film", "anime", "kisame",
+         "satria"]
 hl = "id"
 gl = "id"
 maks_paralel = 6                    # permintaan HTTP bersamaan (total)

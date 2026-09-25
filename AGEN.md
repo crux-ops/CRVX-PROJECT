@@ -4,7 +4,9 @@
 > Spesifikasi lengkap dari pemilik: `PROMPT_KLIKTAHU.txt` (sumber kebenaran; file ini ringkasan + status).
 
 ## 0. Status singkat
-- Fase: **mesin SELESAI dibangun ulang (tahap 1-8 lulus uji)**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
+- Fase: **mesin SELESAI + UPGRADE 2026-09 (U1-U3) lulus uji**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
+- Riset real-time terakhir (25-09-2026, data nyata mode agen): rekomendasi Ep50 = **gunung berapi** (sudut "kenapa gunung
+  meletus ada petir") - BELUM dipesan pemilik. Lihat `laporan/RISET.md` + `laporan/draf/METADATA_gunung_berapi.md`.
 - Jangan membuat video episode sebelum pemilik memberi perintah.
 
 | Tahap | Isi | Status |
@@ -17,6 +19,9 @@
 | 6 | mesin Long | SELESAI (demo 2 bab 28.7 s, QC MP4 lulus) |
 | 7 | mesin analisis v3-v6 + --uji | SELESAI (uji offline lulus; sapuan nyata TERBLOKIR di sandbox) |
 | 8 | audisi suara narator -> kunci ID suara | SELESAI (dimajukan, voice-00) |
+| U1 | fondasi data: kanal.toml, skema tunggal (SQLite/Postgres-Bolt/JSON/TS), DAL, klien Bolt, rumus v3-v7 + TS, astronomi | SELESAI (pytest, paritas TS 760 kasus) |
+| U2 | riset real-time v7 + keputusan + metadata (gerbang render) + pustaka + perencana (ICS) + dasbor + CLI | SELESAI (38 tes, ruff, mypy) |
+| U3 | riset NYATA (mode agen) + perbaikan dari data nyata (derau, relevansi, penyusutan tren, momen berlangsung) | SELESAI (CI 3.11 + 3.14) |
 
 ## 1. Identitas channel (tetap)
 - KlikTahu, bahasa Indonesia, pilar fakta sains & misteri.
@@ -38,14 +43,20 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
 - Render TIDAK di GitHub Actions. Actions hanya uji ringan (< 5 menit), `permissions: contents: read`, tanpa cron.
 - MP4 tidak pernah masuk repo/Releases. Video diserahkan sebagai file di workspace (`dist/`).
 - Satu commit bermakna per tahap; jangan push beruntun dalam hitungan menit.
-- Tidak pernah menyimpan token/password di file atau chat.
+- Tidak pernah menyimpan token/password di file atau chat. `kanal.toml` hanya berisi NAMA variabel lingkungan
+  (divalidasi: nilai yang tampak seperti kunci DITOLAK). Kunci tidak ikut kunci cache/log/snapshot (ada tesnya).
+- CI `.github/workflows/uji.yml`: push ke main & `arena/**`, matriks Python 3.11 + 3.14 + Node 24, < 5 menit, tanpa cron.
 - **Repo `crux-ops/CRVX-PROJECT` saat ini PUBLIK** (dicek 2026-09-25). Agen tidak punya hak admin untuk
   mengubahnya -> pemilik perlu mengubah ke Private lewat Settings > General > Danger Zone.
 
 ## 4. Lingkungan sandbox (dicek 2026-09-25)
 - 2 vCPU, RAM 3.8 GB, disk ~20 GB. Python 3.11. `pip install --break-system-packages -r requirements.txt`.
 - ffmpeg dari `imageio_ffmpeg.get_ffmpeg_exe()` (v7.0.2; ada atempo, ebur128, alimiter, libx264, aac). Tidak ada ffprobe.
-- Internet terbatas: PyPI dan api.github.com BISA; Google, YouTube, Wikipedia, fonts.google, raw.githubusercontent DIBLOKIR.
+- Internet terbatas: HANYA PyPI, registry npm, dan api.github.com yang BISA dari sandbox (dicek ulang 2026-09-25: 48 host
+  lain - Google, YouTube, Wikipedia/Wikimedia, BMKG, NASA, NOAA, OpenAlex, dll. - putus TLS/EOF). Node v22.22 + npm ada.
+  Python sandbox 3.11.2 (uv tidak bisa unduh Python lain) -> Python 3.14 diuji lewat CI.
+  -> Alat `fetch_page` AGEN BISA membuka suggestqueries.google.com, wikimedia.org REST, trends.google.com RSS, dan URL log
+     CI (blob Azure bertanda tangan) -> riset nyata = mode agen (lihat §11).
   -> Font diunduh lewat `gh api repos/google/fonts/contents/ofl/poppins/<file>` (base64).
   -> Analisis tren: pakai alat web search agen, masukkan hasilnya sebagai data manual (lihat analisis/).
 - Disk: frame PNG 1080x1920 berbutir ~3-5 MB/frame -> JANGAN simpan semua frame; render per potongan (chunk)
@@ -58,6 +69,11 @@ Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
 - Long: `build/long/<slug>/`.
 - Hasil serah: `dist/<OUT_NAME>/` (MP4 + METADATA.md + SIAP_TEMPEL.md [+ thumbnail.jpg]).
 - `pratinjau/` = gambar pratinjau untuk ditunjukkan ke pemilik (diabaikan git).
+- UPGRADE: `kanal.toml` (pengaturan kanal), `kliktahu/` (paket data/riset/metadata/perencana/dasbor, CLI
+  `python3 -m kliktahu`), `skema/` (SQL SQLite+Postgres, JSON Schema, TypeScript `skema/ts/`), `supabase/migrations/`,
+  `tests/` (pytest), `data/ekspor/*.jsonl` (isi basis data, DI-COMMIT; `data/kliktahu.db` diabaikan git -> pulihkan dengan
+  `python3 -m kliktahu db impor`), `laporan/` (RISET.md, KALENDER.md + kalender.ics, DASBOR.md, draf/), 
+  `analisis/data/agen/*.json` (data riset nyata hasil alat agen, di-commit).
 
 ## 6. Suara narator (TERKUNCI - jangan diganti)
 - Dipilih pemilik 2026-09-25 lewat audisi TTS Arena (battle "00"): **voice_id `voice-00`**.
@@ -99,6 +115,19 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   Audit MP4 membuang titik kecil (bintang latar) lewat opening morfologi; teks diaudit lewat kotak teks.
 - Odometer: nol di depan hanya disembunyikan di kiri digit satuan (4,2 pernah tampil ",7").
 - Analisis: pencocokan "sudah dibahas" harus KATA UTUH ("ai" != "baterai"); entri "Long:" = boleh jadi Shorts.
+- UPGRADE (2026-09-25):
+  - `random.randint/choice/sample` BERBEDA antar versi Python (3.11 vs 3.14) -> fixture uji hanya boleh memakai
+    `random.random()` (kelas `Acak` di kliktahu/paritas.py). Ketahuan dari CI 3.14.
+  - `ruff format` membungkus ulang baris -> patch "replace + assert" harus memakai teks TERKINI (cek dulu dengan grep).
+  - `fuzz.token_set_ratio` menganggap subset = identik ("kenapa gunung meletus" = "... ada petir") -> jangan dipakai
+    untuk dedup tag/sudut; pakai `fuzz.ratio` atau kata pembeda sudut.
+  - Autocomplete nyata penuh DERAU: "aurora ph" (tim esports), "lubang KNALPOT hitam", sudut agama ("menurut islam").
+    -> filter relevansi (frasa wajib memuat kata kunci tema/alias), daftar `derau` dan `sensitif` di kanal.toml.
+  - "hari tanpa bayangan" hampir TIDAK dicari dalam bentuk pertanyaan (autocomplete kosong) walau momennya dekat.
+  - Pageview bulanan artikel sepi melonjak palsu (21 -> 75) -> tren disusutkan pseudo-count 100.
+  - Momen berlangsung (tanggal..selesai) wajib dicari dengan kueri IRISAN, bukan `tanggal BETWEEN` (perencana & dasbor
+    sempat melewatkan erupsi yang mulai 4 Sep).
+  - Hook "padahal kamu melihatnya setiap hari" salah untuk gunung meletus/lubang hitam -> hanya untuk pengalaman sehari-hari.
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -120,6 +149,13 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   v6 strategi 0-100 (+ kalender 7 episode, sudut, hook, loop performa). Semua --uji lulus. momen.json dari
   BMKG (hari tanpa bayangan) + kalender astronomi. tools/uji_semua.sh (11 selftest, 13 s) + .github/workflows/uji.yml.
 
+- 2026-09-25: UPGRADE U1 (commit 3622692) - kanal.toml, kliktahu/{kanal,teks,tema,skema,db,sinkron,skor,paritas,astro,momen},
+  skema turunan (SQLite/Postgres+RLS/JSON Schema/TypeScript), TS 7.0.2 + paritas rumus 760 kasus.
+- 2026-09-25: UPGRADE U2 (commit 8336e84) - riset real-time v7 (12 sumber, klien HTTP/2 retry+rate limit+cache, mode
+  online/uji/agen), keputusan, metadata + lint + gerbang render_lokal.sh, pustaka, perencana+ICS, dasbor, CLI, 38 tes.
+- 2026-09-25: UPGRADE U3 - riset NYATA mode agen (162 saran Google, 115 YouTube, 15 pageview Wikipedia, Google Trends,
+  berita PVMBG) -> keputusan gunung berapi; perbaikan dari data nyata (lihat §7); dependensi dipin versi 25-09-2026.
+
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
 python3 sfx.py                 # katalog SFX + cek deterministik
@@ -128,6 +164,8 @@ python3 diagrams.py            # selftest semua visual (gerak, zona teks)
 python3 check_layout.py --uji  # audit zona harus menangkap pelanggaran sengaja
 python3 mesin_fx.py            # finishing, 14 transisi (identitas di ujung fase), material
 python3 mesin_v11.py           # BEATS konsisten, layout kinetik, events
+bash tools/uji_semua.sh        # SEMUA: 11 selftest + kanal + skema + pytest + ruff + mypy + TypeScript (~35 s)
+npm ci --prefix skema/ts       # sekali, agar uji TypeScript ikut jalan
 python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
   && python3 build_audio.py demo_langit && python3 master_audio.py demo_langit
 ```
@@ -138,7 +176,11 @@ python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
    untuk visual khusus; pola lihat `mesin_v11_ep00.py`). 3. VO: satu klip per adegan `audio_raw/<id>.wav` dengan
    voice-00 (maks 10 klip TTS per giliran agen). 4. `tools/render_lokal.sh shorts epNN_slug prep` -> periksa
    `build/<slug>/check_layout.jpg` + `python3 render.py <slug> --times auto --sheet` (baca gambarnya!).
-5. METADATA.md 4 blok + `pustaka/EpNN_Nama/SIAP_TEMPEL.md` + PUSTAKA.md + AGEN.md SEBELUM render.
+5. METADATA.md 4 blok + `pustaka/EpNN_Nama/SIAP_TEMPEL.md` + PUSTAKA.md + AGEN.md SEBELUM render:
+   `python3 -m kliktahu pustaka tambah --format shorts --tema "<tema>" --slug epNN_slug` lalu (setelah prep = timeline ada)
+   `python3 -m kliktahu metadata buat --episode epNN_slug --format shorts --kode EpNN --tulis` (judul dari frasa riset,
+   bab dari timeline, sumber dari content.json field "sumber" / basis data). render_lokal.sh MENOLAK render (exit 4)
+   bila METADATA.md tidak ada / tidak lulus lint (kecuali slug demo_*).
 6. Render penuh sebagai proses latar: `bash -o pipefail -c "tools/render_lokal.sh shorts <slug> 2>&1 | tee build/log"`
    -> QC MP4 lulus -> serahkan `dist/<OUT_NAME>/`.
 **Video panjang:** `long/<slug>/{content.json (scenes type "bab": id, judul, accent, vo), config.env, visual.py,
@@ -160,10 +202,30 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
 - Momen dekat (dicek 2026-09-25): **hari tanpa bayangan 9-13 Okt 2026** (Semarang 11 Okt 11.25 WIB, BMKG),
   Orionid 21-22 Okt, supermoon 24 Nov, Geminid 13-14 Des.
 
+### 11b. Mesin riset real-time v7 (kliktahu/riset) - UPGRADE 2026-09
+- `python3 -m kliktahu riset --mode online` (komputer dengan internet biasa): 12 sumber - Google & YouTube Autocomplete,
+  Wikipedia pageview, Google News RSS, GDELT, Google Trends harian, YouTube Data API (bila `YOUTUBE_API_KEY`), BMKG, USGS,
+  NOAA SWPC, JPL CAD, NASA EONET, OpenAlex/Europe PMC, Brave/SearXNG (opsional). Sopan: rate limit, retry, cache 12 jam.
+- Sandbox Arena: `--mode agen --agen analisis/data/agen/<file>.json` (format di kliktahu/riset/agen.py). Agen mengisi file
+  dengan fetch_page: `https://suggestqueries.google.com/complete/search?client=firefox&hl=id&gl=id&q=kenapa%20<inti>`
+  (+`&ds=yt`), `https://wikimedia.org/api/rest_v1/metrics/pageviews/per-article/id.wikipedia/all-access/user/<Judul>/monthly/<awal>/<akhir>`,
+  `https://trends.google.com/trending/rss?geo=ID`, web_search untuk momen live. Kunci kueri HARUS persis "<benih> <kata>".
+- `--mode uji` = internet palsu deterministik (jalur HTTP penuh). Laporan: `laporan/RISET.md` (+arsip), basis data +
+  ekspor JSONL. Lalu: `python3 -m kliktahu rencana` (KALENDER.md + kalender.ics), `python3 -m kliktahu dasbor --png`.
+- Skor: rumus prompt v3-v6 (kliktahu/skor.py, satu implementasi, dipakai juga analisis/v3-v6) + v7 PELUANG 0-100 =
+  26 permintaan + 12 minat + 14 momentum + 16 celah + 12 kecocokan + 10 momen + 5 kesegaran + 5 bukti; KEYAKINAN = porsi
+  bobot berdata nyata. Tanpa kunci YouTube, celah netral -> keyakinan maks ~64%.
+- Hasil 25-09-2026 (run #1 agen): 1 gunung berapi 73.1 (momen erupsi beruntun Sep 2026 + pageview Wikipedia 3.1x) |
+  2 pesawat 65.2 | 3 pelangi 63.1 | 4 merinding 60.6 | 5 segitiga bermuda 60.4. Kalender usulan: Ep50 gunung berapi (Sen
+  28 Sep 11.30 WIB), Ep51 merinding, Ep52 pelangi, Ep53 segitiga bermuda; Long03 pesawat.
+
 ## 12. Tindakan untuk pemilik
-- **Push tertunda (2026-09-25):** token GitHub sandbox kedaluwarsa setelah tahap 4. Commit tahap 5 dan tahap 6-7
-  hanya ada di lokal/snapshot Arena. Setelah koneksi GitHub di Arena diperbaiki: cek `git log`, lalu
-  `git push origin <cabang-sesi>`. Workflow `.github/workflows/uji.yml` mungkin butuh izin 'workflows' untuk di-push.
+- (Selesai 2026-09-25) push tertunda tahap 5-7 sudah dipulihkan & di-push ulang (sandbox sempat reset ke commit awal).
 - Ubah repo `crux-ops/CRVX-PROJECT` menjadi **Private** (Settings > General > Danger Zone). Agen tidak punya hak admin.
+- (Opsional, untuk keyakinan riset > 64%) buat kunci YouTube Data API v3 gratis (Google Cloud Console), lalu di komputer
+  sendiri: `export YOUTUBE_API_KEY=...` (JANGAN ditulis di file/chat). Sama untuk `BRAVE_API_KEY` / `SEARXNG_URL`.
+- (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
+  `python3 -m kliktahu pustaka impor-studio <file.csv>` -> bobot pilar menyesuaikan otomatis.
+- (Opsional) cermin awan Bolt Database/Supabase: jalankan `skema/postgres.sql`, set env URL+KEY, `python3 -m kliktahu sinkron dorong`.
 - Bila ingin sapuan autocomplete nyata: jalankan `python3 analisis/v3_sapuan.py` di komputer dengan internet biasa,
   commit snapshot `analisis/data/hasil_mendalam_*.json`.

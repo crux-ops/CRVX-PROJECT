@@ -1,0 +1,552 @@
+{
+ "_catatan": "Data NYATA diambil agen Arena 25-09-2026 dengan fetch_page/web_search (internet sandbox diblokir). Autocomplete: suggestqueries.google.com client=firefox hl=id gl=id (ds=yt untuk YouTube), kueri persis seperti kunci. Wikipedia: wikimedia.org REST pageviews monthly agent=user, September = 1-24 Sep. 'Merinding' tidak diukur Wikipedia (judul artikel id belum dipastikan); 'Hari_tanpa_bayangan' tidak ada artikelnya (404). Pesaing YouTube belum diukur (butuh YOUTUBE_API_KEY) -> komponen celah netral.",
+ "diambil": "2026-09-25T19:30:00+07:00",
+ "alat": "Arena agent fetch_page (Google/YouTube Autocomplete, Wikimedia REST, Google Trends RSS) + web_search (berita PVMBG)",
+ "saran": {
+  "google": {
+   "kenapa hari tanpa bayangan": [],
+   "kenapa bayangan hilang": [],
+   "apakah hari tanpa bayangan": [
+    "apakah ada hari tanpa bayangan",
+    "apakah hari ini hari tanpa bayangan"
+   ],
+   "kenapa pelangi": [
+    "kenapa pelangi bisa muncul",
+    "kenapa pelangi muncul setelah hujan",
+    "kenapa pelangi warna warni",
+    "kenapa pelangi jadi lambang lgbt",
+    "kenapa pelangi melengkung",
+    "kenapa pelangi tidak boleh ditunjuk",
+    "kenapa pelangi setengah lingkaran",
+    "kenapa pelangi memiliki banyak warna",
+    "kenapa pelangi jarang muncul",
+    "kenapa pelangi ada 7 warna"
+   ],
+   "kenapa cegukan": [
+    "kenapa cegukan terus",
+    "kenapa cegukan bisa terjadi",
+    "kenapa cegukan terus menerus",
+    "kenapa cegukan",
+    "kenapa cegukan tidak berhenti",
+    "kenapa cegukan tiba tiba",
+    "kenapa cegukan tidak hilang hilang",
+    "kenapa cegukan terus menerus pada orang dewasa",
+    "kenapa cegukan terus berhari hari",
+    "kenapa cegukan setelah makan"
+   ],
+   "kenapa uban": [
+    "kenapa uban bikin gatal",
+    "kenapa uban tidak boleh dicabut",
+    "kenapa uban tumbuh di usia muda",
+    "kenapa uban bisa tumbuh",
+    "kenapa uban tidak boleh dicabut dalam islam",
+    "kenapa uban bikin gatal kepala",
+    "kenapa uban cepat tumbuh",
+    "kenapa uban semakin banyak",
+    "kenapa uban sangat gatal",
+    "kenapa uban tumbuh di usia 30 tahun"
+   ],
+   "kenapa aurora": [
+    "kenapa aurora bisa terjadi",
+    "kenapa aurora hanya terjadi di kutub",
+    "kenapa aurora borealis bisa terjadi",
+    "kenapa aurora tertidur",
+    "kenapa aurora ph tidak ikut ewc",
+    "kenapa aurora merah di film sore",
+    "kenapa aurora ph tidak ikut msc",
+    "kenapa aurora tidak ada di indonesia",
+    "kenapa aurora berwarna hijau",
+    "kenapa aurora terjadi di kutub"
+   ],
+   "kenapa salju": [
+    "kenapa salju tidak turun di indonesia",
+    "kenapa salju berwarna putih",
+    "kenapa salju bisa turun",
+    "kenapa salju bisa berbentuk",
+    "kenapa salju dingin",
+    "kenapa salju kulkas mencair sendiri",
+    "kenapa salju tidak ada di indonesia",
+    "kenapa salju bisa terjadi",
+    "kenapa salju dikasih garam",
+    "kenapa salju berbentuk bunga"
+   ],
+   "kenapa ular": [
+    "kenapa ular masuk rumah",
+    "kenapa ular takut garam",
+    "kenapa ular weling tidak boleh dibunuh",
+    "kenapa ular ganti kulit",
+    "kenapa ular sawah tidak berbisa",
+    "kenapa ular tidak punya kaki",
+    "kenapa ular tidak dikasih kaki",
+    "kenapa ular piton tidak berbisa",
+    "kenapa ular sering masuk rumah",
+    "kenapa ular bisa masuk rumah"
+   ],
+   "kenapa piramida": [
+    "kenapa piramida berbentuk segitiga",
+    "kenapa piramida dibangun",
+    "kenapa piramida segitiga",
+    "kenapa piramida ada dimana mana",
+    "kenapa piramida bisa terbentuk",
+    "kenapa piramida tidak masuk keajaiban dunia",
+    "mengapa piramida biomassa di laut terbalik",
+    "kenapa piramida terbalik",
+    "mengapa piramida biomassa terbalik",
+    "kenapa piramida laut terbalik"
+   ],
+   "kenapa lubang hitam": [
+    "kenapa lubang hitam bisa terbentuk",
+    "kenapa lubang hitam berbahaya",
+    "kenapa lubang hitam tercipta",
+    "kenapa lubang hitam",
+    "kenapa lubang hitam bercahaya",
+    "kenapa lubang hitam bisa terjadi",
+    "kenapa lubang knalpot hitam",
+    "kenapa lubang gigi hitam",
+    "kenapa lubang bab hitam",
+    "kenapa lubang hidung hitam"
+   ],
+   "kenapa gunung meletus": [
+    "kenapa gunung meletus",
+    "kenapa gunung meletus ada petir",
+    "kenapa gunung meletus ada kilat",
+    "kenapa gunung meletus menurut islam",
+    "kenapa gunung meletus barengan",
+    "kenapa gunung meletus secara bersamaan",
+    "kenapa gunung meletus ada petir nya",
+    "kenapa gunung meletus berbahaya",
+    "kenapa gunung meletus keluar petir",
+    "kenapa gunung meletus ada apinya"
+   ],
+   "kenapa merinding": [
+    "kenapa merinding terus",
+    "kenapa merinding",
+    "kenapa merinding tiba tiba",
+    "kenapa merinding saat mendengar lagu",
+    "kenapa merinding di kepala",
+    "kenapa merinding sebelah kanan",
+    "kenapa merinding sebelah kiri",
+    "kenapa merinding setengah badan",
+    "kenapa merinding sampai kepala",
+    "kenapa merinding saat mendengar ayat alquran"
+   ],
+   "kenapa menguap": [
+    "kenapa menguap terus",
+    "kenapa menguap menular",
+    "kenapa menguap keluar air mata",
+    "kenapa menguap terus menerus",
+    "kenapa menguap",
+    "kenapa menguap terus padahal tidak ngantuk",
+    "kenapa menguap harus ditutup",
+    "kenapa menguap terus tapi tidak ngantuk",
+    "kenapa menguap terus tapi tidak bisa tidur",
+    "kenapa menguap terus padahal sudah tidur cukup"
+   ],
+   "kenapa gurita": [
+    "kenapa gurita punya 3 jantung",
+    "kenapa gurita bayi dilarang",
+    "kenapa gurita disebut alien",
+    "kenapa gurita pintar",
+    "kenapa gurita punya 9 otak",
+    "kenapa gurita alot",
+    "kenapa gurita cincin biru berbahaya",
+    "kenapa gurita bisa masuk lubang kecil",
+    "kenapa gurita darahnya biru",
+    "kenapa gurita bisa berubah warna"
+   ],
+   "kenapa segitiga bermuda": [
+    "kenapa segitiga bermuda berbahaya",
+    "kenapa segitiga bermuda tidak boleh dilewati",
+    "kenapa segitiga bermuda tidak ada di peta",
+    "kenapa segitiga bermuda dinamakan segitiga bermuda",
+    "kenapa segitiga bermuda tidak boleh dilintasi pesawat",
+    "kenapa segitiga bermuda disebut dengan segitiga setan",
+    "kenapa segitiga bermuda",
+    "kenapa segitiga bermuda angker",
+    "kenapa segitiga bermuda terbentuk",
+    "kenapa disebut segitiga bermuda"
+   ],
+   "kenapa pesawat": [
+    "kenapa pesawat bisa terbang",
+    "kenapa pesawat bisa terbang padahal berat",
+    "kenapa pesawat bisa delay",
+    "kenapa pesawat mengeluarkan asap",
+    "kenapa pesawat tidak bisa mundur",
+    "kenapa pesawat mengeluarkan asap putih",
+    "kenapa pesawat bisa jatuh",
+    "kenapa pesawat berhenti di udara",
+    "kenapa pesawat warna putih",
+    "kenapa pesawat terbang rendah"
+   ],
+   "kenapa hiu": [
+    "kenapa hiu memakan manusia",
+    "kenapa hiu megalodon punah",
+    "kenapa hiu menyerang manusia",
+    "kenapa hiu disebut malaikat",
+    "kenapa hiu tidak boleh dimakan",
+    "kenapa hiu halal padahal bertaring",
+    "kenapa hiu bisa terdampar",
+    "kenapa hiu takut sama lumba-lumba",
+    "kenapa hiu banteng bisa hidup di air tawar",
+    "kenapa hiu haram"
+   ],
+   "kenapa saturnus": [
+    "kenapa saturnus memiliki cincin",
+    "kenapa saturnus punya banyak bulan",
+    "kenapa saturnus tidak bisa ditinggali",
+    "kenapa saturnus miring",
+    "kenapa saturnus memiliki banyak satelit",
+    "kenapa saturnus dan uranus memiliki cincin",
+    "kenapa saturnus",
+    "kenapa saturnus bisa mengapung di air",
+    "kenapa saturnus disebut planet cincin",
+    "kenapa saturnus kehilangan cincin"
+   ]
+  },
+  "youtube": {
+   "apakah hari tanpa bayangan": [
+    "hari tanpa bayangan"
+   ],
+   "kenapa cegukan": [
+    "kenapa cegukan terjadi",
+    "kenapa cegukan",
+    "kenapa cegukan terus menerus",
+    "kenapa cegukan bisa terjadi",
+    "kenapa cegukan tidak berhenti berhenti",
+    "kenapa cegukan terus",
+    "kenapa cegukan tiba tiba",
+    "kenapa bayi cegukan",
+    "kenapa bisa cegukan tiba tiba",
+    "kenapa janin cegukan"
+   ],
+   "kenapa gurita": [
+    "kenapa gurita jantan mati setelah kawin",
+    "kenapa gurita bisa masuk lubang kecil"
+   ],
+   "kenapa pelangi": [
+    "kenapa pelangi tidak boleh ditunjuk",
+    "kenapa pelangi bisa muncul",
+    "kenapa pelangi",
+    "kenapa pelangi gak boleh ditunjuk",
+    "kenapa pelangi ada dua",
+    "kenapa pelangi ada 2",
+    "kenapa pelangi warna warni",
+    "kenapa pelangi melengkung",
+    "kenapa pelangi muncul",
+    "kenapa pelangi bisa ada dua"
+   ],
+   "kenapa aurora": [
+    "kenapa aurora bisa terjadi",
+    "kenapa aurora ph kuat",
+    "kenapa bisa ada aurora"
+   ],
+   "kenapa menguap": [
+    "kenapa menguap terus",
+    "kenapa menguap menular",
+    "kenapa menguap harus ditutup",
+    "kenapa menguap keluar air mata",
+    "kenapa menguap bisa menular",
+    "kenapa menguap",
+    "kenapa kita menguap",
+    "kenapa susah menguap",
+    "kenapa sering menguap saat shalat",
+    "kenapa ayam sering menguap"
+   ],
+   "kenapa piramida": [
+    "kenapa piramida dibuat"
+   ],
+   "kenapa uban": [
+    "kenapa uban tidak boleh dicabut",
+    "kenapa uban terasa gatal",
+    "kenapa uban gatal",
+    "kenapa uban bikin gatal",
+    "kenapa uban bisa tumbuh",
+    "kenapa uban tidak boleh dicabut menurut islam",
+    "kenapa uban itu gatal",
+    "kenapa uban cepat tumbuh",
+    "kenapa uban tumbuh di usia remaja",
+    "kenapa uban bisa tumbuh di usia muda"
+   ],
+   "kenapa salju": [
+    "kenapa salju tidak turun di indonesia",
+    "kenapa salju bisa turun",
+    "kenapa salju",
+    "kenapa ada salju",
+    "kenapa kulkas banyak saljunya",
+    "kenapa bisa ada salju",
+    "kenapa ada musim salju",
+    "kenapa jepang ada salju",
+    "kenapa 2026 turun salju",
+    "kenapa bisa terjadi salju"
+   ],
+   "kenapa ular": [
+    "kenapa ular tidak punya kaki",
+    "kenapa ular",
+    "kenapa ular masuk rumah",
+    "kenapa ular sawah tidak berbisa",
+    "kenapa ular sawah tidak berbisa pada zaman dahulu",
+    "kenapa ular ganti kulit",
+    "kenapa ular bisa berjalan",
+    "kenapa ular gak punya kaki",
+    "kenapa ular weling tidak boleh dibunuh",
+    "kenapa ular takut garam"
+   ],
+   "kenapa lubang hitam": [
+    "kenapa ada black hole",
+    "kenapa black hole muncul",
+    "lubang hitam vs lubang putih"
+   ],
+   "kenapa gunung meletus": [
+    "kenapa gunung meletus",
+    "kenapa gunung meletus keluar petir",
+    "kenapa gunung meletus ada petir",
+    "kenapa gunung bisa meletus",
+    "kenapa gunung semeru meletus",
+    "kenapa bisa terjadi gunung meletus",
+    "kenapa bisa ada gunung berapi"
+   ],
+   "kenapa merinding": [
+    "kenapa merinding",
+    "kenapa sering merinding tiba tiba",
+    "kenapa badan merinding terus",
+    "kenapa kepala sering merinding",
+    "kenapa sholat tahajud merinding",
+    "kenapa badan sering merinding",
+    "kenapa badan selalu merinding",
+    "kenapa badan terasa merinding",
+    "kepala merinding kenapa ya",
+    "kenapa kita bisa merinding"
+   ],
+   "kenapa segitiga bermuda": [
+    "kenapa segitiga bermuda berbahaya",
+    "kenapa segitiga bermuda",
+    "kenapa segitiga bermuda tidak boleh dilintasi pesawat",
+    "kenapa disebut segitiga bermuda",
+    "kenapa ada segitiga bermuda",
+    "kenapa dinamakan segitiga bermuda"
+   ],
+   "kenapa pesawat": [
+    "kenapa pesawat bisa terbang",
+    "kenapa pesawat",
+    "kenapa pesawat bisa terbang padahal berat",
+    "kenapa pesawat bisa jatuh",
+    "kenapa pesawat tidak boleh melewati ka'bah",
+    "kenapa pesawat jet mengeluarkan asap",
+    "kenapa pesawat bisa turbulensi",
+    "kenapa pesawat mengeluarkan asap putih",
+    "kenapa pesawat tidak tersambar petir",
+    "kenapa pesawat kok bisa terbang"
+   ],
+   "kenapa hiu": [
+    "kenapa hiu",
+    "kenapa hiu takut sama lumba-lumba",
+    "kenapa hiu takut sama paus orca",
+    "kenapa hiu megalodon bisa punah",
+    "kenapa hiu megalodon punah",
+    "kenapa hiu putih tidak ada di aquarium",
+    "kenapa hiu tidak menyerang manusia",
+    "kenapa satria hiu mahal",
+    "kenapa sirip hiu dilarang dimakan",
+    "kenapa kisame mirip hiu"
+   ],
+   "kenapa saturnus": [
+    "kenapa saturnus punya cincin",
+    "kenapa planet saturnus ada cincinnya"
+   ]
+  }
+ },
+ "wiki": {
+  "pelangi": {
+   "judul": "Pelangi",
+   "bulanan": {
+    "2026-06": 740,
+    "2026-07": 1069,
+    "2026-08": 1112,
+    "2026-09": 629
+   },
+   "hari_bulan_ini": 24
+  },
+  "cegukan": {
+   "judul": "Cegukan",
+   "bulanan": {
+    "2026-06": 44,
+    "2026-07": 33,
+    "2026-08": 115,
+    "2026-09": 37
+   },
+   "hari_bulan_ini": 24
+  },
+  "gurita": {
+   "judul": "Gurita",
+   "bulanan": {
+    "2026-06": 538,
+    "2026-07": 682,
+    "2026-08": 838,
+    "2026-09": 596
+   },
+   "hari_bulan_ini": 24
+  },
+  "aurora": {
+   "judul": "Aurora",
+   "bulanan": {
+    "2026-06": 735,
+    "2026-07": 1006,
+    "2026-08": 1338,
+    "2026-09": 940
+   },
+   "hari_bulan_ini": 24
+  },
+  "menguap": {
+   "judul": "Menguap",
+   "bulanan": {
+    "2026-06": 5,
+    "2026-07": 6,
+    "2026-08": 6,
+    "2026-09": 8
+   },
+   "hari_bulan_ini": 24
+  },
+  "ular & reptil": {
+   "judul": "Ular",
+   "bulanan": {
+    "2026-06": 2042,
+    "2026-07": 1198,
+    "2026-08": 1013,
+    "2026-09": 865
+   },
+   "hari_bulan_ini": 24
+  },
+  "es & salju": {
+   "judul": "Salju",
+   "bulanan": {
+    "2026-06": 382,
+    "2026-07": 398,
+    "2026-08": 297,
+    "2026-09": 251
+   },
+   "hari_bulan_ini": 24
+  },
+  "lubang hitam": {
+   "judul": "Lubang_hitam",
+   "bulanan": {
+    "2026-06": 1177,
+    "2026-07": 1116,
+    "2026-08": 1141,
+    "2026-09": 1047
+   },
+   "hari_bulan_ini": 24
+  },
+  "gunung berapi": {
+   "judul": "Gunung_berapi",
+   "bulanan": {
+    "2026-06": 1004,
+    "2026-07": 801,
+    "2026-08": 813,
+    "2026-09": 2176
+   },
+   "hari_bulan_ini": 24
+  },
+  "segitiga bermuda": {
+   "judul": "Segitiga_Bermuda",
+   "bulanan": {
+    "2026-06": 7555,
+    "2026-07": 6399,
+    "2026-08": 4710,
+    "2026-09": 7099
+   },
+   "hari_bulan_ini": 24
+  },
+  "hiu": {
+   "judul": "Hiu",
+   "bulanan": {
+    "2026-06": 1196,
+    "2026-07": 1394,
+    "2026-08": 1727,
+    "2026-09": 1258
+   },
+   "hari_bulan_ini": 24
+  },
+  "saturnus & cincin": {
+   "judul": "Saturnus",
+   "bulanan": {
+    "2026-06": 1169,
+    "2026-07": 893,
+    "2026-08": 1118,
+    "2026-09": 757
+   },
+   "hari_bulan_ini": 24
+  },
+  "pesawat": {
+   "judul": "Pesawat_terbang",
+   "bulanan": {
+    "2026-06": 871,
+    "2026-07": 1496,
+    "2026-08": 918,
+    "2026-09": 774
+   },
+   "hari_bulan_ini": 24
+  },
+  "uban & rambut": {
+   "judul": "Uban",
+   "bulanan": {
+    "2026-06": 58,
+    "2026-07": 51,
+    "2026-08": 38,
+    "2026-09": 32
+   },
+   "hari_bulan_ini": 24
+  },
+  "piramida": {
+   "judul": "Piramida_Giza",
+   "bulanan": {
+    "2026-06": 17,
+    "2026-07": 23,
+    "2026-08": 21,
+    "2026-09": 60
+   },
+   "hari_bulan_ini": 24
+  }
+ },
+ "tren_harian": [
+  {
+   "judul": "australia vs brasil",
+   "traffic": 50000
+  },
+  {
+   "judul": "australia vs brazil",
+   "traffic": 10000
+  },
+  {
+   "judul": "malaysia vs bangladesh",
+   "traffic": 10000
+  },
+  {
+   "judul": "guruh soekarnoputra",
+   "traffic": 1000
+  },
+  {
+   "judul": "brazil",
+   "traffic": 1000
+  },
+  {
+   "judul": "korea selatan vs vietnam u-23",
+   "traffic": 500
+  },
+  {
+   "judul": "susunan pemain tim nasional sepak bola australia vs timnas brasil",
+   "traffic": 500
+  }
+ ],
+ "momen_live": [
+  {
+   "tanggal": "2026-09-04",
+   "selesai": "2026-09-25",
+   "nama": "Erupsi beruntun gunung api Indonesia: Anak Krakatau (lava fountain, dentuman sampai Serang), Semeru & Merapi Siaga, Sinabung naik Siaga (PVMBG; cek status terbaru)",
+   "tema": [
+    "gunung berapi"
+   ],
+   "urgensi": 0.7,
+   "sumber": "PVMBG via afu.id (5-9-2026) & gosumbar.com (13-9-2026); lonjakan pageview Wikipedia 'Gunung berapi' Sep 2026"
+  }
+ ]
+}

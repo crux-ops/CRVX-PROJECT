@@ -18,11 +18,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from rapidfuzz import fuzz
+
 from . import ROOT, teks
 from . import kanal as kanal_mod
 from .tema import TEMA
 
-TAG_MAKS_KARAKTER = 30  # batas aman per tag (tag pendek & jelas; tag panjang sering ditolak/terpotong)
+TAG_MAKS_KARAKTER = 60  # batas aman per tag (frasa long-tail <= ~8 kata); total tetap <= 500 cara YouTube
 PENASARAN = ("ternyata", "padahal", "rahasia", "jarang", "kenapa", "apakah", "bagaimana", "misteri", "jawaban")
 UMPAN_BOHONG = ("100%", "dijamin", "pasti terbukti", "terbukti mutlak", "dokter kaget", "wajib tonton", "viral banget")
 TEMPLAT = {
@@ -35,8 +37,8 @@ TEMPLAT = {
     "inti": [
         "Fakta {I} yang Jarang Diketahui",
         "Rahasia di Balik {I} yang Bikin Kaget",
-        "Misteri {I} Akhirnya Terjawab",
     ],
+    "misteri": ["Misteri {I} Akhirnya Terjawab"],  # hanya pilar misteri (jujur: bukan untuk topik yang tidak misterius)
     "shorts": ["{F}? Ini Kata Sains"],
     "long": ["{F}? Penjelasan Lengkap dari Nol", "Semua Tentang {I}: Dari Nol Sampai Paham"],
     "momen": ["{M}: {F}?"],
@@ -56,6 +58,7 @@ class Paket:
     skor_judul: list[float] = field(default_factory=list)
     galat: list[str] = field(default_factory=list)
     peringatan: list[str] = field(default_factory=list)
+    final: bool = False
 
     @property
     def tag_karakter(self) -> int:
@@ -142,17 +145,22 @@ def skor_judul(j: str, kata_kunci: str, inti: str, format_: str, pesaing: Sequen
 
 
 def kandidat_judul(
-    frasa: Sequence[str], inti: str, format_: str, momen: str | None = None, tambahan: Sequence[str] = ()
+    frasa: Sequence[str],
+    inti: str,
+    format_: str,
+    momen: str | None = None,
+    tambahan: Sequence[str] = (),
+    pilar: str = "",
 ) -> list[str]:
     I = teks.kapital_judul(inti)
     out = [_bersih(x) for x in tambahan]
-    tanya = [f for f in frasa if f.split()[0] in ("kenapa", "apakah", "bagaimana")][:5] or list(frasa[:3])
+    tanya = [f for f in frasa if f.split()[0] in ("kenapa", "apakah", "bagaimana")][:8] or list(frasa[:3])
     for f in tanya:
         F = teks.kapital_judul(f)
         out += [t.format(F=F, I=I) for t in TEMPLAT["tanya"] + TEMPLAT[format_]]
         if momen:
             out += [t.format(M=teks.kapital_judul(momen), F=F) for t in TEMPLAT["momen"]]
-    out += [t.format(I=I) for t in TEMPLAT["inti"]]
+    out += [t.format(I=I) for t in TEMPLAT["inti"] + (TEMPLAT["misteri"] if pilar == "misteri" else [])]
     return list(dict.fromkeys(_bersih(x) for x in out if x))
 
 
@@ -161,16 +169,74 @@ def _inti_judul(j: str) -> str:
     return teks.norm(re.split(r"[?:]", j, maxsplit=1)[0])
 
 
-def _mirip_judul(a: str, b: str) -> float:
-    return 1.0 if _inti_judul(a) == _inti_judul(b) else 0.6 * teks.mirip(a, b)
+_FUNGSI = {
+    "kenapa",
+    "mengapa",
+    "apakah",
+    "bagaimana",
+    "padahal",
+    "ada",
+    "bisa",
+    "keluar",
+    "terjadi",
+    "yang",
+    "itu",
+    "ini",
+    "sih",
+    "kok",
+    "jadi",
+    "di",
+    "ke",
+    "dan",
+    "dengan",
+    "saat",
+    "sama",
+    "punya",
+    "memiliki",
+    "tidak",
+    "gak",
+}
 
 
-def pilih_beragam(kandidat: list[tuple[str, float]], n: int = 3, lam: float = 3.0) -> list[tuple[str, float]]:
+_SINONIM = {
+    "kilat": "petir",
+    "halilintar": "petir",
+    "petirnya": "petir",
+    "barengan": "bersamaan",
+    "serentak": "bersamaan",
+    "apinya": "api",
+    "lahar": "lava",
+    "gatal": "gatal",
+    "menular": "menular",
+    "berwarna": "warna",
+}
+
+
+def _kata_sudut(j: str, inti: str) -> set[str]:
+    """kata PEMBEDA sudut sebuah judul: bagian pertanyaan tanpa kata inti & kata fungsi ('ada petir' = {'petir'})."""
+    buang = set(teks.norm(inti).split()) | _FUNGSI
+    return {_SINONIM.get(w, w) for w in _inti_judul(j).split() if w not in buang and len(w) > 2}
+
+
+def _mirip_judul(a: str, b: str, inti: str = "") -> float:
+    if _inti_judul(a) == _inti_judul(b):
+        return 1.0
+    ka, kb = _kata_sudut(a, inti), _kata_sudut(b, inti)
+    if (not ka and not kb and "?" in a and "?" in b) or (ka & kb):
+        return 1.0  # sudut sama walau kata kerjanya beda ("ada petir" vs "keluar petir")
+    return 0.6 * teks.mirip(a, b)
+
+
+def pilih_beragam(
+    kandidat: list[tuple[str, float]], n: int = 3, lam: float = 3.0, inti: str = ""
+) -> list[tuple[str, float]]:
     """MMR: skor tinggi TAPI tidak mirip judul yang sudah terpilih (3 pilihan benar-benar berbeda sudutnya)."""
     sisa = sorted([c for c in kandidat if c[1] > -50], key=lambda c: -c[1])
     pilih: list[tuple[str, float]] = []
     while sisa and len(pilih) < n:
-        terbaik = max(sisa, key=lambda c: c[1] - lam * max((_mirip_judul(c[0], p[0]) for p in pilih), default=0.0))
+        terbaik = max(
+            sisa, key=lambda c: c[1] - lam * max((_mirip_judul(c[0], p[0], inti) for p in pilih), default=0.0)
+        )
         pilih.append(terbaik)
         sisa.remove(terbaik)
     return pilih
@@ -212,7 +278,7 @@ def buat_tag(
             or teks.sensitif(c, k.aturan.sensitif)
         ):
             continue
-        if any(teks.mirip(c, x) >= 0.97 for x in out):
+        if any(fuzz.ratio(c, x) >= 92 for x in out):  # hampir identik saja (subset BUKAN duplikat)
             continue
         if teks.panjang_tag_youtube([*out, c]) <= k.metadata.maks_tag_karakter:
             out.append(c)
@@ -320,9 +386,9 @@ def buat(
     inti = t.inti if t else tema
     fr = frasa_layak(frasa, k)
     kk = teks.norm(kata_kunci) if kata_kunci else kata_kunci_utama(fr, inti)
-    calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan)
+    calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "")
     bernilai = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in calon]
-    pilih = pilih_beragam(bernilai, 3)
+    pilih = pilih_beragam(bernilai, 3, inti=inti)
     tagar = buat_hashtag(tema, inti, format_, k)
     bab = bab_dari_timeline(konten, timeline) if konten and timeline else []
     src = list(sumber) or (sumber_dari_konten(konten) if konten else [])
@@ -338,6 +404,7 @@ def buat(
         src,
         [s for _, s in pilih],
     )
+    p.final = final
     p.galat, p.peringatan = lint(p, k, final=final, pilar=t.pilar if t else None)
     return p
 
@@ -453,7 +520,8 @@ def tulis_md(p: Paket, path: Path | str, judul_halaman: str, catatan: str = "") 
         f"# METADATA - {_bersih(judul_halaman)}",
         "",
         f'> Dibuat oleh kliktahu/metadata.py. Format {p.format}. Kata kunci utama: "{p.kata_kunci}". '
-        f"Lint: {status}.{(' ' + _bersih(catatan)) if catatan else ''}",
+        f"Lint {'final' if p.final else 'draf (lint final butuh bab dari timeline.json)'}: {status}."
+        f"{(' ' + _bersih(catatan)) if catatan else ''}",
         "",
         "## 1. Judul (3 pilihan)",
         *[f"{i}. {j}" for i, j in enumerate(p.judul, 1)],

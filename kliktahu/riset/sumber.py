@@ -77,13 +77,18 @@ def wiki_judul(k: KlienRiset, q: str, bahasa: str = "id") -> str | None:
     return urai_opensearch(r.teks)
 
 
+PSEUDO = 100.0  # pseudo-count penyusut tren pageview (Bayes sederhana)
+
+
 def hitung_wiki(harian: list[int]) -> dict[str, float]:
     """pageview harian (lama -> baru) -> views60, tren (30 terakhir / 30 sebelumnya), lonjakan_z (7 hari vs dasar)."""
     h = [max(0, int(x)) for x in harian][-60:]
     if not h:
         return {"views60": 0.0, "tren": 1.0, "lonjakan_z": 0.0}
     akhir, awal = h[-30:], h[:-30]
-    tren = (sum(akhir) / max(1, sum(awal))) if awal else 1.0
+    tren = (
+        ((sum(akhir) + PSEUDO) / (sum(awal) + PSEUDO)) if awal else 1.0
+    )  # disusutkan: artikel sepi tidak melonjak palsu
     dasar, baru = h[:-7], h[-7:]
     z = 0.0
     if len(dasar) >= 14:
@@ -115,7 +120,8 @@ def wiki_views(k: KlienRiset, judul: str, hari_ini: dt.date, bahasa: str = "id",
 
 
 def wiki_dari_bulanan(bulanan: dict[str, int], hari_bulan_ini: int) -> dict[str, float]:
-    """perkiraan views60/tren dari pageview BULANAN (dipakai data agen: endpoint monthly lebih ringkas)."""
+    """perkiraan views60/tren dari pageview BULANAN (data agen: endpoint monthly lebih ringkas).
+    lonjakan_z = PROKSI dari tren bulanan ((tren - 1) x 3, dijepit +-6) karena data harian tidak tersedia."""
     kunci = sorted(bulanan)
     if not kunci:
         return {"views60": 0.0, "tren": 1.0, "lonjakan_z": 0.0}
@@ -123,11 +129,15 @@ def wiki_dari_bulanan(bulanan: dict[str, int], hari_bulan_ini: int) -> dict[str,
     lalu = bulanan[kunci[-2]] if len(kunci) > 1 else ini
     lalu2 = bulanan[kunci[-3]] if len(kunci) > 2 else lalu
     if hari_bulan_ini >= 10:
-        akhir30 = ini * 30.0 / hari_bulan_ini
-        awal30 = float(lalu)
+        akhir30, awal30 = ini * 30.0 / hari_bulan_ini, float(lalu)
     else:
         akhir30, awal30 = float(lalu), float(lalu2)
-    return {"views60": round(akhir30 + awal30, 1), "tren": round(akhir30 / max(1.0, awal30), 4), "lonjakan_z": 0.0}
+    tren = (akhir30 + PSEUDO) / (awal30 + PSEUDO)  # 21 -> 75 tayangan bukan lonjakan nyata
+    return {
+        "views60": round(akhir30 + awal30, 1),
+        "tren": round(tren, 4),
+        "lonjakan_z": round(max(-6.0, min(6.0, (tren - 1.0) * 3.0)), 3),
+    }
 
 
 # ================================================================================================ berita

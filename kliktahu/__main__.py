@@ -169,6 +169,16 @@ def cmd_metadata(a: argparse.Namespace) -> int:
             print("  GALAT:", x)
         print("Judul:", *[f"\n  {i}. {j}" for i, j in enumerate(p.judul, 1)])
         print(f"Hashtag: {' '.join(p.hashtag)}\nTag ({p.tag_karakter}/500): {', '.join(p.tag)}")
+        if a.keluar:  # DRAF: hanya satu berkas, tanpa folder pustaka/ (folder pustaka = topik dianggap sudah dibahas)
+            out = M.tulis_md(
+                p,
+                Path(a.keluar),
+                f"DRAF {tema} ({a.format}) - belum dipesan pemilik",
+                "Draf dari riset; bab/timestamp final dibuat setelah naskah & VO.",
+            )
+            db.simpan_metadata(p.baris_db(t["id"] if t else None, None))
+            db.commit()
+            print("draf ditulis:", out)
         if a.tulis:
             kode = a.kode or (db.kode_berikut(a.format))
             tujuan = folder or ROOT / "pustaka" / f"{kode}_{tema.replace(' & ', '_').replace(' ', '_')}"
@@ -374,7 +384,8 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--pilar", default=None)
     p.add_argument("--kata-kunci", default=None)
     p.add_argument("--judul", action="append", help="judul kandidat tambahan dari agen (dinilai bersama)")
-    p.add_argument("--tulis", action="store_true")
+    p.add_argument("--tulis", action="store_true", help="tulis METADATA.md + SIAP_TEMPEL.md episode (mode final)")
+    p.add_argument("--keluar", default=None, help="tulis DRAF METADATA ke path ini saja (tanpa folder pustaka/)")
     p = s("pustaka", cmd_pustaka, "perpustakaan episode")
     p.add_argument("aksi", choices=["daftar", "cari", "tambah", "status", "sinkron", "impor-studio", "duplikat"])
     p.add_argument("arg", nargs="*")

@@ -42,7 +42,7 @@ def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
     m60 = [m for m in momen.semua(hari_ini, 60) if m.tanggal >= hari_ini]
     live = db.daftar(
         "momen",
-        "jenis IN ('live','agen') AND tanggal >= ?",
+        "jenis IN ('live','agen') AND COALESCE(selesai, tanggal) >= ?",
         ((hari_ini - dt.timedelta(days=3)).isoformat(),),
         urut="tanggal",
     )
@@ -304,7 +304,15 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
         lx += 20 + int(g.textlength(p, font=_f("Regular", 17))) + 22
 
     # peta niche (skala min-maks titik yang tampil agar sebaran terlihat)
-    kartu(832, 262, 720, 520, "Peta niche: permintaan (x) vs celah pesaing (y)")
+    tampil = sorted(d["top"][:20], key=lambda r: r["v7_peluang"])
+    # sumbu Y = komponen paling informatif: celah pesaing bila ada datanya, jika tidak minat Wikipedia / momentum
+    sumbu, label_y = "celah", "celah pesaing"
+    for kand, lab in (("celah", "celah pesaing"), ("minat", "minat Wikipedia"), ("momentum", "momentum")):
+        nilai = [r["komponen"][kand] for r in tampil]
+        if nilai and max(nilai) - min(nilai) > 0.05:
+            sumbu, label_y = kand, lab
+            break
+    kartu(832, 262, 720, 520, f"Peta niche: permintaan (x) vs {label_y} (y)")
     x0, y0, pw, ph = 890, 320, 600, 400
     g.rectangle((x0, y0, x0 + pw, y0 + ph), outline=(225, 218, 205), width=2)
     g.line((x0 + pw // 2, y0, x0 + pw // 2, y0 + ph), fill=(225, 218, 205), width=2)
@@ -312,9 +320,8 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
     g.text((x0 + pw - 150, y0 + 8), "PELUANG EMAS", font=_f("SemiBold", 17), fill=MUTED)
     g.text((x0, y0 + ph + 8), "permintaan rendah", font=_f("Regular", 16), fill=MUTED)
     g.text((x0 + pw - 128, y0 + ph + 8), "permintaan tinggi", font=_f("Regular", 16), fill=MUTED)
-    tampil = sorted(d["top"][:20], key=lambda r: r["v7_peluang"])
     xs = [r["komponen"]["permintaan"] for r in tampil] or [0.0]
-    ys = [r["komponen"]["celah"] for r in tampil] or [0.0]
+    ys = [r["komponen"][sumbu] for r in tampil] or [0.0]
 
     def sk(v: float, lo: float, hi: float) -> float:
         return 0.5 if hi - lo < 1e-6 else 0.06 + 0.88 * (v - lo) / (hi - lo)
@@ -323,7 +330,7 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
     for r in tampil:
         kp = r["komponen"]
         cx = x0 + int(sk(kp["permintaan"], min(xs), max(xs)) * pw)
-        cy = y0 + ph - int(sk(kp["celah"], min(ys), max(ys)) * ph)
+        cy = y0 + ph - int(sk(kp[sumbu], min(ys), max(ys)) * ph)
         rad = int(6 + r["v7_peluang"] / 8)
         g.ellipse((cx - rad, cy - rad, cx + rad, cy + rad), fill=warna[r["pilar"]], outline=putih, width=2)
         if r["peringkat"] <= 5:
@@ -339,7 +346,11 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
     # momen + keputusan
     kartu(48, 806, 1504, 166, "Momen 60 hari & keputusan")
     mx = 72
-    for m in d["momen"][:6]:
+    chip = [
+        momen.Momen(dt.date.fromisoformat(x["tanggal"]), "LIVE " + x["nama"], x["tema"], x["jenis"], x["sumber"])
+        for x in d["momen_live"]
+    ] + list(d["momen"])
+    for m in chip[:6]:
         pendek = m.nama.split("(")[0].strip()
         if ":" in pendek:
             a_, b_ = pendek.split(":", 1)

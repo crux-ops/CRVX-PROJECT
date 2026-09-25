@@ -1,0 +1,546 @@
+{
+ "run_id": 1,
+ "tanggal": "2026-09-25",
+ "mode": "agen",
+ "keputusan": {
+  "tema": "gunung berapi",
+  "slug": "gunung_berapi",
+  "pilar": "bumi",
+  "format": "shorts",
+  "peluang": 73.1,
+  "keyakinan": 0.636,
+  "status": "segar",
+  "sudut": "kenapa gunung meletus ada petir",
+  "hook": [
+   "Kenapa gunung meletus? Jawabannya lebih seru dari yang kamu kira.",
+   "Kenapa gunung meletus ada petir? Jawabannya lebih seru dari yang kamu kira."
+  ],
+  "alasan": [
+   "Permintaan 0.76: 14 frasa pencarian asli, 7 juga muncul di YouTube Autocomplete (v5 skor_views 49.8).",
+   "Minat Wikipedia 0.81: 3.533 tayangan 60 hari, tren 3.09x.",
+   "Momen 0.70: Erupsi beruntun gunung api Indonesia: Anak Krakatau (lava fountain, dentuman sampai Serang), Semeru & Merapi Siaga, Sinabung naik Siaga (PVMBG; cek status terbaru) (2026-09-04).",
+   "Keyakinan data 64% (sedang); komponen tanpa data dinetralkan 0.5."
+  ],
+  "peringatan": [
+   "Ada frasa pencarian sensitif (kenapa gunung meletus menurut islam) - JANGAN dipakai di judul/tag/hook.",
+   "Momen bencana nyata: bahas sainsnya dengan hormat, tanpa sensasi; sumber resmi PVMBG/MAGMA Indonesia (magma.esdm.go.id)."
+  ],
+  "alternatif": [
+   {
+    "tema": "pesawat",
+    "pilar": "teknologi",
+    "peluang": 65.2,
+    "keyakinan": 0.64,
+    "sudut": "kenapa pesawat bisa terbang",
+    "momen": null
+   },
+   {
+    "tema": "pelangi",
+    "pilar": "bumi",
+    "peluang": 63.1,
+    "keyakinan": 0.64,
+    "sudut": "kenapa pelangi bisa muncul",
+    "momen": "Awal musim hujan di banyak wilayah Indonesia (perkiraan umum, cek BMKG)"
+   },
+   {
+    "tema": "merinding",
+    "pilar": "tubuh",
+    "peluang": 60.6,
+    "keyakinan": 0.49,
+    "sudut": "kenapa sering merinding tiba tiba",
+    "momen": null
+   }
+  ],
+  "seri": [],
+  "momen": "Erupsi beruntun gunung api Indonesia: Anak Krakatau (lava fountain, dentuman sampai Serang), Semeru & Merapi Siaga, Sinabung naik Siaga (PVMBG; cek status terbaru)",
+  "tayang_paling_lambat": "2026-09-26",
+  "niche": [
+   {
+    "pilar": "teknologi",
+    "n": 1,
+    "peluang_top3": 65.2,
+    "permintaan": 0.99,
+    "celah": 0.5,
+    "contoh": [
+     "pesawat"
+    ]
+   },
+   {
+    "pilar": "bumi",
+    "n": 4,
+    "peluang_top3": 65.1,
+    "permintaan": 0.871,
+    "celah": 0.5,
+    "contoh": [
+     "gunung berapi",
+     "pelangi",
+     "es & salju"
+    ]
+   },
+   {
+    "pilar": "tubuh",
+    "n": 4,
+    "peluang_top3": 56.6,
+    "permintaan": 0.89,
+    "celah": 0.5,
+    "contoh": [
+     "merinding",
+     "uban & rambut",
+     "menguap"
+    ]
+   },
+   {
+    "pilar": "hewan",
+    "n": 3,
+    "peluang_top3": 54.4,
+    "permintaan": 0.685,
+    "celah": 0.5,
+    "contoh": [
+     "ular & reptil",
+     "hiu",
+     "gurita"
+    ]
+   },
+   {
+    "pilar": "misteri",
+    "n": 2,
+    "peluang_top3": 53.4,
+    "permintaan": 0.404,
+    "celah": 0.5,
+    "contoh": [
+     "segitiga bermuda",
+     "piramida"
+    ]
+   },
+   {
+    "pilar": "antariksa",
+    "n": 3,
+    "peluang_top3": 44.5,
+    "permintaan": 0.317,
+    "celah": 0.5,
+    "contoh": [
+     "lubang hitam",
+     "saturnus & cincin",
+     "aurora"
+    ]
+   }
+  ],
+  "sementara": false
+ },
+ "top": [
+  {
+   "peringkat": 1,
+   "tema": "gunung berapi",
+   "pilar": "bumi",
+   "status": "segar",
+   "v7_peluang": 73.07089990403142,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 66.66936975203356,
+   "komponen": {
+    "permintaan": 0.7587189226519337,
+    "minat": 0.8112586728665299,
+    "momentum": 1.0,
+    "celah": 0.5,
+    "kecocokan": 0.6121621621621622,
+    "waktu": 0.7,
+    "kesegaran": 0.9526315789473685,
+    "bukti": 0.5
+   },
+   "momen_nama": "Erupsi beruntun gunung api Indonesia: Anak Krakatau (lava fountain, dentuman sampai Serang), Semeru & Merapi Siaga, Sinabung naik Siaga (PVMBG; cek status terbaru)"
+  },
+  {
+   "peringkat": 2,
+   "tema": "pesawat",
+   "pilar": "teknologi",
+   "status": "segar",
+   "v7_peluang": 65.20779504740905,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 67.75248815122406,
+   "komponen": {
+    "permintaan": 0.9896408839779006,
+    "minat": 0.5613721164430798,
+    "momentum": 0.5243333333333333,
+    "celah": 0.5,
+    "kecocokan": 0.825,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 3,
+   "tema": "pelangi",
+   "pilar": "bumi",
+   "status": "segar",
+   "v7_peluang": 63.05063347820558,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 65.70594706291087,
+   "komponen": {
+    "permintaan": 0.9734979281767957,
+    "minat": 0.43831778931125126,
+    "momentum": 0.3656666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.7033783783783782,
+    "waktu": 0.342,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": "Awal musim hujan di banyak wilayah Indonesia (perkiraan umum, cek BMKG)"
+  },
+  {
+   "peringkat": 4,
+   "tema": "merinding",
+   "pilar": "tubuh",
+   "status": "segar",
+   "v7_peluang": 60.55478260869565,
+   "keyakinan": 0.48800000000000004,
+   "v6_papan": 60.0,
+   "komponen": {
+    "permintaan": 1.0,
+    "minat": 0.5,
+    "momentum": 0.5,
+    "celah": 0.5,
+    "kecocokan": 0.51,
+    "waktu": 0.0,
+    "kesegaran": 0.9869565217391303,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 5,
+   "tema": "segitiga bermuda",
+   "pilar": "misteri",
+   "status": "segar",
+   "v7_peluang": 60.373365840151926,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 53.14738409694581,
+   "komponen": {
+    "permintaan": 0.5433356353591159,
+    "minat": 0.8872927662240648,
+    "momentum": 0.9328333333333334,
+    "celah": 0.5,
+    "kecocokan": 0.5866216216216216,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 6,
+   "tema": "es & salju",
+   "pilar": "bumi",
+   "status": "segar",
+   "v7_peluang": 59.31903714407757,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 58.7659090646306,
+   "komponen": {
+    "permintaan": 0.8795752762430941,
+    "minat": 0.4952446514677476,
+    "momentum": 0.5211666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.6425675675675676,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 7,
+   "tema": "ular & reptil",
+   "pilar": "hewan",
+   "status": "segar",
+   "v7_peluang": 57.8227281907961,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 56.61440634472781,
+   "komponen": {
+    "permintaan": 0.7954074585635358,
+    "minat": 0.5722379157387402,
+    "momentum": 0.5306666666666666,
+    "celah": 0.5,
+    "kecocokan": 0.6121621621621622,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 8,
+   "tema": "hiu",
+   "pilar": "hewan",
+   "status": "segar",
+   "v7_peluang": 57.57828345214774,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 57.75804717314468,
+   "komponen": {
+    "permintaan": 0.8256215469613262,
+    "minat": 0.5411649239174251,
+    "momentum": 0.45766666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.6425675675675676,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 9,
+   "tema": "uban & rambut",
+   "pilar": "tubuh",
+   "status": "segar",
+   "v7_peluang": 55.83466595714726,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 53.55913799863678,
+   "komponen": {
+    "permintaan": 0.8636049723756908,
+    "minat": 0.368277853905318,
+    "momentum": 0.5071666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.5355405405405405,
+    "waktu": 0.0,
+    "kesegaran": 0.9869565217391303,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 10,
+   "tema": "menguap",
+   "pilar": "tubuh",
+   "status": "segar",
+   "v7_peluang": 53.287958112169775,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 49.577604295326466,
+   "komponen": {
+    "permintaan": 0.8057665745856354,
+    "minat": 0.2878633755230481,
+    "momentum": 0.5188333333333334,
+    "celah": 0.5,
+    "kecocokan": 0.51,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 11,
+   "tema": "cegukan",
+   "pilar": "tubuh",
+   "status": "segar",
+   "v7_peluang": 51.00020124482375,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 49.854806010882044,
+   "komponen": {
+    "permintaan": 0.8143991712707181,
+    "minat": 0.28695745487097934,
+    "momentum": 0.3401666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.51,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 12,
+   "tema": "lubang hitam",
+   "pilar": "antariksa",
+   "status": "long",
+   "v7_peluang": 49.189654372596955,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 48.739569266077766,
+   "komponen": {
+    "permintaan": 0.40478245856353595,
+    "minat": 0.6098314263843078,
+    "momentum": 0.5676666666666667,
+    "celah": 0.5,
+    "kecocokan": 0.825,
+    "waktu": 0.0,
+    "kesegaran": 0.6,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 13,
+   "tema": "gurita",
+   "pilar": "hewan",
+   "status": "segar",
+   "v7_peluang": 47.794927308465454,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 45.58256383861277,
+   "komponen": {
+    "permintaan": 0.43283839779005534,
+    "minat": 0.4940602967098841,
+    "momentum": 0.45050000000000007,
+    "celah": 0.5,
+    "kecocokan": 0.7337837837837837,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 14,
+   "tema": "piramida",
+   "pilar": "misteri",
+   "status": "segar",
+   "v7_peluang": 46.422427559358766,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 38.12597887823479,
+   "komponen": {
+    "permintaan": 0.2645027624309392,
+    "minat": 0.5479230380729216,
+    "momentum": 0.7231666666666666,
+    "celah": 0.5,
+    "kecocokan": 0.6121621621621622,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 15,
+   "tema": "saturnus & cincin",
+   "pilar": "antariksa",
+   "status": "segar",
+   "v7_peluang": 43.87406506653258,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 40.434851575459604,
+   "komponen": {
+    "permintaan": 0.36161947513812154,
+    "minat": 0.49275106391628914,
+    "momentum": 0.4295,
+    "celah": 0.5,
+    "kecocokan": 0.6121621621621622,
+    "waktu": 0.0,
+    "kesegaran": 0.94,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  },
+  {
+   "peringkat": 16,
+   "tema": "hari tanpa bayangan",
+   "pilar": "bumi",
+   "status": "segar",
+   "v7_peluang": 41.179459459459466,
+   "keyakinan": 0.48800000000000004,
+   "v6_papan": 35.7427027027027,
+   "komponen": {
+    "permintaan": 0.0,
+    "minat": 0.5,
+    "momentum": 0.5,
+    "celah": 0.5,
+    "kecocokan": 0.3866216216216216,
+    "waktu": 0.804,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": "Hari tanpa bayangan: Makassar 11.50 WITA"
+  },
+  {
+   "peringkat": 17,
+   "tema": "aurora",
+   "pilar": "antariksa",
+   "status": "segar",
+   "v7_peluang": 40.39351008012389,
+   "keyakinan": 0.6360000000000001,
+   "v6_papan": 35.48673863444595,
+   "komponen": {
+    "permintaan": 0.18465124309392272,
+    "minat": 0.5145916901837015,
+    "momentum": 0.44333333333333336,
+    "celah": 0.5,
+    "kecocokan": 0.6425675675675676,
+    "waktu": 0.0,
+    "kesegaran": 1.0,
+    "bukti": 0.5
+   },
+   "momen_nama": null
+  }
+ ],
+ "statistik": {
+  "versi": "2.0.0",
+  "status_pustaka": {
+   "segar": 42,
+   "long": 2,
+   "dibahas": 18,
+   "arsip_baru": 15
+  },
+  "sumber": {
+   "autocomplete": "ok (230/230 kueri)",
+   "momen_live": "ok (1 peristiwa)",
+   "google_trends": "ok",
+   "wiki": "ok (15/17)",
+   "berita": "ok (0/17)",
+   "pesaing": "tidak dikonfigurasi",
+   "ilmiah": "ok (0/6)",
+   "tanya": "ok (3/3)"
+  },
+  "frasa_dibuang_derau_relevansi": 11,
+  "velocity_dari_run": null,
+  "tema_dianalisis": 17,
+  "tema_tanpa_data": [
+   "ai",
+   "alien",
+   "angin & badai",
+   "anjing",
+   "asteroid",
+   "astronot",
+   "atlantis",
+   "baterai & hp",
+   "bersin",
+   "bintang",
+   "borobudur",
+   "bulan",
+   "burung",
+   "cicak",
+   "darah",
+   "deja vu",
+   "dinosaurus",
+   "gajah",
+   "galaksi",
+   "gempa bumi",
+   "gerhana",
+   "gigi & mulut",
+   "gua",
+   "gurun",
+   "hujan & awan",
+   "internet & wifi",
+   "jantung",
+   "kucing",
+   "kuku",
+   "kulit & jerawat",
+   "kulkas & microwave",
+   "lapar & haus",
+   "laut",
+   "lebah & semut",
+   "listrik & magnet",
+   "mata",
+   "matahari",
+   "meteor & komet",
+   "mimpi & tidur",
+   "otak",
+   "petir",
+   "planet mars",
+   "stonehenge",
+   "tsunami",
+   "tulang & sendi"
+  ],
+  "kueri_saran": 230,
+  "http": {},
+  "host_offline": [],
+  "durasi_detik": 0.6,
+  "data_agen": "2026-09-25T19:30:00+07:00"
+ }
+}

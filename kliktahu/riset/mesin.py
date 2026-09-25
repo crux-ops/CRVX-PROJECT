@@ -27,7 +27,7 @@ from .. import ROOT, __version__, momen, pustaka, teks
 from .. import metadata as meta_mod
 from .. import skor as S
 from ..db import DB, hari_ini_wib
-from ..tema import LEKS, TEMA
+from ..tema import LEKS, TEMA, relevan
 from . import sumber as SB
 from .agen import SumberAgen
 from .agen import muat as muat_agen
@@ -204,6 +204,7 @@ def jalankan(
         )
     stat["sumber"]["autocomplete"] = f"ok ({len(hasil) - len(gagal_saran)}/{len(hasil)} kueri)"
     frasa: dict[str, dict[str, dict[str, Any]]] = {x: {} for x in kandidat}
+    dibuang = 0
     for x, q, s in kueri:
         v = hasil.get(f"{s}|{q}")
         if not isinstance(v, list):
@@ -215,10 +216,14 @@ def jalankan(
             f = _bersih(sgs, blokir)
             if not f:
                 continue
+            if not relevan(f, TEMA[x]) or (k.riset.derau and teks.kena(f, k.riset.derau)):
+                dibuang += 1  # derau (esports/film) atau tidak membahas tema ("lubang KNALPOT hitam")
+                continue
             e = frasa[x].setdefault(f, {"pos": pos, "yt": False, "google": False})
             e["pos"] = min(e["pos"], pos)
             e["yt" if s == "youtube" else "google"] = True
     db.commit()
+    stat["frasa_dibuang_derau_relevansi"] = dibuang
 
     baris: dict[str, dict[str, Any]] = {}
     for x in kandidat:
@@ -320,7 +325,7 @@ def jalankan(
 
     # ------------------------------------------------------------------ 5. detail real-time
     calon = [x for x in sorted(baris, key=lambda x: -baris[x]["v5_views"]) if baris[x]["status"] != "dibahas"]
-    detail = calon[:top_detail]
+    detail = calon[:top_detail] if klien is not None else calon  # data agen lokal: semua kandidat didetailkan
     tren = None
     try:
         tren = src.tren()
@@ -511,7 +516,8 @@ def _sudut(r: dict[str, Any], k: Any) -> list[str]:
     out = []
     for f in r["sinyal"]["frasa"]:
         w = f.split()
-        if len(w) < 3 or w[0] not in ("kenapa", "padahal", "apakah") or teks.sensitif(f, k.aturan.sensitif):
+        # sudut = pertanyaan SPESIFIK (>= 4 kata), bukan kueri inti ('kenapa gunung meletus' = kata kunci, bukan sudut)
+        if len(w) < 4 or w[0] not in ("kenapa", "padahal", "apakah") or teks.sensitif(f, k.aturan.sensitif):
             continue
         if judul and teks.paling_mirip(" ".join(w[1:]), judul)[1] >= 0.75:
             continue
@@ -527,7 +533,16 @@ def _hook(r: dict[str, Any], k: Any) -> list[str]:
         if len(w) > 5 or teks.kena(f, k.aturan.hindari_hook) or teks.sensitif(f, k.aturan.sensitif):
             continue
         if w[0] == "kenapa":
-            out.append(f"{teks.kalimat(f)}? Padahal kamu melihatnya setiap hari.")
+            # "setiap hari" hanya untuk pengalaman sehari-hari (cegukan, menguap), bukan gunung meletus / lubang hitam
+            sehari = any(x in w for x in ("kita", "terus", "sering", "tiba", "saat", "badan", "kepala"))
+            out.append(
+                f"{teks.kalimat(f)}? "
+                + (
+                    "Padahal kamu mengalaminya hampir setiap hari."
+                    if sehari
+                    else "Jawabannya lebih seru dari yang kamu kira."
+                )
+            )
         elif w[0] == "apakah":
             out.append(f"{teks.kalimat(f)}? Jawabannya tidak seperti yang kamu kira.")
         elif w[0] == "padahal":

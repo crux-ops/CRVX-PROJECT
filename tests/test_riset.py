@@ -96,8 +96,11 @@ def test_pengurai_format_asli():
     w = SB.hitung_wiki([100] * 53 + [400] * 7)
     assert w["views60"] == 100 * 53 + 400 * 7 and w["lonjakan_z"] > 2
     assert SB.wiki_dari_bulanan({"2026-07": 1069, "2026-08": 1112, "2026-09": 629}, 24)["tren"] == pytest.approx(
-        629 * 30 / 24 / 1112, rel=1e-3
+        (629 * 30 / 24 + 100) / (1112 + 100), rel=1e-3
     )
+    sepi = SB.wiki_dari_bulanan({"2026-08": 21, "2026-09": 60}, 24)  # 21 -> 75/30 hari: bukan lonjakan nyata
+    ramai = SB.wiki_dari_bulanan({"2026-08": 813, "2026-09": 2176}, 24)  # Gunung berapi Sep 2026
+    assert sepi["tren"] < 1.5 < 3.0 < ramai["tren"] and ramai["lonjakan_z"] == 6.0
     rss = (
         "<rss><channel><item><title>A</title><link>u</link><pubDate>Thu, 24 Sep 2026 10:00:00 GMT</pubDate>"
         '<source url="x">Kompas</source></item><item><title>B</title><pubDate>Mon, 07 Sep 2026 10:00:00 GMT'

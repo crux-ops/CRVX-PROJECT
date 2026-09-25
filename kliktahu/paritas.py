@@ -9,14 +9,42 @@ from __future__ import annotations
 
 import json
 import random
-from typing import Any
+from collections.abc import Sequence
+from typing import Any, TypeVar
 
 from . import skor as S
 
 PILAR = ["tubuh", "antariksa", "bumi", "hewan", "teknologi", "misteri"]
+T = TypeVar("T")
 
 
-def _sig(r: random.Random) -> dict[str, float]:
+class Acak:
+    """pembangkit acak STABIL lintas versi Python: hanya memakai random.random() (satu-satunya yang dijamin sama
+    urutannya antar versi); randint/choice/sample bawaan boleh berubah antar versi (3.11 vs 3.14 berbeda)."""
+
+    def __init__(self, benih: int) -> None:
+        self._r = random.Random(benih)
+
+    def random(self) -> float:
+        return self._r.random()
+
+    def randint(self, a: int, b: int) -> int:
+        return a + int(self._r.random() * (b - a + 1))
+
+    def uniform(self, a: float, b: float) -> float:
+        return a + (b - a) * self._r.random()
+
+    def choice(self, xs: Sequence[T]) -> T:
+        return xs[int(self._r.random() * len(xs))]
+
+    def sample(self, xs: Sequence[T], k: int) -> list[T]:
+        kolam, out = list(xs), []
+        for _ in range(k):
+            out.append(kolam.pop(int(self._r.random() * len(kolam))))
+        return out
+
+
+def _sig(r: Acak) -> dict[str, float]:
     return {
         "jml": float(r.randint(0, 150)),
         "kuat": round(r.uniform(0, 90), 2),
@@ -30,12 +58,12 @@ def _sig(r: random.Random) -> dict[str, float]:
     }
 
 
-def _opsional(r: random.Random, v: Any, p: float = 0.25) -> Any:
+def _opsional(r: Acak, v: Any, p: float = 0.25) -> Any:
     return None if r.random() < p else v
 
 
 def kasus(n: int = 40, benih: int = 20260925) -> list[dict[str, Any]]:
-    r = random.Random(benih)
+    r = Acak(benih)
     out: list[dict[str, Any]] = []
 
     def tambah(fn: str, masukan: list[Any], keluaran: Any) -> None:

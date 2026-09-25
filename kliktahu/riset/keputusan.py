@@ -130,7 +130,9 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
         )
     if juara.get("momen_jenis") in ("live", "agen") and t.nama in ("gempa bumi", "tsunami", "gunung berapi"):
         peringatan.append(
-            "Momen bencana nyata: bahas sainsnya dengan hormat, tanpa sensasi, sertakan sumber resmi BMKG."
+            "Momen bencana nyata: bahas sainsnya dengan hormat, tanpa sensasi; sumber resmi "
+            + ("PVMBG/MAGMA Indonesia (magma.esdm.go.id)" if t.nama == "gunung berapi" else "BMKG")
+            + "."
         )
     if juara["keyakinan"] < 0.5:
         peringatan.append(
