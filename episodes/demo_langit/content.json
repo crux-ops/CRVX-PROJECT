@@ -11,20 +11,46 @@
   "demo": true,
   "scenes": [
     {
-      "id": "intro", "type": "intro", "visual": "langit00", "accent": "#2F7BFF", "shake": 0.6,
-      "lines": ["UDARA ITU BENING", "KENAPA LANGIT BIRU?"],
-      "vo": "Udara itu bening. Kenapa langit biru?", "speed": 1.0
+      "id": "intro",
+      "type": "intro",
+      "visual": "langit",
+      "accent": "#2F7BFF",
+      "shake": 0.6,
+      "lines": [
+        "UDARA ITU BENING",
+        "KENAPA LANGIT BIRU?"
+      ],
+      "vo": "Udara itu bening. Kenapa langit biru?",
+      "speed": 1.0
     },
     {
-      "id": "f1", "type": "fact", "visual": "hamburan00", "accent": "#2F7BFF", "trans": "tinta",
-      "badge": "HAMBURAN RAYLEIGH", "title": "BIRU PALING MUDAH DIHAMBURKAN", "hl": "BIRU",
-      "vo": "Biru paling mudah dihamburkan molekul udara ke segala arah.", "speed": 1.0
+      "id": "f1",
+      "type": "fact",
+      "visual": "spektrum",
+      "accent": "#2F7BFF",
+      "trans": "tinta",
+      "badge": "HAMBURAN RAYLEIGH",
+      "title": "BIRU PALING MUDAH DIHAMBURKAN",
+      "hl": "BIRU",
+      "vo": "Biru paling mudah dihamburkan molekul udara ke segala arah.",
+      "speed": 1.0,
+      "sorot": 4
     },
     {
-      "id": "outro", "type": "outro", "accent": "#FF6B3D", "trans": "iris",
-      "lines": ["SEKARANG", "KAMU TAHU"], "cta": "IKUTI",
-      "foot": "Fakta sains & misteri, tiap hari", "foot2": "Simpan video ini · bagikan ke teman",
-      "src": "Sumber: NASA Space Place", "vo": "Sekarang kamu tahu.", "speed": 1.0
+      "id": "outro",
+      "type": "outro",
+      "accent": "#FF6B3D",
+      "trans": "iris",
+      "lines": [
+        "SEKARANG",
+        "KAMU TAHU"
+      ],
+      "cta": "IKUTI",
+      "foot": "Fakta sains & misteri, tiap hari",
+      "foot2": "Simpan video ini · bagikan ke teman",
+      "src": "Sumber: NASA Space Place",
+      "vo": "Sekarang kamu tahu.",
+      "speed": 1.0
     }
   ]
 }

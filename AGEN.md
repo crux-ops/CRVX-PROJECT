@@ -11,7 +11,7 @@
 |---|---|---|
 | 1 | struktur repo, requirements, fonts, .gitignore, AGEN.md | SELESAI |
 | 2 | pipeline audio + sfx + QC keutuhan | SELESAI (uji: isi hilang 0 ms, uji negatif lulus) |
-| 3 | render.py + diagrams.py + mesin_util + check_layout | belum |
+| 3 | render.py + diagrams.py + mesin_util + check_layout | SELESAI (demo 3 adegan, audit bersih) |
 | 4 | mesin_v11 + mesin_fx | belum |
 | 5 | qc_mp4 + tools/render_lokal.sh (demo end-to-end) | belum |
 | 6 | mesin Long | belum |
@@ -84,11 +84,16 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - 2026-09-25: Audisi suara (dimajukan dari tahap 8) -> voice-00 terkunci; klip referensi suara/referensi_narator.wav.
 - 2026-09-25: Tahap 2 - process_audio (QC keutuhan + uji negatif), build_timeline, build_audio, master_audio
   (-14 LUFS, true-peak -1.2, ducking SFX), sfx.py (29 bunyi sintetis). Episode uji: episodes/demo_langit.
+- 2026-09-25: Tahap 3 - diagrams.py (primitif SDF anti-alias, teks ter-cache + KOTAK_TEKS, ikon bentuk, 10 visual
+  generik), render.py (lapisan frame, CLI --range/--outdir/--pipe/--times/--sheet, multiproses), check_layout.py
+  (audit margin/zona + --uji negatif), mesin_util (preview_times, ink_report, sheet).
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
 python3 sfx.py                 # katalog SFX + cek deterministik
 python3 process_audio.py --uji # QC keutuhan (sintetis + uji negatif + klip TTS asli)
+python3 diagrams.py            # selftest semua visual (gerak, zona teks)
+python3 check_layout.py --uji  # audit zona harus menangkap pelanggaran sengaja
 python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
   && python3 build_audio.py demo_langit && python3 master_audio.py demo_langit
 ```
