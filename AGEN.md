@@ -10,7 +10,7 @@
 | Tahap | Isi | Status |
 |---|---|---|
 | 1 | struktur repo, requirements, fonts, .gitignore, AGEN.md | SELESAI |
-| 2 | pipeline audio + sfx + QC keutuhan | belum |
+| 2 | pipeline audio + sfx + QC keutuhan | SELESAI (uji: isi hilang 0 ms, uji negatif lulus) |
 | 3 | render.py + diagrams.py + mesin_util + check_layout | belum |
 | 4 | mesin_v11 + mesin_fx | belum |
 | 5 | qc_mp4 + tools/render_lokal.sh (demo end-to-end) | belum |
@@ -69,7 +69,26 @@ Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
 
 ## 7. Pelajaran & jebakan
 Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
-- (akan diisi)
+- TTS Arena (voice-00): WAV 24 kHz mono, pace alami ~2.2 kata/detik -> atempo ~0.88 memberi ~1.9 kata/detik.
+  Kalimat dengan jeda panjang (intro) bisa di bawah target -> dipercepat maks 1.08. Pipeline kerja 48 kHz.
+- QC "isi hilang": referensi = klip mentah yang di-atempo UTUH, hasil = potongan referensi yang sama ->
+  sejajar per sampel, bandingkan amplop PUNCAK frame 5 ms TANPA toleransi waktu, ambang isi = SIL_DB+3
+  (sama dengan pemotong hening). Versi awal (RMS 10 ms, -45 dB, toleransi +-2 frame) meloloskan ekor
+  lirih yang dibuang -> ketahuan lewat uji negatif. Uji negatif WAJIB tetap ada di `--uji`.
+- Limiter harus sadar TRUE-PEAK (interpolasi 4x, `mesin_util.puncak_antar_sampel`): tanpa itu master
+  -1.2 dBFS punya true-peak -0.3 dBTP dan bisa lewat batas setelah AAC.
+- SFX tidak bisa didengar agen: periksa lewat spektrogram (`pratinjau/sfx_spektrogram.png`).
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
+- 2026-09-25: Audisi suara (dimajukan dari tahap 8) -> voice-00 terkunci; klip referensi suara/referensi_narator.wav.
+- 2026-09-25: Tahap 2 - process_audio (QC keutuhan + uji negatif), build_timeline, build_audio, master_audio
+  (-14 LUFS, true-peak -1.2, ducking SFX), sfx.py (29 bunyi sintetis). Episode uji: episodes/demo_langit.
+
+## 9. Cara uji cepat (semua harus LULUS)
+```
+python3 sfx.py                 # katalog SFX + cek deterministik
+python3 process_audio.py --uji # QC keutuhan (sintetis + uji negatif + klip TTS asli)
+python3 process_audio.py demo_langit && python3 build_timeline.py demo_langit \
+  && python3 build_audio.py demo_langit && python3 master_audio.py demo_langit
+```

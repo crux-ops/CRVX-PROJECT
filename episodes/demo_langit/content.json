@@ -1,0 +1,30 @@
+{
+  "title": "Demo: Kenapa Langit Biru?",
+  "channel": "KlikTahu",
+  "header_badge": "LANGIT · CAHAYA",
+  "bg_element": "partikel",
+  "lead_in": 0.6,
+  "tail_intro": 0.8,
+  "tail_fact": 0.9,
+  "tail_outro": 1.2,
+  "mesin": "v11",
+  "demo": true,
+  "scenes": [
+    {
+      "id": "intro", "type": "intro", "visual": "langit00", "accent": "#2F7BFF", "shake": 0.6,
+      "lines": ["UDARA ITU BENING", "KENAPA LANGIT BIRU?"],
+      "vo": "Udara itu bening. Kenapa langit biru?", "speed": 1.0
+    },
+    {
+      "id": "f1", "type": "fact", "visual": "hamburan00", "accent": "#2F7BFF", "trans": "tinta",
+      "badge": "HAMBURAN RAYLEIGH", "title": "BIRU PALING MUDAH DIHAMBURKAN", "hl": "BIRU",
+      "vo": "Biru paling mudah dihamburkan molekul udara ke segala arah.", "speed": 1.0
+    },
+    {
+      "id": "outro", "type": "outro", "accent": "#FF6B3D", "trans": "iris",
+      "lines": ["SEKARANG", "KAMU TAHU"], "cta": "IKUTI",
+      "foot": "Fakta sains & misteri, tiap hari", "foot2": "Simpan video ini · bagikan ke teman",
+      "src": "Sumber: NASA Space Place", "vo": "Sekarang kamu tahu.", "speed": 1.0
+    }
+  ]
+}
