@@ -157,6 +157,9 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
     EDF (tenggat terdekat dulu), momen bertanggal tidak pernah dijadwalkan sesudah event.
   - JANGAN `rm data/kliktahu.db` begitu saja: nomor run mulai lagi dari #1 dan arsip `RISET_<tgl>_<mode>_run1.md` tertimpa.
     DB baru -> `python3 -m kliktahu db impor` (ekspor yang di-commit) DULU, baru riset (run berikutnya bernomor lanjut).
+  - Statistik laporan harus menghitung kueri BERDATA: mode agen dulu menulis "autocomplete ok (610/610)" padahal hanya 90
+    kueri berisi data (kombinasi benih lain memang tidak diambil). Kini "610 (90 berdata)". Sumber ilmiah yang dicatat ke DB
+    ikut tersimpan di `data/ekspor/sumber_ilmiah.jsonl` -> `db impor` memulihkannya (tidak perlu dicatat ulang).
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.

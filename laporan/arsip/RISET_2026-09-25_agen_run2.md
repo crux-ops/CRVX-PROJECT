@@ -183,10 +183,10 @@ Tag (500/500): kenapa otak lemot, otak, kenapa otak sering lupa, kenapa otak sus
 
 ## Statistik run
 
-- Tema dianalisis: 44 | kueri autocomplete: 610 | durasi 1.1 s
+- Tema dianalisis: 44 | kueri autocomplete: 610 (90 berdata) | durasi 1.1 s
 - HTTP: {} | host tidak terjangkau: -
-- Velocity dibanding run: belum ada run sebelumnya (velocity netral)
-- Sumber autocomplete: ok (610/610 kueri)
+- Velocity dibanding run: tidak ada run nyata pada TANGGAL sebelumnya (velocity netral)
+- Sumber autocomplete: ok (90/610 kueri berdata)
 - Sumber momen_live: ok (2 peristiwa)
 - Sumber google_trends: ok
 - Sumber wiki: ok (42/44)

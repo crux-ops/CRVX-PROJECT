@@ -206,7 +206,13 @@ def jalankan(
             f"autocomplete tidak terjangkau ({gagal_saran[0]}). Di sandbox Arena gunakan --mode agen "
             "dengan data web search agen, atau jalankan di komputer dengan internet biasa."
         )
-    stat["sumber"]["autocomplete"] = f"ok ({len(hasil) - len(gagal_saran)}/{len(hasil)} kueri)"
+    # BERDATA = kueri yang benar-benar punya jawaban (daftar, boleh kosong). Mode agen: kombinasi benih yang tidak diambil
+    # agen = None -> tidak dihitung (dulu tertulis "ok (610/610)" padahal hanya 90 kueri berisi data).
+    berdata = sum(1 for v in hasil.values() if isinstance(v, list))
+    stat["kueri_berdata"] = berdata
+    stat["sumber"]["autocomplete"] = f"ok ({berdata}/{len(hasil)} kueri berdata" + (
+        f", {len(gagal_saran)} gagal)" if gagal_saran else ")"
+    )
     frasa: dict[str, dict[str, dict[str, Any]]] = {x: {} for x in kandidat}
     dibuang = 0
     for x, q, s in kueri:
@@ -742,10 +748,11 @@ def tulis_laporan(h: HasilRiset, folder: Path) -> Path:
         "",
         "## Statistik run",
         "",
-        f"- Tema dianalisis: {s.get('tema_dianalisis')} | kueri autocomplete: "
-        f"{s.get('kueri_saran')} | durasi {s.get('durasi_detik')} s",
+        f"- Tema dianalisis: {s.get('tema_dianalisis')} | kueri autocomplete: {s.get('kueri_saran')} "
+        f"({s.get('kueri_berdata', '?')} berdata) | durasi {s.get('durasi_detik')} s",
         f"- HTTP: {s.get('http')} | host tidak terjangkau: {', '.join(s.get('host_offline') or []) or '-'}",
-        f"- Velocity dibanding run: {s.get('velocity_dari_run') or 'belum ada run sebelumnya (velocity netral)'}",
+        f"- Velocity dibanding run: "
+        f"{s.get('velocity_dari_run') or 'tidak ada run nyata pada TANGGAL sebelumnya (velocity netral)'}",
         *[f"- Sumber {kk}: {v}" for kk, v in s.get("sumber", {}).items()],
     ]
     if s.get("tema_tanpa_data"):

@@ -544,7 +544,7 @@
    "arsip_baru": 0
   },
   "sumber": {
-   "autocomplete": "ok (610/610 kueri)",
+   "autocomplete": "ok (90/610 kueri berdata)",
    "momen_live": "ok (2 peristiwa)",
    "google_trends": "ok",
    "wiki": "ok (42/44)",
@@ -553,6 +553,7 @@
    "ilmiah": "ok (0/6)",
    "tanya": "ok (3/3)"
   },
+  "kueri_berdata": 90,
   "frasa_dibuang_derau_relevansi": 50,
   "velocity_dari_run": null,
   "tema_dianalisis": 44,

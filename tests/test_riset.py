@@ -186,6 +186,8 @@ def test_mesin_agen(tmp_path):
     d = DB(tmp_path / "a.db")
     h = mesin.jalankan("agen", HARI, db=d, agen=f, folder_laporan=tmp_path / "l", ekspor=False, log=lambda s: None)
     assert {r["tema"] for r in h.baris} == {"pelangi", "cegukan"} and len(h.statistik["tema_tanpa_data"]) == 60
+    # hanya 3 kueri benar-benar berisi data (bukan "ok (20/20)" untuk kombinasi benih yang tidak diambil agen)
+    assert h.statistik["kueri_berdata"] == 3 and h.statistik["sumber"]["autocomplete"].startswith("ok (3/")
     top = {r["tema"]: r for r in h.baris}["pelangi"]
     assert top["wiki"]["views60"] > 0 and top["frasa_sensitif"] == ["kenapa pelangi jadi lambang lgbt"]
     assert d.sumber_topik(d.topik("pelangi")["id"])[0]["kredibel"]
