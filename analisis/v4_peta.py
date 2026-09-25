@@ -45,7 +45,7 @@ def petakan(tema, h3, mode):
     kedalaman = sum(c["kedalaman"] for c in punya) / max(1, jaring)
     semua = {f for c in cab for f in c["d1"] + c["d2"]}
     peluang = sum(1 for f in semua if len(f.split()) >= 5)
-    skor = h3["skor_tumbuh"] + jaring * 2.5 + kedalaman * 1.5 + peluang * 2
+    skor = U.SKOR.v4_keluarga(h3["skor_tumbuh"], jaring, kedalaman, peluang)  # rumus prompt §8
     seri = [c["cabang"] for c in sorted(punya, key=lambda c: -(len(c["d1"]) + len(c["d2"])))[:4]]
     return {"tema": tema, "pilar": h3["pilar"], "jaring": jaring, "kedalaman": round(kedalaman, 2), "peluang": peluang,
             "skor_keluarga": round(skor, 2), "seri": seri, "cabang": cab}

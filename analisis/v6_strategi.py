@@ -30,8 +30,7 @@ JAM_UNGGAH = ["11.30-12.30 WIB", "18.30-20.30 WIB"]
 
 
 def _norm01(vals):
-    lo, hi = min(vals), max(vals)
-    return [0.5 if hi - lo < 1e-9 else (v - lo) / (hi - lo) for v in vals]
+    return U.SKOR.norm01(vals)
 
 
 def bobot_pilar(path):
@@ -50,24 +49,17 @@ def bobot_pilar(path):
     if not agg:
         return {p: 0.5 for p in U.PILAR}, False
     rata = {p: sum(v) / len(v) for p, v in agg.items()}
-    mx = max(rata.values())
-    return {p: round(0.25 + 0.75 * rata.get(p, 0) / mx, 3) if p in rata else 0.4 for p in U.PILAR}, True
+    return {p: round(w, 3) for p, w in U.SKOR.bobot_pilar(rata, U.PILAR).items()}, True
 
 
 def skor_wiki(d):
     """d = {views60, tren (rasio 30 hari terakhir / 30 hari sebelumnya)} -> 0..1."""
-    import math
-    v = min(1.0, math.log10(max(1, d.get("views60", 0))) / 5.0)  # 100k views/60 hari ~ 1.0
-    tr = min(1.0, max(0.0, (d.get("tren", 1.0) - 0.7) / 0.9))
-    return round(0.65 * v + 0.35 * tr, 3)
+    return round(U.SKOR.skor_wiki(d.get("views60", 0), d.get("tren", 1.0)), 3)
 
 
 def skor_celah(d):
     """kejenuhan pesaing: banyak video, baru, views tinggi = jenuh. celah = 1 - kejenuhan."""
-    jml = min(1.0, d.get("jumlah", 0) / 40.0)
-    baru = 1.0 - min(1.0, d.get("umur_median_hari", 730) / 730.0)
-    views = min(1.0, d.get("median_views", 0) / 500000.0)
-    return round(1.0 - (0.45 * jml + 0.2 * baru + 0.35 * views), 3)
+    return round(U.SKOR.skor_celah(d.get("jumlah", 0), d.get("umur_median_hari", 730), d.get("median_views", 0)), 3)
 
 
 def sudut(tema, v3, judul_pesaing):
@@ -119,7 +111,7 @@ def jalankan(mode="online", performa=None, hari_ini=None, data_dir=None, wiki=No
         w = skor_wiki(wiki[t]) if t in wiki else 0.5
         c = skor_celah(pesaing[t]) if t in pesaing else 0.5
         vis = 0.5 * vn + 0.5 * U.TEMA[t][4]
-        total = 34 * pn + 18 * w + 18 * c + 10 * vis + 10 * bp.get(r["pilar"], 0.5) + 10 * r["momen"]
+        total = U.SKOR.v6_papan(pn, w, c, vis, bp.get(r["pilar"], 0.5), r["momen"])
         papan.append({**r, "permintaan": round(pn, 3), "wiki": w, "wiki_netral": t not in wiki, "celah": c,
                       "celah_netral": t not in pesaing, "visual": round(vis, 3), "pilar_w": bp.get(r["pilar"], 0.5),
                       "papan": round(total, 1), "sudut": sudut(t, v3, pesaing.get(t, {}).get("judul", [])),

@@ -44,7 +44,7 @@ def sapuan(mode="online", log=True):
         n = len(frasa)
         sig = {
             "jml": n,
-            "kuat": round(sum((10 - e["pos"]) / 10 for e in frasa.values()), 2),
+            "kuat": round(U.SKOR.kuat(e["pos"] for e in frasa.values()), 2),
             "niat": sum(U.punya(f, "niat") for f in frasa),
             "yt": sum(e["yt"] for e in frasa.values()),
             "sains": sum(U.punya(f, "sains") for f in frasa),
@@ -53,8 +53,8 @@ def sapuan(mode="online", log=True):
             "vis": sum(U.punya(f, "vis") for f in frasa) + visb,
             "ever": ever,
         }
-        skor = sig["jml"] + sig["kuat"] * 0.7 + sig["niat"] * 0.9 + sig["sains"] * 3 + sig["yt"] * 0.3
-        tumbuh = skor + sig["rel"] * 1.2 + sig["kom"] * 1.5 + sig["vis"] * 0.8 + sig["ever"] * 3
+        skor = U.SKOR.v3_skor(sig)            # rumus prompt §8 (satu implementasi: kliktahu/skor.py)
+        tumbuh = U.SKOR.v3_tumbuh(sig, skor)
         hasil[tema] = {"pilar": pilar, **sig, "skor": round(skor, 2), "skor_tumbuh": round(tumbuh, 2),
                        "frasa": sorted(frasa, key=lambda f: frasa[f]["pos"])[:40]}
     return hasil

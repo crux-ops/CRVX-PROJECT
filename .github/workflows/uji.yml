@@ -1,9 +1,10 @@
-# Uji RINGAN saja (selftest < 5 menit). TIDAK ada render video, TIDAK ada jadwal cron, TIDAK ada scraping.
+# Uji RINGAN saja (< 5 menit). TIDAK ada render video, TIDAK ada jadwal cron, TIDAK ada scraping / riset online.
 # Aturan GitHub: runner Actions hanya untuk membangun/menguji perangkat lunak (lihat AGEN.md §3).
+# Matriks Python 3.11 (sandbox agen) + 3.14 (terbaru; numpy 2.5.x) + Node 24 LTS (tipe TS + paritas rumus skor).
 name: uji
 on:
   push:
-    branches: [main]
+    branches: [main, "arena/**"]
   pull_request:
   workflow_dispatch:
 permissions:
@@ -12,13 +13,25 @@ concurrency:
   group: uji-${{ github.ref }}
   cancel-in-progress: true
 jobs:
-  selftest:
+  uji:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    strategy:
+      fail-fast: false
+      matrix:
+        python: ["3.11", "3.14"]
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-python@v5
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
         with:
-          python-version: "3.11"
-      - run: pip install -r requirements.txt
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: requirements-dev.txt
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "24"
+          cache: npm
+          cache-dependency-path: skema/ts/package-lock.json
+      - run: pip install -r requirements-dev.txt
+      - run: npm ci --prefix skema/ts
       - run: bash tools/uji_semua.sh

@@ -61,6 +61,13 @@ if [[ "$MODE" == "prep" ]]; then
   exit 0
 fi
 
+# GERBANG METADATA (aturan keras §2.4: metadata lengkap SEBELUM render). Episode demo_* dikecualikan (uji mesin).
+if [[ "$SLUG" != demo_* ]]; then
+  log "cek METADATA.md (4 blok, ASCII, bab dari timeline, sumber, tag <= 500)"
+  [[ -f "$EPDIR/METADATA.md" ]] || { log "GAGAL: $EPDIR/METADATA.md belum ada - buat dulu: python3 -m kliktahu metadata buat --episode $SLUG --format $JENIS --tulis"; exit 4; }
+  python3 -m kliktahu metadata cek "$EPDIR/METADATA.md" --format "$JENIS" || { log "GAGAL: METADATA.md belum lulus lint - perbaiki sebelum render"; exit 4; }
+fi
+
 TOTAL="$(python3 -c "import json;print(json.load(open('$BDIR/timeline.json'))['frames'])")"
 SEGDIR="$BDIR/seg"
 mkdir -p "$SEGDIR"

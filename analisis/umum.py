@@ -1,20 +1,21 @@
 #!/usr/bin/env python3
-"""analisis/umum.py - bagian bersama mesin analisis KlikTahu (v3-v6).
+"""analisis/umum.py - bagian bersama mesin analisis KlikTahu (v3-v6), kini lapisan tipis di atas paket kliktahu/.
 
-* TEMA (~60) per pilar + kata inti/aspek, BENIH pertanyaan, leksikon sinyal (niat/sains/rel/kom/vis)
-* BLOKIR total: kentut, ngiler, keringat & bau badan -> frasa DIBUANG dari data (bukan disembunyikan)
-* ambil_saran(): Google / YouTube Autocomplete (online) ATAU fixture deterministik (--uji) ATAU data manual
-  (hasil web search agen, analisis/data/manual_saran.json) - TIDAK pernah dijalankan sebagai cron di Actions.
-* sudah_dibahas(): otomatis dari PUSTAKA.md (blok SUDAH_DIBAHAS) + folder pustaka/
-* momen(): kalender event langit/musim (analisis/momen.json)
+* TEMA, LEKS          -> kliktahu/tema.py (satu registri untuk v3-v7, basis data, metadata)
+* BLOKIR/BENIH/HOOK   -> kanal.toml (pengaturan kanal; blokir kentut/ngiler/keringat & bau badan WAJIB)
+* ambil_saran()       -> Google/YouTube Autocomplete lewat kliktahu/riset (retry, rate limit, cache) ATAU fixture
+                         deterministik (--uji) ATAU data manual/agen (hasil web search agen)
+* sudah_dibahas()     -> kliktahu/pustaka.py (PUSTAKA.md + folder pustaka/)
+* momen()             -> kliktahu/momen.py (kalender kurasi + astronomi terhitung)
+* rumus skor          -> kliktahu/skor.py (dipakai v3-v6 dan mesin riset v7; port TypeScript identik)
+TIDAK pernah dijalankan sebagai cron di GitHub Actions.
 """
 from __future__ import annotations
 
 import datetime as dt
 import json
 import re
-import urllib.parse
-import urllib.request
+import sys
 import zlib
 from pathlib import Path
 
@@ -22,105 +23,32 @@ ROOT = Path(__file__).resolve().parent.parent
 DIR = Path(__file__).resolve().parent
 DATA = DIR / "data"
 FIXTURE = DIR / "fixture"
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))
 
-BLOKIR = ["kentut", "ngiler", "iler", "keringat", "bau badan", "bau ketiak", "ketiak bau", "buang angin", "flatus"]
-BENIH = ["kenapa", "apakah", "bagaimana", "padahal", "tiba-tiba"]
-PILAR = ["tubuh", "antariksa", "bumi", "hewan", "teknologi", "misteri"]
+from kliktahu import kanal as _kanal  # noqa: E402
+from kliktahu import momen as _momen  # noqa: E402
+from kliktahu import pustaka as _pustaka  # noqa: E402
+from kliktahu import skor as SKOR  # noqa: E402,F401 - dipakai v3-v6
+from kliktahu import teks as _teks  # noqa: E402
+from kliktahu import tema as _tema  # noqa: E402
 
-# tema: pilar, kata kunci pencarian (kata[0] = inti), aspek (untuk cabang v4), ever (evergreen 0/1), vis bawaan 0..1
-TEMA = {
-    # tubuh
-    "cegukan": ("tubuh", ["cegukan"], ["lama", "terus", "bayi", "malam"], 1, 0.6),
-    "uban & rambut": ("tubuh", ["uban", "rambut rontok"], ["muda", "stres", "dicabut"], 1, 0.7),
-    "menguap": ("tubuh", ["menguap"], ["menular", "ngantuk", "terus"], 1, 0.6),
-    "bersin": ("tubuh", ["bersin"], ["matahari", "terus", "ditahan"], 1, 0.6),
-    "merinding": ("tubuh", ["merinding"], ["musik", "dingin", "takut"], 1, 0.6),
-    "jantung": ("tubuh", ["jantung"], ["berdebar", "berhenti", "detak"], 1, 0.8),
-    "otak": ("tubuh", ["otak"], ["lupa", "deja vu", "lelah"], 1, 0.8),
-    "mimpi & tidur": ("tubuh", ["mimpi", "tidur"], ["jatuh", "lupa", "ketindihan"], 1, 0.7),
-    "tulang & sendi": ("tubuh", ["tulang", "sendi berbunyi"], ["retak", "bunyi", "patah"], 1, 0.7),
-    "darah": ("tubuh", ["darah"], ["merah", "golongan", "biru"], 1, 0.8),
-    "kuku": ("tubuh", ["kuku"], ["putih", "tumbuh", "belang"], 1, 0.6),
-    "lapar & haus": ("tubuh", ["lapar", "perut keroncongan"], ["bunyi", "malam", "marah"], 1, 0.6),
-    "mata": ("tubuh", ["mata"], ["kedutan", "minus", "merah"], 1, 0.8),
-    "kulit & jerawat": ("tubuh", ["jerawat", "kulit"], ["muncul", "keriput"], 1, 0.7),
-    "gigi & mulut": ("tubuh", ["gigi"], ["ngilu", "berlubang"], 1, 0.7),
-    # antariksa
-    "lubang hitam": ("antariksa", ["lubang hitam"], ["terdekat", "masuk", "cahaya"], 1, 1.0),
-    "aurora": ("antariksa", ["aurora"], ["warna", "indonesia", "kutub"], 1, 1.0),
-    "matahari": ("antariksa", ["matahari"], ["panas", "mati", "badai"], 1, 1.0),
-    "bulan": ("antariksa", ["bulan"], ["merah", "besar", "siang"], 1, 1.0),
-    "bintang": ("antariksa", ["bintang"], ["jatuh", "mati", "terdekat"], 1, 1.0),
-    "meteor & komet": ("antariksa", ["meteor", "komet", "hujan meteor"], ["jatuh", "warna"], 1, 1.0),
-    "planet mars": ("antariksa", ["mars"], ["merah", "air", "hidup"], 1, 0.9),
-    "saturnus & cincin": ("antariksa", ["saturnus", "cincin saturnus"], ["hilang", "terbuat"], 1, 1.0),
-    "galaksi": ("antariksa", ["galaksi", "bima sakti"], ["tabrakan", "pusat"], 1, 1.0),
-    "astronot": ("antariksa", ["astronot"], ["tidur", "makan", "melayang"], 1, 0.9),
-    "alien": ("antariksa", ["alien"], ["ada", "sinyal"], 1, 0.9),
-    "gerhana": ("antariksa", ["gerhana"], ["matahari", "bulan merah"], 1, 1.0),
-    "asteroid": ("antariksa", ["asteroid"], ["menabrak", "dinosaurus"], 1, 0.9),
-    # bumi
-    "hari tanpa bayangan": ("bumi", ["hari tanpa bayangan", "bayangan hilang"], ["jam", "indonesia"], 0, 0.9),
-    "gempa bumi": ("bumi", ["gempa"], ["malam", "terasa"], 1, 0.9),
-    "gunung berapi": ("bumi", ["gunung meletus", "gunung berapi"], ["lava", "tidur"], 1, 1.0),
-    "tsunami": ("bumi", ["tsunami"], ["surut", "tanda"], 1, 1.0),
-    "petir": ("bumi", ["petir", "kilat"], ["menyambar", "suara"], 1, 1.0),
-    "hujan & awan": ("bumi", ["hujan", "awan"], ["bau", "melayang", "es"], 1, 0.9),
-    "pelangi": ("bumi", ["pelangi"], ["melengkung", "ganda", "malam"], 1, 1.0),
-    "es & salju": ("bumi", ["salju", "es"], ["putih", "indonesia", "mengapung"], 1, 1.0),
-    "laut": ("bumi", ["laut", "air laut"], ["asin", "biru", "dalam"], 1, 1.0),
-    "angin & badai": ("bumi", ["angin", "badai", "puting beliung"], ["berputar", "mata badai"], 1, 1.0),
-    "gurun": ("bumi", ["gurun"], ["dingin malam", "pasir"], 1, 0.9),
-    "gua": ("bumi", ["gua", "stalaktit"], ["gelap", "terbentuk"], 1, 0.9),
-    # hewan
-    "ular & reptil": ("hewan", ["ular", "reptil"], ["berbisa", "ganti kulit", "lidah"], 1, 1.0),
-    "kucing": ("hewan", ["kucing"], ["mendengkur", "jatuh"], 1, 0.9),
-    "anjing": ("hewan", ["anjing"], ["menggonggong", "setia"], 1, 0.9),
-    "hiu": ("hewan", ["hiu"], ["gigi", "tidur"], 1, 1.0),
-    "gurita": ("hewan", ["gurita"], ["tiga jantung", "tinta", "pintar"], 1, 1.0),
-    "lebah & semut": ("hewan", ["lebah", "semut"], ["menyengat", "ratu"], 1, 0.9),
-    "burung": ("hewan", ["burung"], ["terbang", "migrasi"], 1, 0.9),
-    "gajah": ("hewan", ["gajah"], ["ingatan", "kuburan"], 1, 0.9),
-    "cicak": ("hewan", ["cicak"], ["ekor putus", "menempel"], 1, 0.8),
-    "dinosaurus": ("hewan", ["dinosaurus"], ["punah", "burung"], 1, 1.0),
-    # teknologi
-    "baterai & hp": ("teknologi", ["baterai", "hp panas"], ["cepat habis", "meledak"], 1, 0.8),
-    "internet & wifi": ("teknologi", ["wifi", "internet"], ["lemot", "sinyal"], 1, 0.7),
-    "listrik & magnet": ("teknologi", ["listrik", "magnet"], ["setrum", "kutub"], 1, 0.8),
-    "pesawat": ("teknologi", ["pesawat"], ["terbang", "turbulensi", "putih"], 1, 1.0),
-    "kulkas & microwave": ("teknologi", ["microwave", "kulkas"], ["panas", "dingin"], 1, 0.8),
-    "ai": ("teknologi", ["ai", "kecerdasan buatan"], ["berpikir", "bahaya"], 1, 0.7),
-    # misteri
-    "piramida": ("misteri", ["piramida"], ["dibangun", "mesir", "dalam"], 1, 1.0),
-    "segitiga bermuda": ("misteri", ["segitiga bermuda"], ["hilang", "misteri"], 1, 0.9),
-    "stonehenge": ("misteri", ["stonehenge"], ["dibangun", "batu"], 1, 0.9),
-    "borobudur": ("misteri", ["borobudur", "candi"], ["dibangun", "batu"], 1, 0.9),
-    "deja vu": ("misteri", ["deja vu"], ["pernah", "otak"], 1, 0.6),
-    "atlantis": ("misteri", ["atlantis"], ["tenggelam", "nyata"], 1, 0.9),
-}
-
-LEKS = {
-    "niat": ["kenapa", "mengapa", "bagaimana", "apa itu", "apakah", "cara", "penyebab", "proses", "terjadi"],
-    "sains": ["ilmiah", "sains", "fakta", "penjelasan", "teori", "nasa", "penelitian", "fisika", "biologi", "kimia",
-              "otak", "sel", "gravitasi", "cahaya", "energi", "atom", "reaksi", "suhu", "tekanan", "gelombang"],
-    "rel": ["saya", "aku", "kita", "kalau", "saat", "setiap", "sering", "tiba-tiba", "malam", "pagi", "tidur",
-            "makan", "anak", "bayi", "rumah"],
-    "kom": ["apakah", "benarkah", "mitos", "atau", "lebih", "paling", "bisa", "boleh", "bahaya", "beneran", "benar"],
-    "vis": ["warna", "bentuk", "terlihat", "cahaya", "besar", "kecil", "bergerak", "berputar", "meledak", "jatuh",
-            "terbang", "menyala", "merah", "biru", "hijau", "hitam", "putih"],
-}
-HINDARI_HOOK = ["haram", "halal", "agama", "dosa", "harga", "murah", "brand", "merek", "game", "judi", "slot"]
+_K = _kanal.muat()
+BLOKIR = list(_K.aturan.blokir)
+BENIH = list(_K.riset.benih)
+PILAR = list(_kanal.PILAR_SAH)
+HINDARI_HOOK = list(_K.aturan.hindari_hook)
+# bentuk lama (tuple) dipertahankan untuk v3-v6: pilar, kata kunci (kata[0] = inti), aspek, evergreen, visual bawaan
+TEMA = {n: (t.pilar, list(t.kata), list(t.aspek), t.ever, t.visb) for n, t in _tema.TEMA.items()}
+LEKS = _tema.LEKS
 
 
 def norm(s):
-    s = s.lower().strip()
-    s = re.sub(r"[^0-9a-z\s\-]", " ", s)
-    return re.sub(r"\s+", " ", s).strip()
+    return _teks.norm(s)
 
 
 def diblokir(frasa):
-    f = " " + norm(frasa) + " "
-    return any((" " + b + " ") in f or f.strip().startswith(b) for b in BLOKIR)
+    return _teks.diblokir(frasa, BLOKIR)
 
 
 def bersih(frasa):
@@ -140,15 +68,20 @@ class Offline(Exception):
     pass
 
 
+_KLIEN = None
+
+
 def _http_saran(q, sumber):
-    base = "https://suggestqueries.google.com/complete/search?client=firefox&hl=id&gl=id&q="
-    url = base + urllib.parse.quote(q) + ("&ds=yt" if sumber == "youtube" else "")
+    """Autocomplete asli lewat klien riset kliktahu (HTTP/2, retry+backoff, rate limit per host, cache 12 jam)."""
+    global _KLIEN
+    from kliktahu.riset import http as _H
+    from kliktahu.riset import sumber as _S
+    if _KLIEN is None:
+        _KLIEN = _H.KlienRiset(_K)
     try:
-        with urllib.request.urlopen(url, timeout=6) as r:
-            data = json.loads(r.read().decode("utf-8", "replace"))
-        return [s for s in data[1]][:10]
-    except Exception as e:  # noqa: BLE001
-        raise Offline(str(e))
+        return _S.saran(_KLIEN, q, sumber)
+    except (_H.Offline, _H.GagalHTTP) as e:
+        raise Offline(str(e)) from e
 
 
 def _fixture_saran(q, sumber):
@@ -172,8 +105,12 @@ def _fixture_saran(q, sumber):
 
 
 def _manual_saran():
+    """data manual/agen: analisis/data/manual_saran.json ATAU bagian 'saran' berkas agen terbaru (data/agen/*.json)."""
     p = DATA / "manual_saran.json"
-    return json.loads(p.read_text(encoding="utf-8")) if p.exists() else {}
+    if p.exists():
+        return json.loads(p.read_text(encoding="utf-8"))
+    agen = sorted((DATA / "agen").glob("*.json"))
+    return json.loads(agen[-1].read_text(encoding="utf-8")).get("saran", {}) if agen else {}
 
 
 def ambil_saran(q, sumber="google", mode="online"):
@@ -195,19 +132,8 @@ def cek_online():
 
 # ------------------------------------------------------------------------------------------ pustaka & momen
 def sudah_dibahas():
-    """{frasa_tema: 'shorts'|'long'} dari PUSTAKA.md (blok SUDAH_DIBAHAS) + folder pustaka/.
-    Entri berawalan 'Long:' = baru dibahas sebagai video panjang (masih boleh jadi Shorts dengan sudut baru)."""
-    out = {}
-    p = ROOT / "PUSTAKA.md"
-    if p.exists():
-        s = p.read_text(encoding="utf-8")
-        m = re.search(r"SUDAH_DIBAHAS:MULAI.*?-->(.*?)<!--\s*SUDAH_DIBAHAS:SELESAI", s, re.S)
-        if m:
-            for ln in m.group(1).splitlines():
-                ln = ln.strip().lstrip("-").strip()
-                if ln:
-                    jenis = "long" if ln.lower().startswith("long:") else "shorts"
-                    out[norm(re.sub(r"(?i)^long:", "", ln).replace("(2x)", ""))] = jenis
+    """{frasa_tema: 'shorts'|'long'} dari PUSTAKA.md (blok SUDAH_DIBAHAS) + folder pustaka/."""
+    out = dict(_pustaka.sudah_dibahas())
     for d in (ROOT / "pustaka").glob("*/"):
         if d.is_dir():
             jenis = "long" if d.name.lower().startswith("long") else "shorts"
@@ -215,46 +141,31 @@ def sudah_dibahas():
     return out
 
 
-def _kata_utuh(a, b):
-    """semua kata a muncul UTUH di b (bukan substring: 'ai' tidak cocok dengan 'baterai')."""
-    wb = set(b.replace("&", " ").split())
-    wa = [w for w in a.replace("&", " ").split()]
-    return bool(wa) and all(w in wb for w in wa)
-
-
 def tema_sudah(tema, daftar=None):
-    """-> 'shorts' (sudah jadi Shorts), 'long' (baru jadi video panjang), atau None (segar)."""
+    """-> 'shorts' (sudah jadi Shorts), 'long' (baru jadi video panjang), atau None (segar). Kata utuh."""
     daftar = sudah_dibahas() if daftar is None else daftar
-    kunci = [norm(x) for x in [tema] + TEMA[tema][1]]
-    hasil = None
-    for d, jenis in daftar.items():
-        dinti = d.split(" & ")[0].strip()
-        for k in kunci:
-            inti = k.split(" & ")[0].strip()
-            if _kata_utuh(inti, d) or _kata_utuh(dinti, k):
-                if jenis == "shorts":
-                    return "shorts"
-                hasil = "long"
-    return hasil
+    st = _pustaka.status_tema(_tema.TEMA[tema], daftar)
+    return {"dibahas": "shorts", "long": "long"}.get(st)
 
 
 def momen(hari_ini=None, jendela=45):
-    """-> {tema_kata: (skor 0..1, event)} untuk event dalam jendela hari ke depan."""
+    """-> {kunci_tema: (skor 0..1, event)}: kalender kurasi (momen.json) + astronomi terhitung (kliktahu/astro)."""
     hari_ini = hari_ini or dt.date.today()
-    data = json.loads((DIR / "momen.json").read_text(encoding="utf-8"))["events"]
     out = {}
-    for ev in data:
-        d = dt.date.fromisoformat(ev["tanggal"])
-        sisa = (d - hari_ini).days
-        if 0 <= sisa <= jendela:
-            s = 1.0 - sisa / (jendela * 1.25)
-            for t in ev["tema"]:
-                if s > out.get(t, (0, None))[0]:
-                    out[t] = (round(s, 3), ev)
+    for ev in _momen.semua(hari_ini, jendela):
+        s = _momen.skor_momen(ev, hari_ini, jendela)
+        if s <= 0:
+            continue
+        e = {"tanggal": ev.tanggal.isoformat(), "nama": ev.nama, "tema": ev.tema, "sumber": ev.sumber}
+        for t in {*(_momen.ke_tema(ev)), *(norm(x) for x in ev.tema)}:
+            if s > out.get(t, (0, None))[0]:
+                out[t] = (round(s, 3), e)
     return out
 
 
 def momen_tema(tema, peta):
+    if norm(tema) in peta:
+        return peta[norm(tema)]
     kata = [norm(tema)] + [norm(x) for x in TEMA[tema][1]]
     best = (0.0, None)
     for k, v in peta.items():

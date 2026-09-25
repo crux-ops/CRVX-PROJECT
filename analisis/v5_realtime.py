@@ -71,15 +71,10 @@ def jalankan(mode="online", tanggal=None, hari_ini=None, data_dir=None, top_bfs=
         if st == "shorts":
             continue
         p = prev_t.get(t)
-        if p:
-            baru = len(set(h["frasa"]) - set(p.get("frasa", []))) / max(1, len(h["frasa"]))
-            vel = (h["jml"] - p["jml"]) / max(5, p["jml"]) + 0.5 * baru
-        else:
-            vel = 0.0
+        vel = U.SKOR.v5_velocity(h["jml"], h["frasa"], p["jml"] if p else None, p.get("frasa", []) if p else None)
         ms, ev = U.momen_tema(t, mom)
         jaring = peta.get(t, {}).get("jaring", 0)
-        sv = (h["jml"] + h["kuat"] + h["yt"] * 2 + h["vis"] * 0.8 + h["niat"] * 0.6 + h["sains"] * 2 + jaring * 2) \
-            + vel * 4 + ms * 6
+        sv = U.SKOR.v5_views(h, jaring, vel, ms)  # rumus prompt §8 (kliktahu/skor.py)
         rows.append({"tema": t, "pilar": h["pilar"], "status": st or "segar", "velocity": round(vel, 3),
                      "momen": ms, "momen_event": ev["nama"] if ev else None, "jaring": jaring,
                      "skor_views": round(sv, 2)})
