@@ -45,8 +45,8 @@ def ascii_saja(s: str) -> str:
 
 
 def norm(s: str) -> str:
-    """huruf kecil ASCII, hanya [0-9a-z spasi -], spasi tunggal."""
-    s = ascii_saja(s).lower().strip()
+    """huruf kecil ASCII, hanya [0-9a-z spasi -], spasi tunggal. Apostrof DIBUANG (ka'bah -> kabah, jum'at -> jumat)."""
+    s = ascii_saja(s).lower().strip().replace("'", "").replace("`", "")
     s = re.sub(r"[^0-9a-z\s\-]", " ", s)
     return re.sub(r"\s+", " ", s).strip()
 

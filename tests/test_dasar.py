@@ -115,3 +115,8 @@ def test_skema_cek_toleran_libm_tapi_ketat_masukan():
     f = json.loads(json.dumps(d))
     f["kasus"][0]["in"][0]["jml"] += 1  # masukan berubah = melenceng sungguhan
     assert skema._sama_toleran(e, d) and not skema._sama_toleran(f, d)
+
+
+def test_apostrof_tidak_meloloskan_kata_sensitif(k):
+    assert teks.norm("Ka'bah") == "kabah" and teks.norm("Jum\u2019at") == "jumat"
+    assert teks.sensitif("kenapa pesawat tidak boleh melewati ka'bah", k.aturan.sensitif)

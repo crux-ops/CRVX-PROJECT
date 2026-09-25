@@ -138,7 +138,7 @@ Ikuti KlikTahu untuk fakta sains & misteri setiap hari.
 ```
 Hashtag: #KlikTahu #FaktaSains #Pesawat #Shorts
 
-Tag (494/500): kenapa pesawat bisa terbang, pesawat, kenapa pesawat, kenapa pesawat bisa terbang padahal berat, kenapa pesawat bisa delay, kenapa pesawat bisa jatuh, kenapa pesawat mengeluarkan asap, kenapa pesawat tidak boleh melewati ka bah, kenapa pesawat tidak bisa mundur, kenapa pesawat mengeluarkan asap putih, kenapa pesawat bisa turbulensi, kenapa pesawat berhenti di udara, kenapa pesawat tidak tersambar petir, kenapa pesawat warna putih, kenapa pesawat terbang rendah, fakta pesawat
+Tag (496/500): kenapa pesawat bisa terbang, pesawat, kenapa pesawat, kenapa pesawat bisa terbang padahal berat, kenapa pesawat bisa delay, kenapa pesawat bisa jatuh, kenapa pesawat mengeluarkan asap, kenapa pesawat tidak bisa mundur, kenapa pesawat mengeluarkan asap putih, kenapa pesawat bisa turbulensi, kenapa pesawat berhenti di udara, kenapa pesawat tidak tersambar petir, kenapa pesawat warna putih, kenapa pesawat terbang rendah, fakta pesawat, pesawat menurut sains, fakta sains, kliktahu
 
 ### pelangi (shorts) - lint LULUS
 
@@ -171,7 +171,7 @@ Tag (495/500): kenapa pelangi bisa muncul, pelangi, kenapa pelangi tidak boleh d
 
 ## Statistik run
 
-- Tema dianalisis: 17 | kueri autocomplete: 230 | durasi 0.6 s
+- Tema dianalisis: 17 | kueri autocomplete: 230 | durasi 0.7 s
 - HTTP: {} | host tidak terjangkau: -
 - Velocity dibanding run: belum ada run sebelumnya (velocity netral)
 - Sumber autocomplete: ok (230/230 kueri)
