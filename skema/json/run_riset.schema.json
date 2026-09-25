@@ -1,0 +1,59 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/run_riset.schema.json",
+  "title": "run_riset",
+  "description": "Satu kali jalan mesin riset (online/agen/uji).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "mulai": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "selesai": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "mode": {
+      "type": "string",
+      "enum": [
+        "online",
+        "agen",
+        "uji",
+        "manual"
+      ]
+    },
+    "versi": {
+      "type": "string"
+    },
+    "tanggal": {
+      "type": "string",
+      "format": "date",
+      "description": "tanggal analisis (WIB)"
+    },
+    "statistik": {
+      "type": "object"
+    },
+    "catatan": {
+      "type": [
+        "string",
+        "null"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "mulai",
+    "mode",
+    "versi",
+    "tanggal",
+    "statistik"
+  ]
+}

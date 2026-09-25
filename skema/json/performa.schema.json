@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/performa.schema.json",
+  "title": "performa",
+  "description": "Performa video (impor CSV YouTube Studio / manual) -> loop bobot pilar.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "episode_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "kode": {
+      "type": "string",
+      "description": "kode episode atau ID video YouTube"
+    },
+    "judul": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tanggal": {
+      "type": "string",
+      "format": "date",
+      "description": "tanggal data diambil"
+    },
+    "tayangan": {
+      "type": "integer"
+    },
+    "durasi_tonton_jam": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "rata_durasi_detik": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "persen_ditonton": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "retensi rata-rata %"
+    },
+    "impresi": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "ctr": {
+      "type": [
+        "number",
+        "null"
+      ],
+      "description": "rasio klik-tayang %"
+    },
+    "subscriber": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "pilar": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "enum": [
+        "tubuh",
+        "antariksa",
+        "bumi",
+        "hewan",
+        "teknologi",
+        "misteri",
+        null
+      ]
+    },
+    "sumber": {
+      "type": "string",
+      "enum": [
+        "studio_csv",
+        "performa_csv",
+        "manual",
+        "api"
+      ]
+    }
+  },
+  "required": [
+    "id",
+    "kode",
+    "tanggal",
+    "tayangan",
+    "sumber"
+  ]
+}

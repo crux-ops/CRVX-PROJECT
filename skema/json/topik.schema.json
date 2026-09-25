@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/topik.schema.json",
+  "title": "topik",
+  "description": "Registri topik/tema kanal (segar, antre, sudah dibahas).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "slug": {
+      "type": "string",
+      "description": "slug unik, mis. hari_tanpa_bayangan"
+    },
+    "nama": {
+      "type": "string"
+    },
+    "pilar": {
+      "type": "string",
+      "enum": [
+        "tubuh",
+        "antariksa",
+        "bumi",
+        "hewan",
+        "teknologi",
+        "misteri"
+      ]
+    },
+    "kata_kunci": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "kata[0] = inti"
+    },
+    "aspek": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "nama_en": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "nama Inggris untuk pencarian jurnal"
+    },
+    "wiki": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "judul artikel Wikipedia bahasa Indonesia"
+    },
+    "evergreen": {
+      "type": "boolean"
+    },
+    "visual": {
+      "type": "number",
+      "description": "seberapa bisa diperlihatkan 0..1"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "segar",
+        "antre",
+        "dibahas",
+        "long",
+        "arsip"
+      ]
+    },
+    "catatan": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "diubah": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "slug",
+    "nama",
+    "pilar",
+    "kata_kunci",
+    "aspek",
+    "evergreen",
+    "visual",
+    "status",
+    "dibuat",
+    "diubah"
+  ]
+}

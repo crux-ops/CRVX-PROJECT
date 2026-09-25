@@ -1,0 +1,83 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/snapshot_pencarian.schema.json",
+  "title": "snapshot_pencarian",
+  "description": "Hasil mentah-ternormalisasi tiap pencarian real-time (untuk VELOCITY & audit).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "run_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "sumber": {
+      "type": "string",
+      "enum": [
+        "google_saran",
+        "youtube_saran",
+        "wikipedia",
+        "berita",
+        "gdelt",
+        "tren",
+        "youtube",
+        "momen",
+        "ilmiah",
+        "web",
+        "agen"
+      ]
+    },
+    "kueri": {
+      "type": "string"
+    },
+    "topik_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "diambil": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "status": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "status HTTP (0 = dari data agen/fixture)"
+    },
+    "durasi_ms": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "dari_cache": {
+      "type": "boolean"
+    },
+    "jumlah": {
+      "type": "integer"
+    },
+    "data": {},
+    "sidik": {
+      "type": "string",
+      "description": "sha1 data (deteksi perubahan)"
+    }
+  },
+  "required": [
+    "id",
+    "sumber",
+    "kueri",
+    "diambil",
+    "dari_cache",
+    "jumlah",
+    "data",
+    "sidik"
+  ]
+}

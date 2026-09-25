@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/skor.schema.json",
+  "title": "skor",
+  "description": "Skor per topik per run: rumus prompt v3-v6 + v7 (peluang & keyakinan).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "run_id": {
+      "type": "integer"
+    },
+    "topik_id": {
+      "type": "integer"
+    },
+    "peringkat": {
+      "type": "integer"
+    },
+    "status_topik": {
+      "type": "string",
+      "enum": [
+        "segar",
+        "long",
+        "dibahas"
+      ]
+    },
+    "v3_skor": {
+      "type": "number"
+    },
+    "v3_tumbuh": {
+      "type": "number"
+    },
+    "v4_keluarga": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "v5_views": {
+      "type": "number"
+    },
+    "v6_papan": {
+      "type": "number"
+    },
+    "v7_peluang": {
+      "type": "number"
+    },
+    "keyakinan": {
+      "type": "number",
+      "description": "porsi bobot v7 yang didukung data nyata 0..1"
+    },
+    "komponen": {
+      "type": "object"
+    },
+    "sinyal": {
+      "type": "object"
+    }
+  },
+  "required": [
+    "id",
+    "run_id",
+    "topik_id",
+    "peringkat",
+    "status_topik",
+    "v3_skor",
+    "v3_tumbuh",
+    "v5_views",
+    "v6_papan",
+    "v7_peluang",
+    "keyakinan",
+    "komponen",
+    "sinyal"
+  ]
+}

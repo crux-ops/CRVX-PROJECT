@@ -1,0 +1,112 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/episode.schema.json",
+  "title": "episode",
+  "description": "Episode Shorts/Long (Ep50, Long03, ...) dan status produksinya.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "kode": {
+      "type": "string",
+      "description": "Ep50 / Long03"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "shorts",
+        "long"
+      ]
+    },
+    "topik_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "slug": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "folder episodes/<slug> atau long/<slug>"
+    },
+    "judul": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "judul terpilih"
+    },
+    "sudut": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "description": "sudut pembeda"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "ide",
+        "riset",
+        "naskah",
+        "vo",
+        "render",
+        "rilis",
+        "arsip"
+      ]
+    },
+    "jadwal_tayang": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "tayang": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date-time"
+    },
+    "youtube_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "durasi_detik": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "catatan": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "diubah": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "kode",
+    "format",
+    "status",
+    "dibuat",
+    "diubah"
+  ]
+}

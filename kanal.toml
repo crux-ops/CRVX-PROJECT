@@ -1,0 +1,87 @@
+# =====================================================================================================
+# PENGATURAN KANAL KlikTahu  (satu sumber kebenaran untuk: identitas, merek, aturan, jadwal, metadata, riset)
+# Setelah mengubah file ini jalankan:   python3 -m kliktahu kanal cek
+# JANGAN pernah menaruh token / kunci API / password di file ini. Yang ditulis di sini hanya NAMA variabel
+# lingkungan (mis. YOUTUBE_API_KEY); nilainya diisi di terminal/komputer pemilik, tidak pernah di-commit.
+# =====================================================================================================
+
+[kanal]
+nama = "KlikTahu"
+bahasa = "id"
+wilayah = "ID"
+zona_waktu = "WIB"                  # UTC+7, tanpa musim panas
+niche = "Fakta sains & misteri"
+slogan = "Fakta sains & misteri, tiap hari"
+shorts_terakhir = 49                # nomor Shorts terakhir akun lama (Ep49) -> berikutnya Ep50
+long_terakhir = 2                   # video panjang terakhir (Long02) -> berikutnya Long03
+
+[pilar]                             # bobot awal 0..1; loop performa (YouTube Studio) menyesuaikan otomatis
+tubuh = 1.0
+antariksa = 1.0
+bumi = 1.0
+hewan = 1.0
+teknologi = 1.0
+misteri = 1.0
+
+[merek]
+cream = [246, 241, 232]
+ink = [24, 24, 31]
+muted = [128, 122, 114]
+aksen = ["#2F7BFF", "#FF6B3D", "#F4B400", "#1FB57A", "#8A5CF6", "#E5484D"]
+font = "Poppins"
+font_berat = ["Bold", "SemiBold", "Medium", "Regular"]
+shorts = { lebar = 1080, tinggi = 1920, fps = 60, maks_detik = 178 }
+long = { lebar = 1920, tinggi = 1080, fps = 30 }
+
+[aturan]                            # ATURAN KERAS pemilik (PROMPT_KLIKTAHU.txt §2) - tidak bisa dimatikan dari sini
+# Topik DIBLOKIR total: dibuang dari data (bukan cuma disembunyikan). Kata >= 6 huruf dicocokkan sebagai
+# potongan kata ("berkeringat" ikut terblokir), kata pendek dicocokkan kata utuh.
+blokir = ["kentut", "buang angin", "flatus", "ngiler", "iler", "keringat", "bau badan", "bau ketiak", "ketiak bau"]
+# Boleh ada di data riset, tetapi DILARANG muncul di judul, tag, hashtag, dan hook.
+sensitif = ["lgbt", "politik", "partai", "pemilu", "capres", "sara", "porno", "bokep", "judi", "slot", "pinjol",
+            "togel", "kafir", "sesat", "azab", "santet", "pelet"]
+hindari_hook = ["haram", "halal", "agama", "dosa", "harga", "murah", "brand", "merek", "game", "judi", "slot"]
+pilar_kesehatan = ["tubuh"]
+disclaimer_kesehatan = "Konten edukasi, bukan pengganti dokter."
+subtitle = false                    # aturan keras 1: tanpa subtitle
+musik = false                       # aturan keras 2: tanpa musik latar
+
+[jadwal]
+slot_wib = ["11:30", "18:30"]       # jam unggah terbaik (WIB)
+shorts_per_minggu = 5
+long_per_bulan = 1
+momen_hari_sebelum = 3              # topik bermomen tayang N hari SEBELUM event
+jendela_momen_hari = 45             # momen dihitung bila event <= N hari lagi (rumus v5)
+
+[metadata]
+hashtag_wajib = ["#KlikTahu", "#FaktaSains"]
+hashtag_shorts = "#Shorts"
+maks_hashtag = 5
+maks_judul = 100                    # batas keras YouTube
+ideal_judul_shorts = 60             # judul Shorts terbaca penuh di layar HP
+ideal_judul_long = 70
+maks_deskripsi = 5000
+maks_tag_karakter = 500             # dihitung cara YouTube: koma + tanda kutip untuk tag berspasi
+cta = "Ikuti KlikTahu untuk fakta sains & misteri setiap hari."
+komentar_sematan = "Fakta mana yang paling bikin kamu kaget? Tulis di komentar!"
+
+[riset]
+benih = ["kenapa", "apakah", "bagaimana", "padahal", "tiba-tiba"]
+hl = "id"
+gl = "id"
+maks_paralel = 6                    # permintaan HTTP bersamaan (total)
+maks_paralel_per_host = 3
+jeda_min_detik = 0.35               # jarak minimum antar permintaan ke host yang sama (sopan)
+cache_jam = 12                      # hasil HTTP disimpan sekian jam (tidak memukul server berulang)
+maks_youtube_tema = 20              # berapa tema teratas yang dicek pesaingnya via YouTube Data API (kuota)
+user_agent = "KlikTahuRiset/2.0 (riset konten edukasi; +https://github.com/crux-ops/CRVX-PROJECT)"
+env_youtube_key = "YOUTUBE_API_KEY" # NAMA variabel lingkungan, BUKAN kuncinya
+env_brave_key = "BRAVE_API_KEY"
+env_searxng_url = "SEARXNG_URL"
+env_openalex_mailto = "OPENALEX_MAILTO"
+
+[sumber_kredibel]                   # domain yang dianggap kredibel untuk daftar sumber deskripsi
+domain = ["nasa.gov", "esa.int", "eso.org", "noaa.gov", "nhs.uk", "mayoclinic.org", "clevelandclinic.org",
+          "who.int", "cdc.gov", "nih.gov", "ncbi.nlm.nih.gov", "bmkg.go.id", "brin.go.id", "usgs.gov",
+          "nature.com", "science.org", "sciencedirect.com", "britannica.com", "nationalgeographic.com",
+          "smithsonianmag.com", "iau.org", "imo.net", "kemkes.go.id", "ac.id", "edu", "ac.uk"]

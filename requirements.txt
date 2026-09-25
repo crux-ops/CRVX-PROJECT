@@ -1,3 +1,13 @@
-pillow>=10
-numpy>=1.26
-imageio-ffmpeg>=0.4.9
+# KlikTahu - dependensi runtime. Versi TERBARU per 25 September 2026, dipin persis agar render & QC identik.
+# Pasang: pip install -r requirements.txt        (cek versi baru: python3 tools/cek_versi.py)
+#
+# Mesin RENDER (render.py, mesin_*, long/, audio, QC) hanya butuh 3 paket inti ini:
+numpy==2.4.6; python_version < "3.12"      # numpy 2.5 butuh Python >= 3.12
+numpy==2.5.3; python_version >= "3.12"
+pillow==12.3.0
+imageio-ffmpeg==0.6.0                      # ffmpeg 7 terbundel (tanpa ffprobe)
+#
+# Lapisan DATA & RISET REAL-TIME (kliktahu/: basis data, riset, metadata, perencana, dasbor):
+httpx[http2]==0.28.1                       # klien HTTP/2 + MockTransport untuk uji offline
+rapidfuzz==3.14.6                          # kemiripan teks (duplikat topik, sudut, judul beragam)
+rich==15.0.0                               # dasbor terminal

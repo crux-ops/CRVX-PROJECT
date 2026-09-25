@@ -1,0 +1,108 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/metadata.schema.json",
+  "title": "metadata",
+  "description": "Paket metadata (3 judul, deskripsi, hashtag, tag) per topik/episode, berversi.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "topik_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "episode_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "run_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "versi": {
+      "type": "integer"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "shorts",
+        "long"
+      ]
+    },
+    "kata_kunci": {
+      "type": "string",
+      "description": "kata kunci utama = baris pertama deskripsi"
+    },
+    "judul": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "judul_terpilih": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "deskripsi": {
+      "type": "string"
+    },
+    "hashtag": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tag": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "tag_karakter": {
+      "type": "integer",
+      "description": "hitungan cara YouTube (<= 500)"
+    },
+    "sumber": {
+      "type": "array"
+    },
+    "lint": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "lulus": {
+      "type": "boolean"
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "versi",
+    "format",
+    "kata_kunci",
+    "judul",
+    "deskripsi",
+    "hashtag",
+    "tag",
+    "tag_karakter",
+    "sumber",
+    "lint",
+    "lulus",
+    "dibuat"
+  ]
+}

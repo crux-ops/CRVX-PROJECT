@@ -1,0 +1,80 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/sumber_ilmiah.schema.json",
+  "title": "sumber_ilmiah",
+  "description": "Sumber kredibel per topik (jurnal, lembaga, ensiklopedia) untuk naskah & deskripsi.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "topik_id": {
+      "type": "integer"
+    },
+    "episode_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "judul": {
+      "type": "string"
+    },
+    "url": {
+      "type": "string"
+    },
+    "penerbit": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "tahun": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "doi": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "jenis": {
+      "type": "string",
+      "enum": [
+        "jurnal",
+        "lembaga",
+        "ensiklopedia",
+        "berita",
+        "lain"
+      ]
+    },
+    "kredibel": {
+      "type": "boolean"
+    },
+    "kutipan": {
+      "type": [
+        "integer",
+        "null"
+      ],
+      "description": "jumlah sitasi (OpenAlex)"
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "topik_id",
+    "judul",
+    "url",
+    "jenis",
+    "kredibel",
+    "dibuat"
+  ]
+}

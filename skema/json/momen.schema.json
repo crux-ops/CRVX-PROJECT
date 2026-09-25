@@ -1,0 +1,70 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/momen.schema.json",
+  "title": "momen",
+  "description": "Kalender momen: statis (kurasi), astro (dihitung), live (umpan real-time), agen.",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "tanggal": {
+      "type": "string",
+      "format": "date"
+    },
+    "selesai": {
+      "type": [
+        "string",
+        "null"
+      ],
+      "format": "date"
+    },
+    "nama": {
+      "type": "string"
+    },
+    "tema": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "jenis": {
+      "type": "string",
+      "enum": [
+        "statis",
+        "astro",
+        "live",
+        "agen"
+      ]
+    },
+    "sumber": {
+      "type": "string"
+    },
+    "urgensi": {
+      "type": "number",
+      "description": "0..1; live penting = 1"
+    },
+    "lokasi": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "tanggal",
+    "nama",
+    "tema",
+    "jenis",
+    "sumber",
+    "urgensi",
+    "dibuat"
+  ]
+}

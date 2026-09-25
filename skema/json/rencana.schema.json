@@ -1,0 +1,86 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://kliktahu.local/skema/rencana.schema.json",
+  "title": "rencana",
+  "description": "Kalender konten (usulan perencana / terkunci pemilik).",
+  "type": "object",
+  "additionalProperties": false,
+  "properties": {
+    "id": {
+      "type": "integer",
+      "description": "kunci utama"
+    },
+    "tanggal": {
+      "type": "string",
+      "format": "date"
+    },
+    "jam": {
+      "type": "string",
+      "description": "HH:MM WIB"
+    },
+    "format": {
+      "type": "string",
+      "enum": [
+        "shorts",
+        "long"
+      ]
+    },
+    "topik_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "episode_kode": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "judul_kerja": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "alasan": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "momen_id": {
+      "type": [
+        "integer",
+        "null"
+      ]
+    },
+    "skor": {
+      "type": [
+        "number",
+        "null"
+      ]
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "usulan",
+        "terkunci",
+        "selesai",
+        "batal"
+      ]
+    },
+    "dibuat": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "id",
+    "tanggal",
+    "jam",
+    "format",
+    "status",
+    "dibuat"
+  ]
+}
