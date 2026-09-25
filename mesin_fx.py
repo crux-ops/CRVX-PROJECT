@@ -405,6 +405,7 @@ def odometer(img, nilai, x, y, size, warna=D.INK, a=1.0, anchor="m", w="B", u=1.
     ndig = sum(c.isdigit() for c in tgt)
     cx, pos = xl, ndig - 1
     ch = D.cap_h(size, w)
+    terlihat = False  # pemisah ribuan di depan digit yang masih tersembunyi ikut disembunyikan
     for c in tgt:
         if c.isdigit():
             q = vi / (10 ** pos)
@@ -418,12 +419,17 @@ def odometer(img, nilai, x, y, size, warna=D.INK, a=1.0, anchor="m", w="B", u=1.
             yy = int(round((dig + roll) * sel))
             win = strip.crop((0, yy, lebar, yy + sel))
             top = D.S(y) - sel * 0.5 - px * 0.36
-            if not (pos >= 1 and vi < 10 ** pos and dig == 0 and roll == 0 and u < 1):
+            # nol di depan disembunyikan HANYA untuk digit di kiri digit satuan (pos > desimal);
+            # digit satuan selalu tampil (dulu 4,2 sempat tampil ",7" saat menghitung)
+            nol_depan = pos > desimal and vi < 10 ** pos and u < 1 and roll < 0.5
+            if not nol_depan:
                 D.tempel(img, warna, round(D.S(cx)), round(top), win, a)
+                terlihat = True
             cx += lebar_d
             pos -= 1
         else:
-            D.txt(img, c, cx, y, size, w, warna, a, "ls", catat=False)
+            if terlihat:
+                D.txt(img, c, cx, y, size, w, warna, a, "ls", catat=False)
             cx += D.txt_w(c, size, w)
     if satuan:
         D.txt(img, satuan, cx + D.txt_w(" ", size * 0.55, "SB"), y, size * 0.55, "SB", warna, a, "ls", catat=False)
@@ -734,6 +740,11 @@ def _uji():
     bokeh(im, 2.0, 8, D.PUTIH, 1)
     im.save(Path(__file__).resolve().parent / "build" / "mesin_fx_material.png")
     cek("material & odometer tergambar", True)
+    D.set_ss(1.0)
+    kosong = Image.new("RGB", (600, 200), (0, 0, 0))
+    odometer(kosong, 4.2, 300, 150, 100, D.PUTIH, 1, "m", "B", 0.35, 1)
+    kiri = np.asarray(kosong)[:, :300].max()  # digit satuan (kiri dari koma) harus tergambar
+    cek("odometer 4,2 saat menghitung: digit satuan tampil", kiri > 200)
     print("MESIN_FX SELFTEST:", "LULUS" if ok else "GAGAL")
     return 0 if ok else 1
 
