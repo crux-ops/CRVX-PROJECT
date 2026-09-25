@@ -52,7 +52,7 @@ max-line-length = 130   # formatter membungkus di 120; string panjang yang tak b
 "tests/*" = ["E501"]
 
 [tool.mypy]
-python_version = "3.11"
+# tanpa python_version: mypy memakai versi interpreter yang berjalan (stub numpy 2.5 memakai sintaks 3.12+)
 files = ["kliktahu"]
 check_untyped_defs = true
 no_implicit_optional = true
