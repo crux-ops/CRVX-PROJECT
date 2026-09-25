@@ -128,6 +128,10 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   - Momen berlangsung (tanggal..selesai) wajib dicari dengan kueri IRISAN, bukan `tanggal BETWEEN` (perencana & dasbor
     sempat melewatkan erupsi yang mulai 4 Sep).
   - Hook "padahal kamu melihatnya setiap hari" salah untuk gunung meletus/lubang hitam -> hanya untuk pengalaman sehari-hari.
+  - Apostrof harus DIBUANG saat normalisasi ("ka'bah" -> "kabah"); dulu jadi "ka bah" dan lolos daftar sensitif ke tag.
+  - CI Python 3.14: angka libm (tanh/log10) beda digit terakhir antar platform -> cek fixture paritas pakai toleransi;
+    mypy jangan dipin python_version (stub numpy 2.5 memakai sintaks 3.12+). Log CI dibaca lewat fetch_page URL blob.
+  - Jangan push beruntun: kumpulkan perbaikan CI dalam satu push (2026-09-25 sempat 2 push berjarak 4 menit).
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -155,6 +159,9 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   online/uji/agen), keputusan, metadata + lint + gerbang render_lokal.sh, pustaka, perencana+ICS, dasbor, CLI, 38 tes.
 - 2026-09-25: UPGRADE U3 - riset NYATA mode agen (162 saran Google, 115 YouTube, 15 pageview Wikipedia, Google Trends,
   berita PVMBG) -> keputusan gunung berapi; perbaikan dari data nyata (lihat §7); dependensi dipin versi 25-09-2026.
+- 2026-09-25: VERIFIKASI - pasang bersih venv baru (requirements-dev.txt + npm ci) -> tools/uji_semua.sh LULUS; render
+  regresi demo_langit penuh (render_lokal.sh) dengan dependensi baru -> QC MP4 LULUS identik (15.23 s, 12.6 MB, korelasi
+  1.0000, isi hilang 0 ms, 0.24-0.28 s/frame); gerbang METADATA diuji 3 kasus (tidak ada/gagal lint = exit 4, lulus = render).
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -221,6 +228,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
 
 ## 12. Tindakan untuk pemilik
 - (Selesai 2026-09-25) push tertunda tahap 5-7 sudah dipulihkan & di-push ulang (sandbox sempat reset ke commit awal).
+- (Selesai 2026-09-25 15.20 UTC) push tertunda 13.00 UTC dipulihkan: sandbox reset lagi ke commit awal -> tambah
+  refspec arena, `git fetch`, `git reset --mixed origin/arena/...`, commit dibuat ulang dari working tree (mypy tanpa
+  pin, apostrof ka'bah, catatan AGEN), paket dipasang ulang (`pip install -r requirements-dev.txt`, `npm ci`), uji LULUS.
 - Ubah repo `crux-ops/CRVX-PROJECT` menjadi **Private** (Settings > General > Danger Zone). Agen tidak punya hak admin.
 - (Opsional, untuk keyakinan riset > 64%) buat kunci YouTube Data API v3 gratis (Google Cloud Console), lalu di komputer
   sendiri: `export YOUTUBE_API_KEY=...` (JANGAN ditulis di file/chat). Sama untuk `BRAVE_API_KEY` / `SEARXNG_URL`.
