@@ -22,7 +22,7 @@ from rapidfuzz import fuzz
 
 from . import ROOT, teks
 from . import kanal as kanal_mod
-from .tema import TEMA
+from .tema import BENCANA, TEMA
 
 TAG_MAKS_KARAKTER = 60  # batas aman per tag (frasa long-tail <= ~8 kata); total tetap <= 500 cara YouTube
 PENASARAN = ("ternyata", "padahal", "rahasia", "jarang", "kenapa", "apakah", "bagaimana", "misteri", "jawaban")
@@ -43,6 +43,9 @@ TEMPLAT = {
     "long": ["{F}? Penjelasan Lengkap dari Nol", "Semua Tentang {I}: Dari Nol Sampai Paham"],
     "momen": ["{M}: {F}?"],
 }
+# topik BENCANA (korban jiwa nyata): templat bernada sensasi dibuang, kata berikut GALAT di judul/deskripsi
+TEMPLAT_SENSASI = {"Rahasia di Balik {I} yang Bikin Kaget", "{F}? Jawabannya Tidak Seperti Dugaanmu"}
+KATA_SENSASI = ("seru", "bikin kaget", "ngeri", "mengerikan", "merinding", "heboh", "kiamat", "seram")
 
 
 @dataclass
@@ -151,21 +154,32 @@ def kandidat_judul(
     momen: str | None = None,
     tambahan: Sequence[str] = (),
     pilar: str = "",
+    hormat: bool = False,
 ) -> list[str]:
+    """hormat=True (topik bencana): templat sensasional tidak dipakai."""
     I = teks.kapital_judul(inti)
     out = [_bersih(x) for x in tambahan]
+
+    def pakai(daftar: list[str]) -> list[str]:
+        return [t for t in daftar if not (hormat and t in TEMPLAT_SENSASI)]
+
     tanya = [f for f in frasa if f.split()[0] in ("kenapa", "apakah", "bagaimana")][:8] or list(frasa[:3])
     for f in tanya:
         F = teks.kapital_judul(f)
-        out += [t.format(F=F, I=I) for t in TEMPLAT["tanya"] + TEMPLAT[format_]]
-        if momen:
+        out += [t.format(F=F, I=I) for t in pakai(TEMPLAT["tanya"] + TEMPLAT[format_])]
+        if momen and len(f.split()) >= 4:  # judul momen hanya untuk pertanyaan SPESIFIK (bukan "{M}: Kenapa Tsunami?")
             out += [t.format(M=teks.kapital_judul(momen), F=F) for t in TEMPLAT["momen"]]
-    out += [t.format(I=I) for t in TEMPLAT["inti"] + (TEMPLAT["misteri"] if pilar == "misteri" else [])]
+    out += [t.format(I=I) for t in pakai(TEMPLAT["inti"] + (TEMPLAT["misteri"] if pilar == "misteri" else []))]
     return list(dict.fromkeys(_bersih(x) for x in out if x))
 
 
 def _inti_judul(j: str) -> str:
-    """bagian pertanyaan/inti judul (sebelum '?' atau ':') - dua judul dengan inti sama = pilihan yang sama."""
+    """bagian pertanyaan/inti judul - dua judul dengan inti sama = pilihan yang sama. Judul momen '{M}: {F}?' -> F
+    (pertanyaannya), selain itu bagian sebelum '?' atau ':'."""
+    if ":" in j:
+        kanan = j.split(":", 1)[1]
+        if "?" in kanan:
+            return teks.norm(kanan.split("?", 1)[0])
     return teks.norm(re.split(r"[?:]", j, maxsplit=1)[0])
 
 
@@ -342,14 +356,23 @@ def buat_deskripsi(
 ) -> str:
     kk = teks.kalimat(kata_kunci)
     baris = [kk + ("?" if kk.split()[0].lower() in ("kenapa", "apakah", "bagaimana") and not kk.endswith("?") else "")]
-    baris.append(_bersih(hook) if hook else "Jawabannya ada di sains - dan lebih seru dari yang kamu kira.")
+    bencana = BENCANA.get(tema)
+    if hook and "?" in hook and teks.norm(hook.split("?", 1)[0]) == teks.norm(baris[0]):
+        hook = hook.split("?", 1)[1].strip()  # hook mengulang pertanyaan baris 1 -> ambil sisanya saja
+    if hook:
+        baris.append(_bersih(hook))
+    elif bencana:  # korban jiwa nyata -> tanpa "lebih seru"
+        baris.append("Ini penjelasan sainsnya - pengetahuan yang membantu kita lebih siap.")
+    else:
+        baris.append("Jawabannya ada di sains - dan lebih seru dari yang kamu kira.")
     baris += [
         "",
         _bersih(ringkas)
         if ringkas
         else (
             f"Di video ini {inti} dijelaskan dari nol: apa yang sebenarnya terjadi, kenapa bisa begitu, "
-            f"dan fakta yang jarang diketahui. Animasi sederhana, tanpa ribet."
+            + ("dan apa yang perlu kita tahu agar lebih siap." if bencana else "dan fakta yang jarang diketahui.")
+            + " Animasi sederhana, tanpa ribet."
         ),
     ]
     baris += ["", "Bab:"]
@@ -358,6 +381,8 @@ def buat_deskripsi(
     baris += (
         [_baris_sumber(s) for s in sumber] if sumber else ["- (diisi saat riset: NASA/ESA/NOAA/NHS/Mayo Clinic/jurnal)"]
     )
+    if bencana:
+        baris += ["", f"Info resmi & peringatan dini: {bencana}. Ikuti arahan petugas setempat."]
     if TEMA.get(tema) and TEMA[tema].pilar in k.aturan.pilar_kesehatan:
         baris += ["", k.aturan.disclaimer_kesehatan]
     baris += ["", k.metadata.cta, "", " ".join(hashtag)]
@@ -386,7 +411,7 @@ def buat(
     inti = t.inti if t else tema
     fr = frasa_layak(frasa, k)
     kk = teks.norm(kata_kunci) if kata_kunci else kata_kunci_utama(fr, inti)
-    calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "")
+    calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "", hormat=tema in BENCANA)
     bernilai = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in calon]
     pilih = pilih_beragam(bernilai, 3, inti=inti)
     tagar = buat_hashtag(tema, inti, format_, k)
@@ -430,6 +455,11 @@ def lint(p: Paket, k: kanal_mod.Kanal, final: bool = True, pilar: str | None = N
         if len(j) > ideal:
             w.append(f"judul {i} {len(j)} karakter (> ideal {ideal}, bisa terpotong di HP)")
     g += lint_deskripsi(p.deskripsi, p.format, k, final, pilar, p.judul[0] if p.judul else "")
+    if p.tema in BENCANA:
+        for nama, isi in [*[(f"judul {i}", j) for i, j in enumerate(p.judul, 1)], ("deskripsi", p.deskripsi)]:
+            kena = [x for x in KATA_SENSASI if re.search(rf"(?<![0-9a-z]){x}(?![0-9a-z])", teks.norm(isi))]
+            if kena:
+                g.append(f"{nama}: topik bencana tidak boleh bernada sensasi ({', '.join(kena)})")
     g += lint_hashtag(p.hashtag, p.format, k, w)
     g += lint_tag(p.tag, k)
     return g, w
@@ -566,9 +596,23 @@ def urai_md(s: str) -> dict[str, Any]:
 
 
 def cek_md(
-    path: Path | str, format_: str = "shorts", pilar: str | None = None, k: kanal_mod.Kanal | None = None
+    path: Path | str,
+    format_: str = "shorts",
+    pilar: str | None = None,
+    k: kanal_mod.Kanal | None = None,
+    tema: str | None = None,
 ) -> tuple[list[str], list[str]]:
+    """lint METADATA.md. Tema (bila tidak diberikan) dibaca dari content.json di folder yang sama -> pilar ikut
+    diturunkan, sehingga gerbang render juga menegakkan disclaimer kesehatan & nada hormat topik bencana."""
     k = k or kanal_mod.muat()
+    if tema is None:
+        kj = Path(path).with_name("content.json")
+        try:
+            tema = json.loads(kj.read_text(encoding="utf-8")).get("topik") if kj.exists() else None
+        except (ValueError, AttributeError):
+            tema = None
+    if tema in TEMA and not pilar:
+        pilar = TEMA[tema].pilar
     raw = Path(path).read_bytes()
     try:
         s = raw.decode("ascii")
@@ -578,7 +622,7 @@ def cek_md(
         d = urai_md(s)
     except ValueError as e:
         return [str(e)], []
-    p = Paket(format_, "", "", d["judul"], d["deskripsi"], d["hashtag"], d["tag"])
+    p = Paket(format_, tema if tema in TEMA else "", "", d["judul"], d["deskripsi"], d["hashtag"], d["tag"])
     return lint(p, k, final=True, pilar=pilar)
 
 

@@ -127,7 +127,7 @@ def cmd_metadata(a: argparse.Namespace) -> int:
 
     k = kanal.muat()
     if a.aksi == "cek":
-        g, w = M.cek_md(a.file, a.format, a.pilar, k)
+        g, w = M.cek_md(a.file, a.format, a.pilar, k, tema=a.tema)
         for x in w:
             print("  peringatan:", x)
         for x in g:
@@ -150,12 +150,21 @@ def cmd_metadata(a: argparse.Namespace) -> int:
         t = db.topik(tema)
         frasa: list[str] = []
         pes: list[str] = []
+        hook: str | None = None
+        momen: str | None = None
         sumber = M.sumber_dari_konten(konten) if konten else []
         run = db.run_terakhir()
         if run and t:
             for r in db.skor_run(run["id"]):
                 if r["topik_id"] == t["id"]:
-                    frasa = r["sinyal"].get("frasa", [])
+                    sg = r["sinyal"]
+                    # sudut riset DULUAN -> judul kandidat memuat sudut pembeda yang sama dengan laporan keputusan
+                    frasa = list(dict.fromkeys([*sg.get("sudut", []), *sg.get("frasa", [])]))
+                    hook = (sg.get("hook") or [None])[0]
+                    if sg.get("momen", 0) >= 0.5 and sg.get("momen_nama"):
+                        from .momen import nama_pendek
+
+                        momen = nama_pendek(sg["momen_nama"])
         if t and not sumber:
             sumber = [s for s in db.sumber_topik(t["id"]) if s["kredibel"]][:4]
         p = M.buat(
@@ -170,6 +179,8 @@ def cmd_metadata(a: argparse.Namespace) -> int:
             final=bool(a.episode),
             kata_kunci=a.kata_kunci,
             judul_tambahan=a.judul or [],
+            hook=hook,
+            momen=momen,
         )
         for x in p.peringatan:
             print("  peringatan:", x)

@@ -2,6 +2,8 @@
 
 Tiap tema: pilar, kata kunci pencarian (kata[0] = inti), aspek (cabang v4), evergreen, visual bawaan 0..1,
 nama Inggris (pencarian jurnal/OpenAlex/Wikipedia en), judul artikel Wikipedia bahasa Indonesia.
+Judul wiki WAJIB judul KANONIK, bukan halaman alihan: pageview halaman alihan hampir nol ("Astronaut" 13/bulan vs
+"Antariksawan" 250/bulan) dan API pageview tidak mengikuti alihan. Mode online tetap memeriksa alihan otomatis.
 """
 
 from __future__ import annotations
@@ -101,8 +103,17 @@ DAFTAR: list[Tema] = [
         "Saturnus",
     ),
     _t("galaksi", "antariksa", ["galaksi", "bima sakti"], ["tabrakan", "pusat"], 1, 1.0, "galaxy", "Galaksi"),
-    _t("astronot", "antariksa", ["astronot"], ["tidur", "makan", "melayang"], 1, 0.9, "astronaut", "Astronaut"),
-    _t("alien", "antariksa", ["alien"], ["ada", "sinyal"], 1, 0.9, "extraterrestrial life", "Kehidupan_luar_Bumi"),
+    _t("astronot", "antariksa", ["astronot"], ["tidur", "makan", "melayang"], 1, 0.9, "astronaut", "Antariksawan"),
+    _t(
+        "alien",
+        "antariksa",
+        ["alien"],
+        ["ada", "sinyal"],
+        1,
+        0.9,
+        "extraterrestrial life",
+        "Kehidupan_ekstraterestrial",
+    ),
     _t("gerhana", "antariksa", ["gerhana"], ["matahari", "bulan merah"], 1, 1.0, "eclipse", "Gerhana"),
     _t("asteroid", "antariksa", ["asteroid"], ["menabrak", "dinosaurus"], 1, 0.9, "asteroid impact", "Asteroid"),
     # bumi
@@ -154,7 +165,7 @@ DAFTAR: list[Tema] = [
     _t("lebah & semut", "hewan", ["lebah", "semut"], ["menyengat", "ratu"], 1, 0.9, "honey bee ant colony", "Lebah"),
     _t("burung", "hewan", ["burung"], ["terbang", "migrasi"], 1, 0.9, "bird migration", "Burung"),
     _t("gajah", "hewan", ["gajah"], ["ingatan", "kuburan"], 1, 0.9, "elephant", "Gajah"),
-    _t("cicak", "hewan", ["cicak"], ["ekor putus", "menempel"], 1, 0.8, "gecko", "Cicak"),
+    _t("cicak", "hewan", ["cicak"], ["ekor putus", "menempel"], 1, 0.8, "gecko", "Cecak"),
     _t("dinosaurus", "hewan", ["dinosaurus"], ["punah", "burung"], 1, 1.0, "dinosaur", "Dinosaurus"),
     # teknologi
     _t(
@@ -187,7 +198,7 @@ DAFTAR: list[Tema] = [
         1,
         0.8,
         "microwave oven",
-        "Oven_gelombang_mikro",
+        "Pemanggang_gelombang_mikro",
     ),
     _t(
         "ai",
@@ -222,7 +233,7 @@ DAFTAR: list[Tema] = [
     ),
     _t("stonehenge", "misteri", ["stonehenge"], ["dibangun", "batu"], 1, 0.9, "stonehenge", "Stonehenge"),
     _t("borobudur", "misteri", ["borobudur", "candi"], ["dibangun", "batu"], 1, 0.9, "borobudur", "Borobudur"),
-    _t("deja vu", "misteri", ["deja vu"], ["pernah", "otak"], 1, 0.6, "deja vu", "Deja_vu"),
+    _t("deja vu", "misteri", ["deja vu"], ["pernah", "otak"], 1, 0.6, "deja vu", "D\u00e9j\u00e0_vu"),
     _t("atlantis", "misteri", ["atlantis"], ["tenggelam", "nyata"], 1, 0.9, "atlantis", "Atlantis"),
 ]
 
@@ -323,10 +334,24 @@ SINONIM_MOMEN: dict[str, list[str]] = {
 }
 
 
+# tema BENCANA (ada korban jiwa nyata): nada HORMAT tanpa sensasi di hook/judul/deskripsi, rujuk info resmi & peringatan dini
+BENCANA: dict[str, str] = {
+    "gempa bumi": "BMKG (bmkg.go.id) & InaTEWS (inatews.bmkg.go.id)",
+    "tsunami": "BMKG (bmkg.go.id) & InaTEWS (inatews.bmkg.go.id)",
+    "gunung berapi": "PVMBG/MAGMA Indonesia (magma.esdm.go.id)",
+    "angin & badai": "BMKG (bmkg.go.id)",
+}
+
+
 # alias relevansi: frasa autocomplete dianggap MEMBAHAS tema bila memuat kata kunci tema ATAU alias ini
 # (Google sering menyelipkan kata lain: "kenapa lubang KNALPOT hitam" bukan soal lubang hitam -> dibuang)
 ALIAS: dict[str, list[str]] = {
     "lubang hitam": ["black hole"],
+    "deja vu": ["dejavu"],  # YouTube menulis "kenapa sering dejavu" (satu kata)
+    "laut": ["lautan"],
+    "gua": ["goa"],
+    "cicak": ["cecak"],
+    "astronot": ["antariksawan"],
     "gunung berapi": ["gunung bisa meletus", "gunung api", "erupsi", "gunung semeru", "gunung merapi"],
     "hari tanpa bayangan": ["bayangan"],
     "meteor & komet": ["bintang jatuh"],
@@ -338,15 +363,63 @@ ALIAS: dict[str, list[str]] = {
 }
 
 
-def relevan(frasa: str, t: Tema) -> bool:
+# TOLAK: frasa yang memuat istilah ini membahas MAKNA LAIN dari kata tema (homonim/nama diri) -> bukan tema ini.
+# Hanya untuk tema bersangkutan ("masuk angin" bisa jadi topik tubuh kelak), berbeda dari [riset].derau global.
+TOLAK: dict[str, list[str]] = {
+    "angin & badai": ["angin duduk", "masuk angin", "angin bisa masuk", "angin ac", "angin kompresor"],
+    "alien": ["alien stage", "fang", "lemon"],  # serial animasi / tokoh BoBoiBoy / julukan orang
+    "ai": ["hoshino"],  # tokoh anime "Ai Hoshino"
+    "gajah": ["kampung gajah"],  # taman rekreasi
+    "atlantis": ["atlantis land"],  # taman rekreasi Surabaya
+}
+
+# KONTEKS: kata tema yang AMBIGU hanya dihitung bila frasa juga memuat salah satu kata konteks.
+# "gua" = gua batu ATAU "aku" (bahasa gaul: "kenapa gua susah tidur", "kenapa gua ganteng").
+KONTEKS: dict[str, dict[str, list[str]]] = {
+    "gua": {
+        "gua": [
+            "terbentuk",
+            "stalaktit",
+            "stalagmit",
+            "kapur",
+            "karst",
+            "kelelawar",
+            "gelap",
+            "dalam gua",
+            "masuk gua",
+            "purba",
+            "pindul",
+            "jomblang",
+            "batu",
+        ]
+    },
+}
+
+
+def _ada(f: str, istilah: str) -> bool:
     import re
 
     from .teks import norm
 
+    k = norm(istilah)
+    return bool(k) and re.search(rf"(?<![0-9a-z]){re.escape(k)}(?![0-9a-z])", f) is not None
+
+
+def relevan(frasa: str, t: Tema) -> bool:
+    """frasa autocomplete MEMBAHAS tema t? (kata utuh; alias; tolak homonim; kata ambigu butuh konteks)"""
+    from .teks import norm
+
     f = " " + norm(frasa) + " "
-    return any(
-        re.search(rf"(?<![0-9a-z]){re.escape(norm(k))}(?![0-9a-z])", f) for k in (*t.kata, *ALIAS.get(t.nama, []))
-    )
+    if any(_ada(f, x) for x in TOLAK.get(t.nama, [])):
+        return False
+    konteks = KONTEKS.get(t.nama, {})
+    for k in (*t.kata, *ALIAS.get(t.nama, [])):
+        if not _ada(f, k):
+            continue
+        if k in konteks and not any(_ada(f, c) for c in konteks[k]):
+            continue  # kata ambigu tanpa konteks ("kenapa gua jelek") -> coba kata kunci lain
+        return True
+    return False
 
 
 def cari(nama_atau_kata: str) -> Tema | None:

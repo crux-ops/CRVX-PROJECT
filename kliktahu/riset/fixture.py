@@ -140,6 +140,10 @@ def _yt_channels(ids: list[str]) -> dict:
     return {"items": [{"id": c, "statistics": {"subscriberCount": str(1000 + _rr(c) % 900000)}} for c in ids]}
 
 
+# halaman alihan tiruan (judul lama -> judul kanonik) untuk menguji wiki_kanonik
+ALIHAN_UJI = {"Astronaut": "Antariksawan", "Cicak": "Cecak"}
+
+
 def transport_uji(hari_ini: dt.date) -> httpx.MockTransport:
     sekarang = dt.datetime(hari_ini.year, hari_ini.month, hari_ini.day, 9, tzinfo=dt.UTC)
     kemarin = sekarang - dt.timedelta(hours=20)
@@ -154,6 +158,11 @@ def transport_uji(hari_ini: dt.date) -> httpx.MockTransport:
 
         if h == "suggestqueries.google.com":
             return js([q["q"], saran_palsu(q["q"], q.get("ds", "g")), [], {}])
+        if h.endswith("wikipedia.org") and p == "/w/api.php" and q.get("action") == "query":
+            judul = ALIHAN_UJI.get(q.get("titles", ""), q.get("titles", ""))
+            ada = judul.replace(" ", "_") in {t.wiki for t in TEMA.values()}
+            hal = {"1": {"title": judul}} if ada else {"-1": {"title": judul, "missing": ""}}
+            return js({"batchcomplete": "", "query": {"pages": hal}})
         if h.endswith("wikipedia.org") and p == "/w/api.php":
             t = next((t for t in DAFTAR if q.get("search", "").lower() in (t.nama, *t.kata)), None)
             return js([q.get("search"), [t.wiki.replace("_", " ")] if t else [], [""], [""]])

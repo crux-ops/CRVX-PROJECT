@@ -8,7 +8,6 @@ peta niche (permintaan vs celah), momen 60 hari, rencana 14 hari, performa per p
 from __future__ import annotations
 
 import datetime as dt
-import json
 from pathlib import Path
 from typing import Any
 
@@ -17,6 +16,7 @@ from PIL import Image, ImageDraw, ImageFont
 from . import ROOT, momen
 from . import kanal as kanal_mod
 from .db import DB, hari_ini_wib
+from .riset import keputusan as keputusan_mod
 from .tema import TEMA
 
 LAPORAN = ROOT / "laporan"
@@ -24,12 +24,16 @@ FONT = ROOT / "fonts"
 PILAR = ("tubuh", "antariksa", "bumi", "hewan", "teknologi", "misteri")
 
 
-def _tayang(kp: dict[str, Any]) -> str:
-    if not kp.get("tayang_paling_lambat"):
-        return ""
-    if kp.get("segera"):
-        return f" - tayang SECEPATNYA (paling cepat {kp['tayang_paling_lambat']})"
-    return f" - tayang paling lambat {kp['tayang_paling_lambat']}"
+def _tayang(kp: dict[str, Any], jd: dict[str, Any] | None = None) -> str:
+    out = ""
+    if kp.get("tayang_paling_lambat"):
+        if kp.get("segera"):
+            out = f" - tayang SECEPATNYA (paling cepat {kp['tayang_paling_lambat']})"
+        else:
+            out = f" - tayang paling lambat {kp['tayang_paling_lambat']}"
+    if jd:  # slot nyata di kalender (perencana) -> dasbor tidak bertentangan dengan KALENDER.md
+        out += f" -> dijadwalkan {jd['kode']} {jd['tanggal']} {jd['jam']} WIB"
+    return out
 
 
 def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
@@ -37,11 +41,7 @@ def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
     hari_ini = hari_ini or hari_ini_wib()
     run = db.run_terakhir() or db.run_terakhir(mode=("uji",))
     top = db.skor_run(run["id"]) if run else []
-    kep = None
-    js = LAPORAN / ("_uji" if run and run["mode"] == "uji" else "") / "riset_terakhir.json"
-    if run and js.exists():
-        d = json.loads(js.read_text(encoding="utf-8"))
-        kep = d.get("keputusan") if d.get("run_id") == run["id"] else None
+    kep = keputusan_mod.dari_laporan(run, LAPORAN)
     topik = db.daftar("topik")
     per_pilar = {p: {"segar": 0, "long": 0, "dibahas": 0, "lain": 0} for p in PILAR}
     for t in topik:
@@ -60,6 +60,15 @@ def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
         (hari_ini.isoformat(), (hari_ini + dt.timedelta(days=14)).isoformat()),
         urut="tanggal, jam",
     )
+    jadwal = None
+    if kep:
+        j = db.daftar(
+            "rencana",
+            "judul_kerja = ? AND format = ? AND tanggal >= ?",
+            (kep.get("tema"), kep.get("format"), hari_ini.isoformat()),
+            urut="tanggal, jam",
+        )
+        jadwal = {"kode": j[0]["episode_kode"], "tanggal": j[0]["tanggal"], "jam": j[0]["jam"]} if j else None
     r = k.riset
     return {
         "hari_ini": hari_ini.isoformat(),
@@ -77,6 +86,7 @@ def kumpulkan(db: DB, hari_ini: dt.date | None = None) -> dict[str, Any]:
         "run": run,
         "umur_data_hari": (hari_ini - dt.date.fromisoformat(run["tanggal"])).days if run else None,
         "keputusan": kep,
+        "jadwal_keputusan": jadwal,
         "top": top[:20],
         "momen": m60[:12],
         "momen_live": live[:6],
@@ -120,7 +130,7 @@ def terminal(d: dict[str, Any]) -> None:
             Panel(
                 f"[bold green]{kp['tema']}[/] ({kp['pilar']}) - {kp['format'].upper()} - peluang {kp['peluang']} "
                 f"- keyakinan {kp['keyakinan']:.0%}"
-                + (f" - tayang <= {kp['tayang_paling_lambat']}" if kp.get("tayang_paling_lambat") else "")
+                + _tayang(kp, d.get("jadwal_keputusan"))
                 + "\n"
                 + "\n".join("- " + a for a in kp["alasan"][:4]),
                 title="KEPUTUSAN RISET",
@@ -191,7 +201,7 @@ def markdown(d: dict[str, Any]) -> str:
             "## Keputusan riset",
             "",
             f"**{kp['tema']}** ({kp['pilar']}) - {kp['format']} - peluang {kp['peluang']} - "
-            f"keyakinan {kp['keyakinan']:.0%}" + _tayang(kp),
+            f"keyakinan {kp['keyakinan']:.0%}" + _tayang(kp, d.get("jadwal_keputusan")),
             "",
             *[f"- {a}" for a in kp["alasan"]],
             "",
@@ -369,10 +379,14 @@ def png(d: dict[str, Any], path: Path, k: kanal_mod.Kanal | None = None) -> Path
         g.rounded_rectangle((mx, 852, mx + w, 884), 16, fill=(238, 233, 224))
         g.text((mx + 14, 857), teks_m, font=_f("Medium", 17), fill=INK)
         mx += w + 12
-    kp = d["keputusan"]
+    kp, jd = d["keputusan"], d.get("jadwal_keputusan")
+    if kp and jd:  # PNG: satu baris -> slot kalender saja (tenggat ada di DASBOR.md / RISET.md)
+        dd, mm = jd["tanggal"][8:10], jd["tanggal"][5:7]
+        waktu = f" - jadwal {jd['kode']} {dd}/{mm} {jd['jam']} WIB"
+    else:
+        waktu = _tayang(kp) if kp else ""
     kal = (
-        f"Keputusan: {kp['tema']} ({kp['format']}) - peluang {kp['peluang']} - keyakinan {kp['keyakinan']:.0%}"
-        + _tayang(kp)
+        f"Keputusan: {kp['tema']} ({kp['format']}) - peluang {kp['peluang']} - keyakinan {kp['keyakinan']:.0%}" + waktu
         if kp
         else "Keputusan: belum ada riset - jalankan python3 -m kliktahu riset"
     )

@@ -68,6 +68,28 @@ def urai_opensearch(teks: str) -> str | None:
         return None
 
 
+def urai_kanonik(teks: str) -> str | None:
+    """judul KANONIK dari action=query&redirects=1 (alihan diikuti); None bila halaman tidak ada."""
+    try:
+        halaman = json.loads(teks)["query"]["pages"]
+    except (ValueError, KeyError, TypeError):
+        return None
+    for h in halaman.values():
+        if "missing" not in h and "invalid" not in h and h.get("title"):
+            return str(h["title"])
+    return None
+
+
+def wiki_kanonik(k: KlienRiset, judul: str, bahasa: str = "id") -> str | None:
+    """'Astronaut' -> 'Antariksawan'. API pageview TIDAK mengikuti alihan: pageview halaman alihan hampir nol."""
+    r = k.get(
+        f"https://{bahasa}.wikipedia.org/w/api.php",
+        {"action": "query", "titles": judul.replace("_", " "), "redirects": "1", "format": "json"},
+        ttl_jam=168,
+    )
+    return urai_kanonik(r.teks)
+
+
 def wiki_judul(k: KlienRiset, q: str, bahasa: str = "id") -> str | None:
     r = k.get(
         f"https://{bahasa}.wikipedia.org/w/api.php",

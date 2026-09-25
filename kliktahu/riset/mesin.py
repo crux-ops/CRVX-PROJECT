@@ -27,7 +27,7 @@ from .. import ROOT, __version__, momen, pustaka, teks
 from .. import metadata as meta_mod
 from .. import skor as S
 from ..db import DB, hari_ini_wib
-from ..tema import LEKS, TEMA, relevan
+from ..tema import ALIAS, BENCANA, LEKS, TEMA, relevan
 from . import sumber as SB
 from .agen import SumberAgen
 from .agen import muat as muat_agen
@@ -63,10 +63,14 @@ class SumberOnline:
 
     def wiki(self, tema: str) -> dict | None:
         t = TEMA[tema]
-        w = SB.wiki_views(self.k, t.wiki, self.hari_ini)
+        try:
+            judul = SB.wiki_kanonik(self.k, t.wiki) or t.wiki  # ikuti alihan (registri bisa usang)
+        except Exception:  # API MediaWiki gagal -> pakai judul registri apa adanya
+            judul = t.wiki
+        w = SB.wiki_views(self.k, judul, self.hari_ini)
         if w is None:
-            judul = SB.wiki_judul(self.k, t.inti)
-            w = SB.wiki_views(self.k, judul, self.hari_ini) if judul else None
+            cadangan = SB.wiki_judul(self.k, t.inti)
+            w = SB.wiki_views(self.k, cadangan, self.hari_ini) if cadangan else None
         return w
 
     def berita(self, tema: str) -> dict | None:
@@ -318,6 +322,7 @@ def jalankan(
             momen=ms,
             momen_nama=ev.nama if ev else None,
             momen_tanggal=ev.tanggal.isoformat() if ev else None,
+            momen_selesai=ev.selesai.isoformat() if ev and ev.selesai else None,
             momen_jenis=ev.jenis if ev else None,
             velocity=vel if p else None,
             v5_views=S.v5_views(r["sinyal"], r.get("jaring", 0), vel, ms),
@@ -506,9 +511,75 @@ def jalankan(
     return hasil_r
 
 
-def _momen_pendek(r: dict[str, Any]) -> str:
-    n = r.get("momen_nama") or ""
-    return n.split(":")[0].split("(")[0].strip()[:40]
+def _momen_pendek(r: dict[str, Any], maks: int = 40) -> str:
+    return momen.nama_pendek(r.get("momen_nama") or "", maks)
+
+
+# kata pengisi: "kenapa tsunami BISA TERJADI" = kata kunci inti, bukan sudut pembeda
+_PENGISI = {"bisa", "terjadi", "terjadinya", "itu", "sih", "ya", "adalah", "dapat", "sebenarnya", "yang", "ada", "kok"}
+_BENIH_TANYA = {"kenapa", "mengapa", "padahal", "apakah", "bagaimana"}
+# kata umum di nama momen yang bukan pembeda ("Peringatan 8 tahun ... (bahas sains dengan hormat)")
+_UMUM_MOMEN = {
+    "peringatan",
+    "tahun",
+    "hari",
+    "bahas",
+    "sains",
+    "dengan",
+    "hormat",
+    "sedunia",
+    "nasional",
+    "internasional",
+    "dunia",
+    "pekan",
+    "awal",
+    "musim",
+    "banyak",
+    "wilayah",
+    "perkiraan",
+    "umum",
+    "cek",
+    "status",
+    "terbaru",
+    "beruntun",
+    "sampai",
+    "naik",
+    "bukan",
+    "prediksi",
+    "imbauan",
+    "mitigasi",
+    "setelah",
+    "sebulan",
+    "memicu",
+    "hingga",
+    "terlihat",
+    "dari",
+    "untuk",
+    "pada",
+    "yang",
+    "atau",
+    "merilis",
+    "skenario",
+    "terburuk",
+}
+
+
+def _kata_tema(nama: str) -> set[str]:
+    t = TEMA[nama]
+    return {w for x in (t.nama, *t.kata, *ALIAS.get(nama, [])) for w in teks.norm(x.replace("&", " ")).split()}
+
+
+def _generik(frasa: str, nama: str) -> bool:
+    """frasa hanya berisi benih + kata tema + kata pengisi -> bukan sudut ('kenapa bisa terjadinya tsunami')."""
+    return all(w in _BENIH_TANYA | _PENGISI | _kata_tema(nama) for w in frasa.split())
+
+
+def _kata_momen(r: dict[str, Any]) -> set[str]:
+    """kata pembeda dari nama momen yang relevan saat ini ('... tsunami Palu-Donggala 2018' -> {palu, donggala, gempa})."""
+    if not r.get("momen_nama") or r.get("momen", 0) < 0.5:
+        return set()
+    kata = teks.norm(r["momen_nama"].replace("-", " ")).split()
+    return {w for w in kata if len(w) >= 4 and not w.isdigit() and w not in _UMUM_MOMEN | _kata_tema(r["tema"])}
 
 
 def _sudut(r: dict[str, Any], k: Any) -> list[str]:
@@ -519,20 +590,28 @@ def _sudut(r: dict[str, Any], k: Any) -> list[str]:
         # sudut = pertanyaan SPESIFIK (>= 4 kata), bukan kueri inti ('kenapa gunung meletus' = kata kunci, bukan sudut)
         if len(w) < 4 or w[0] not in ("kenapa", "padahal", "apakah") or teks.sensitif(f, k.aturan.sensitif):
             continue
+        if _generik(f, r["tema"]):  # 'kenapa tsunami bisa terjadi' = kata kunci + pengisi
+            continue
         if judul and teks.paling_mirip(" ".join(w[1:]), judul)[1] >= 0.75:
             continue
         out.append(f)
+    # sudut yang menyambung momen saat ini didahulukan (Palu 28 Sep -> 'kenapa tsunami palu bisa terjadi')
+    km = _kata_momen(r)
+    out.sort(key=lambda f: not (km & set(f.split())))
     tanya = [teks.norm(q) for q in (r.get("tanya") or []) if not teks.sensitif(q, k.aturan.sensitif)]
     return (out + tanya)[:4]
 
 
 def _hook(r: dict[str, Any], k: Any) -> list[str]:
     out = []
-    for f in r["sinyal"]["frasa"]:
+    bencana = r["tema"] in BENCANA  # ada korban jiwa nyata -> tanpa "lebih seru" / "tidak seperti yang kamu kira"
+    for f in dict.fromkeys([*r.get("sudut", []), *r["sinyal"]["frasa"]]):
         w = f.split()
-        if len(w) > 5 or teks.kena(f, k.aturan.hindari_hook) or teks.sensitif(f, k.aturan.sensitif):
+        if len(w) < 3 or len(w) > 5 or teks.kena(f, k.aturan.hindari_hook) or teks.sensitif(f, k.aturan.sensitif):
             continue
-        if w[0] == "kenapa":
+        if bencana and w[0] in ("kenapa", "apakah"):
+            out.append(f"{teks.kalimat(f)}? Ini penjelasan ilmiahnya.")
+        elif w[0] == "kenapa":
             # "setiap hari" hanya untuk pengalaman sehari-hari (cegukan, menguap), bukan gunung meletus / lubang hitam
             sehari = any(x in w for x in ("kita", "terus", "sering", "tiba", "saat", "badan", "kepala"))
             out.append(
@@ -603,6 +682,7 @@ def tulis_laporan(h: HasilRiset, folder: Path) -> Path:
                     f"- {a['tema']} ({a['pilar']}) peluang {a['peluang']}, keyakinan {a['keyakinan']:.0%}"
                     + (f', sudut "{a["sudut"]}"' if a.get("sudut") else "")
                     + (f", momen: {a['momen']}" if a.get("momen") else "")
+                    + (f" - **{a['catatan']}**" if a.get("catatan") else "")
                     for a in kep.alternatif
                 ],
             ]

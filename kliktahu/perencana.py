@@ -1,7 +1,9 @@
 """kliktahu/perencana.py - PERENCANA TOPIK: kalender konten N minggu + deteksi momen + berkas ICS.
 
 * slot Shorts per minggu & Long per bulan dari kanal.toml, jam unggah terbaik (WIB)
-* topik BERMOMEN dijadwalkan `momen_hari_sebelum` hari SEBELUM event (bukan sesudah)
+* KEPUTUSAN riset terakhir (episode berikutnya) mengisi slot Shorts PERTAMA -> kalender = laporan RISET.md
+* topik BERMOMEN diurutkan TENGGAT terdekat dulu (EDF): dijadwalkan `momen_hari_sebelum` hari sebelum event, paling
+  lambat HARI H (tidak pernah sesudah event); momen berlangsung yang verifikasinya lewat menyusul setelahnya
 * sisa slot diisi peringkat PELUANG v7 riset terakhir; pilar tidak dobel berturut-turut
 * Long: topik dengan pohon pertanyaan lebar & dalam (v4) dan evergreen
 * entri 'terkunci'/'selesai' milik pemilik tidak pernah ditimpa; hasil = usulan
@@ -17,6 +19,7 @@ from typing import Any
 
 from . import ROOT, momen, skor, teks
 from .db import DB, hari_ini_wib
+from .riset import keputusan as keputusan_mod
 from .tema import TEMA
 
 LAPORAN = ROOT / "laporan"
@@ -86,10 +89,47 @@ def susun(db: DB, hari_ini: dt.date | None = None, minggu: int = 4, simpan: bool
     dipakai: set[str] = {teks.norm(r["judul_kerja"] or "") for r in db.daftar("rencana", "status = 'terkunci'")}
     isi: dict[int, dict[str, Any]] = {}
 
-    # 1) topik bermomen -> slot Shorts terdekat SEBELUM (event - N hari). Syarat: momen kuat (>= 0.5 atau live),
-    #    peluang v7 minimal median kandidat, dan SATU topik terbaik per event (tidak menumpuk satu momen).
     ambang = sorted(r["v7_peluang"] for r in rank)[len(rank) // 2] if rank else 0.0
     event_dipakai: set[tuple[str, str]] = set()
+
+    def kunci_event(m: momen.Momen) -> tuple[str, str]:
+        return (m.tanggal.isoformat(), teks.norm(m.nama.split(":")[0]))
+
+    def shorts_bebas() -> list[int]:
+        return [i for i, s in enumerate(bebas) if s["format"] == "shorts" and i not in isi]
+
+    # 0) KEPUTUSAN riset = episode berikutnya -> slot Shorts PERTAMA (kalender konsisten dengan laporan RISET.md)
+    kep = keputusan_mod.dari_laporan(run, LAPORAN)
+    if kep and kep.get("format") == "shorts" and kep.get("tema") in TEMA and teks.norm(kep["tema"]) not in dipakai:
+        sb = shorts_bebas()
+        if sb:
+            i = sb[0]
+            r0 = next((x for x in rank if x["nama"] == kep["tema"]), None)
+            s_m, m0 = momen.skor_tema(kep["tema"], daftar_m, hari_ini, k.jadwal.jendela_momen_hari)
+            m0 = m0 if m0 and s_m >= 0.5 else None
+            ket = f"KEPUTUSAN riset: peluang {kep.get('peluang')}"
+            if m0:
+                ket += f"; momen: {m0.nama} ({m0.tanggal})"
+                event_dipakai.add(kunci_event(m0))
+            saran = kep.get("tayang_paling_lambat")
+            if saran and bebas[i]["tanggal"] > saran and not kep.get("segera"):
+                ket += f"; saran paling lambat {saran} jatuh di luar slot -> slot pertama yang tersedia"
+            isi[i] = {
+                **bebas[i],
+                "tema": kep["tema"],
+                "skor": r0["v7_peluang"] if r0 else float(kep.get("peluang") or 0),
+                "momen": m0,
+                "alasan": ket,
+            }
+            dipakai.add(teks.norm(kep["tema"]))
+
+    # 1) topik bermomen, TENGGAT terdekat dulu (EDF). Syarat: momen kuat (>= 0.5 atau live), peluang v7 minimal
+    #    median kandidat, SATU topik terbaik per event. Momen bertanggal: slot terdekat sebelum (event - N hari),
+    #    paling lambat hari H - bila tak terkejar, tidak dipaksakan. Momen berlangsung: secepatnya; bila verifikasinya
+    #    sudah lewat saat slot pertama, menyusul SETELAH momen bertanggal yang tenggatnya dekat.
+    sb0 = shorts_bebas()
+    slot1 = dt.date.fromisoformat(bebas[sb0[0]]["tanggal"]) if sb0 else mulai
+    antre = []
     for r in rank:
         nama = r["nama"]
         if nama not in TEMA or teks.norm(nama) in dipakai:
@@ -97,23 +137,30 @@ def susun(db: DB, hari_ini: dt.date | None = None, minggu: int = 4, simpan: bool
         s_m, m = momen.skor_tema(nama, daftar_m, hari_ini, k.jadwal.jendela_momen_hari)
         if not m or (s_m < 0.5 and m.jenis not in ("live", "agen")) or r["v7_peluang"] < ambang:
             continue
-        kunci_ev = (m.tanggal.isoformat(), teks.norm(m.nama.split(":")[0]))
-        if kunci_ev in event_dipakai:
+        if m.tanggal <= hari_ini:  # sedang berlangsung
+            tenggat = slot1 if (m.selesai or m.tanggal) >= slot1 else slot1 + dt.timedelta(days=1)
+        else:
+            tenggat = m.tanggal
+        antre.append((tenggat, -r["v7_peluang"], nama, r, m))
+    for _tenggat, _, nama, r, m in sorted(antre, key=lambda x: (x[0], x[1], x[2])):
+        if kunci_event(m) in event_dipakai or teks.norm(nama) in dipakai:
             continue
-        target = m.tanggal - dt.timedelta(days=k.jadwal.momen_hari_sebelum)
-        pilihan = [
-            i
-            for i, s in enumerate(bebas)
-            if s["format"] == "shorts" and i not in isi and dt.date.fromisoformat(s["tanggal"]) <= max(target, mulai)
-        ]
-        segera = m.jenis in ("live", "agen") and m.tanggal <= hari_ini  # sedang berlangsung -> slot PERTAMA
-        if segera or not pilihan:
-            pertama = [i for i, s in enumerate(bebas) if s["format"] == "shorts" and i not in isi]
-            if not pertama or not (segera or target <= mulai):
-                continue
-            pilihan = pertama[:1]
-        i = pilihan[-1]
-        event_dipakai.add(kunci_ev)
+        sb = shorts_bebas()
+        if not sb:
+            break
+        if m.tanggal <= hari_ini:
+            i = sb[0]
+        else:
+            target = m.tanggal - dt.timedelta(days=k.jadwal.momen_hari_sebelum)
+            ideal = [x for x in sb if dt.date.fromisoformat(bebas[x]["tanggal"]) <= target]
+            tepat = [x for x in sb if dt.date.fromisoformat(bebas[x]["tanggal"]) <= m.tanggal]
+            if ideal:
+                i = ideal[-1]  # sedekat mungkin ke N hari sebelum event
+            elif tepat:
+                i = tepat[0]  # terlambat dari ideal -> slot pertama, paling lambat hari H
+            else:
+                continue  # event terlewat sebelum slot mana pun -> diisi peringkat biasa
+        event_dipakai.add(kunci_event(m))
         isi[i] = {
             **bebas[i],
             "tema": nama,

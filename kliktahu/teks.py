@@ -33,6 +33,60 @@ _GANTI = {
     "\u2192": "->",
 }
 KECIL = {"di", "ke", "dan", "yang", "atau", "dari", "pada", "untuk", "itu", "ini", "dengan", "sih", "kah", "vs"}
+# singkatan yang selalu KAPITAL ("kenapa ai butuh air" -> "Kenapa AI Butuh Air")
+SINGKATAN = {
+    "ai": "AI",
+    "nasa": "NASA",
+    "bmkg": "BMKG",
+    "pvmbg": "PVMBG",
+    "usgs": "USGS",
+    "noaa": "NOAA",
+    "esa": "ESA",
+    "iss": "ISS",
+    "dna": "DNA",
+    "brin": "BRIN",
+}
+# nama diri (tempat, gunung, planet) -> huruf besar di kalimat hook ("kenapa tsunami palu" -> "Kenapa tsunami Palu")
+NAMA_DIRI = {
+    "palu",
+    "donggala",
+    "aceh",
+    "jakarta",
+    "indonesia",
+    "jawa",
+    "sumatera",
+    "sumatra",
+    "sulawesi",
+    "kalimantan",
+    "papua",
+    "bali",
+    "lombok",
+    "flores",
+    "semeru",
+    "merapi",
+    "krakatau",
+    "sinabung",
+    "lewotobi",
+    "sahara",
+    "andromeda",
+    "chicxulub",
+    "apophis",
+    "atlantis",
+    "borobudur",
+    "stonehenge",
+    "bermuda",
+    "giza",
+    "mesir",
+    "mars",
+    "saturnus",
+    "yupiter",
+    "jupiter",
+    "venus",
+    "merkurius",
+    "neptunus",
+    "uranus",
+    "pluto",
+}
 
 
 def ascii_saja(s: str) -> str:
@@ -124,6 +178,8 @@ def kapital_judul(s: str) -> str:
     for i, x in enumerate(w):
         if x.isupper() and len(x) > 1:  # singkatan (NASA, AI) dipertahankan
             out.append(x)
+        elif x.lower() in SINGKATAN:
+            out.append(SINGKATAN[x.lower()])
         elif i and x.lower() in KECIL:
             out.append(x.lower())
         else:
@@ -145,5 +201,8 @@ def panjang_tag_youtube(tags: Sequence[str]) -> int:
 
 
 def kalimat(s: str) -> str:
-    s = s.strip()
+    """huruf besar di awal kalimat + nama diri & singkatan ('kenapa tsunami palu' -> 'Kenapa tsunami Palu')."""
+    w = s.strip().split(" ")
+    w = [SINGKATAN.get(x, x[:1].upper() + x[1:] if x in NAMA_DIRI else x) for x in w]
+    s = " ".join(w)
     return s[:1].upper() + s[1:] if s else s

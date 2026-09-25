@@ -41,7 +41,8 @@ blokir = ["kentut", "buang angin", "flatus", "ngiler", "iler", "keringat", "bau 
 sensitif = ["lgbt", "politik", "partai", "pemilu", "capres", "sara", "porno", "bokep", "judi", "slot", "pinjol",
             "togel", "kafir", "sesat", "azab", "santet", "pelet", "islam", "alquran", "quran", "ayat", "sholat",
             "shalat", "tahajud", "hadis", "hadits", "dalil", "syariat", "kristen", "hindu", "buddha", "kabah",
-            "haram", "halal"]
+            "haram", "halal", "najis", "alhamdulillah", "adzan", "azan", "pahala", "dosa", "surga", "neraka", "nabi",
+            "rasul"]
 hindari_hook = ["haram", "halal", "agama", "dosa", "harga", "murah", "brand", "merek", "game", "judi", "slot"]
 pilar_kesehatan = ["tubuh"]
 disclaimer_kesehatan = "Konten edukasi, bukan pengganti dokter."
@@ -91,4 +92,6 @@ env_openalex_mailto = "OPENALEX_MAILTO"
 domain = ["nasa.gov", "esa.int", "eso.org", "noaa.gov", "nhs.uk", "mayoclinic.org", "clevelandclinic.org",
           "who.int", "cdc.gov", "nih.gov", "ncbi.nlm.nih.gov", "bmkg.go.id", "brin.go.id", "usgs.gov",
           "nature.com", "science.org", "sciencedirect.com", "britannica.com", "nationalgeographic.com",
-          "smithsonianmag.com", "iau.org", "imo.net", "kemkes.go.id", "ac.id", "edu", "ac.uk"]
+          "smithsonianmag.com", "iau.org", "imo.net", "kemkes.go.id", "ac.id", "edu", "ac.uk",
+          # otoritas bencana RI + penerbit jurnal bereputasi (BUKAN doi.org: semua DOI termasuk jurnal predator lolos)
+          "esdm.go.id", "bnpb.go.id", "aps.org", "agu.org", "onlinelibrary.wiley.com", "springer.com", "pnas.org"]

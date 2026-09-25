@@ -203,3 +203,56 @@ def test_cli_asap():
     r = jalan("astro", "--tahun", "2026", "--kota", "Semarang")
     assert "10-10" not in r.stdout and "11-10 11:25" in r.stdout
     assert jalan("sinkron").returncode == 1  # belum dikonfigurasi -> pesan jelas, bukan crash
+
+
+def test_metadata_bencana_hormat_dan_gerbang_baca_content_json(k, tmp_path):
+    fr = ["kenapa tsunami bisa terjadi", "kenapa tsunami surut dulu", "kenapa tsunami palu bisa terjadi"]
+    p = M.buat("tsunami", fr, "shorts", k)
+    assert p.lulus, p.galat
+    assert "seru" not in p.deskripsi.lower() and "Info resmi & peringatan dini: BMKG" in p.deskripsi
+    assert not any("Bikin Kaget" in j or "Dugaanmu" in j for j in p.judul)
+    p.judul[0] = "Kenapa Tsunami Terjadi? Jawabannya Bikin Kaget"
+    g, _ = M.lint(p, k, final=False)
+    assert any("sensasi" in x for x in g)
+    # gerbang render: tema dibaca dari content.json di folder episode -> nada bencana & disclaimer kesehatan ditegakkan
+    ep = tmp_path / "Ep50"
+    ep.mkdir()
+    md = M.tulis_md(M.buat("pelangi", FRASA, "shorts", k), ep / "METADATA.md", "uji")
+    md.write_text(md.read_text().replace("Kenapa pelangi melengkung?\n", "Kenapa pelangi melengkung?\nSeru!\n"))
+    (ep / "content.json").write_text(json.dumps({"topik": "tsunami"}), encoding="utf-8")
+    assert any("sensasi" in x for x in M.cek_md(md, "shorts", k=k)[0])
+    (ep / "content.json").write_text(json.dumps({"topik": "cegukan"}), encoding="utf-8")
+    assert any("kesehatan" in x for x in M.cek_md(md, "shorts", k=k)[0])  # pilar tubuh diturunkan dari tema
+
+
+def test_perencana_keputusan_dulu_lalu_tenggat_terdekat(db, tmp_path, monkeypatch):
+    from kliktahu import momen
+
+    def baris(nama, peluang, n):
+        return {"nama": nama, "v7_peluang": peluang, "peringkat": n, "status_topik": "segar", "sinyal": {}}
+
+    rank = [baris("gunung berapi", 67.9, 1), baris("tsunami", 65.7, 2), baris("otak", 62.5, 3), baris("kuku", 59.4, 4)]
+    daftar = [
+        momen.Momen(
+            dt.date(2026, 9, 4), "Erupsi beruntun", ["gunung berapi"], "agen", "uji", 0.7, dt.date(2026, 9, 25)
+        ),
+        momen.Momen(dt.date(2026, 9, 28), "Peringatan 8 tahun tsunami Palu", ["tsunami"], "statis", "uji"),
+    ]
+    run = {"id": 7, "mode": "agen"}
+    monkeypatch.setattr(perencana, "_peringkat", lambda d: (rank, run))
+    monkeypatch.setattr(perencana.momen, "semua", lambda *a, **kw: daftar)
+    monkeypatch.setattr(perencana, "LAPORAN", tmp_path)
+    # tanpa keputusan: EDF -> tsunami (event 28 Sep) di slot pertama Senin 28 Sep, gunung berapi (verifikasi lewat) sesudahnya
+    s = [r for r in perencana.susun(db, HARI, 2, simpan=False) if r["format"] == "shorts"]
+    assert [(r["tanggal"], r["judul_kerja"]) for r in s[:2]] == [
+        ("2026-09-28", "tsunami"),
+        ("2026-09-29", "gunung berapi"),
+    ]
+    # dengan keputusan 'kuku': slot pertama = keputusan; tsunami TIDAK dijadwalkan sebagai momen sesudah event
+    (tmp_path / "riset_terakhir.json").write_text(
+        json.dumps({"run_id": 7, "keputusan": {"tema": "kuku", "format": "shorts", "peluang": 59.4}}), encoding="utf-8"
+    )
+    rows = perencana.susun(db, HARI, 2, simpan=False)
+    assert rows[0]["judul_kerja"] == "kuku" and rows[0]["alasan"].startswith("KEPUTUSAN riset")
+    ts = next(r for r in rows if r["judul_kerja"] == "tsunami")
+    assert "momen" not in ts["alasan"] and ts["tanggal"] > "2026-09-28"  # diisi peringkat biasa, bukan "momen" telat

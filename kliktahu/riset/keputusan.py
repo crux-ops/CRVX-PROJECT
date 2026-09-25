@@ -3,7 +3,9 @@
 Aturan:
 1. Kandidat = topik segar atau 'long' (boleh Shorts sudut baru), tidak diblokir, frasa tidak didominasi kata sensitif.
 2. Topik BERMOMEN yang waktunya mepet (event <= momen_hari_sebelum + 10 hari) dan skornya <= 8 poin di bawah
-   juara dipilih lebih dulu (kesempatan yang tidak datang dua kali).
+   juara dipilih lebih dulu (kesempatan yang tidak datang dua kali) - asal masih TERKEJAR jeda produksi: momen
+   bertanggal minimal siap_shorts_hari lagi, atau momen berlangsung yang masih berlangsung saat paling cepat tayang.
+   Bila juara skor dilewati, alasannya DITULIS (transparan) dan juara skor diberi catatan penjadwalan.
 3. Format Long bila pohon pertanyaannya lebar & dalam (v4) dan evergreen; selain itu Shorts.
 4. Keyakinan < 0.5 -> rekomendasi SEMENTARA (data belum cukup; jalankan riset online / lengkapi data agen).
 """
@@ -11,12 +13,14 @@ Aturan:
 from __future__ import annotations
 
 import datetime as dt
+import json
 from dataclasses import asdict, dataclass, field
+from pathlib import Path
 from typing import Any
 
 from .. import kanal as kanal_mod
 from .. import skor as S
-from ..tema import TEMA
+from ..tema import BENCANA, TEMA
 
 
 @dataclass
@@ -42,6 +46,18 @@ class Keputusan:
 
     def dict(self) -> dict[str, Any]:
         return asdict(self)
+
+
+def dari_laporan(run: dict[str, Any] | None, laporan: Path) -> dict[str, Any] | None:
+    """keputusan milik `run` dari riset_terakhir.json (None bila tidak ada / berkas milik run lain)."""
+    if not run:
+        return None
+    js = laporan / ("_uji" if run.get("mode") == "uji" else "") / "riset_terakhir.json"
+    if not js.exists():
+        return None
+    d = json.loads(js.read_text(encoding="utf-8"))
+    kep = d.get("keputusan") if d.get("run_id") == run.get("id") else None
+    return kep if isinstance(kep, dict) else None
 
 
 def _rb(x: float) -> str:
@@ -101,19 +117,48 @@ def niche(rows: list[dict[str, Any]]) -> list[dict[str, Any]]:
     return sorted(out, key=lambda x: -x["peluang_top3"])
 
 
+def sisa_momen(r: dict[str, Any], hari_ini: dt.date, siap: int) -> int | None:
+    """hari menuju momen yang MASIH TERKEJAR jeda produksi `siap` hari; 0 = sedang berlangsung dan masih berlangsung
+    saat paling cepat tayang; None = tidak bermomen / momen lewat sebelum video bisa tayang."""
+    if not r.get("momen_tanggal"):
+        return None
+    mulai = dt.date.fromisoformat(r["momen_tanggal"])
+    akhir = dt.date.fromisoformat(r.get("momen_selesai") or r["momen_tanggal"])
+    siap_tayang = hari_ini + dt.timedelta(days=siap)
+    if mulai <= hari_ini:
+        return 0 if akhir >= siap_tayang else None
+    sisa = (mulai - hari_ini).days
+    return sisa if sisa >= siap else None
+
+
+def _catatan_juara_skor(top: dict[str, Any], hari_ini: dt.date, siap: int) -> str:
+    akhir = top.get("momen_selesai") or top.get("momen_tanggal")
+    if (
+        top.get("momen_jenis") in ("live", "agen")
+        and akhir
+        and akhir < (hari_ini + dt.timedelta(days=siap)).isoformat()
+    ):
+        return (
+            f"juara skor; momennya berlangsung (terakhir terverifikasi {akhir}) - angkat berikutnya selama masih "
+            "berlangsung, cek status di sumber resmi dulu"
+        )
+    return "juara skor - jadwalkan berikutnya"
+
+
 def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) -> Keputusan | None:
     calon = [r for r in rows if r["status"] in ("segar", "long") and not r.get("dominan_sensitif")]
     if not calon:
         return None
     calon.sort(key=lambda r: -r["v7_peluang"])
-    juara = calon[0]
+    juara = top = calon[0]
     batas = k.jadwal.momen_hari_sebelum + 10
+    siap_min = k.jadwal.siap_shorts_hari
     for r in calon[:5]:
-        if r.get("momen_tanggal") and r["komponen"]["waktu"] >= 0.5:
-            sisa = (dt.date.fromisoformat(r["momen_tanggal"]) - hari_ini).days
-            if 0 <= sisa <= batas and r["v7_peluang"] >= juara["v7_peluang"] - 8:
-                juara = r
-                break
+        sisa = sisa_momen(r, hari_ini, siap_min)
+        dekat = sisa is not None and 0 <= sisa <= batas
+        if dekat and r["komponen"]["waktu"] >= 0.5 and r["v7_peluang"] >= top["v7_peluang"] - 8:
+            juara = r
+            break
     t = TEMA[juara["tema"]]
     fmt = S.format_saran(juara.get("jaring", 0), juara.get("kedalaman", 0), t.ever, juara["v7_peluang"])
     tayang, segera = None, False
@@ -131,12 +176,20 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
             + ", ".join(juara["frasa_sensitif"][:3])
             + ") - JANGAN dipakai di judul/tag/hook."
         )
-    if juara.get("momen_jenis") in ("live", "agen") and t.nama in ("gempa bumi", "tsunami", "gunung berapi"):
+    if t.nama in BENCANA:  # SELALU (dulu hanya untuk momen live -> peringatan tsunami Palu tidak memicu apa pun)
         peringatan.append(
-            "Momen bencana nyata: bahas sainsnya dengan hormat, tanpa sensasi; sumber resmi "
-            + ("PVMBG/MAGMA Indonesia (magma.esdm.go.id)" if t.nama == "gunung berapi" else "BMKG")
-            + "."
+            "Topik bencana dengan korban jiwa nyata: bahas sainsnya dengan hormat, tanpa sensasi & tanpa menakut-nakuti "
+            f"(tanpa kata 'seru', 'ngeri', 'bikin kaget'); arahkan ke info resmi {BENCANA[t.nama]}."
         )
+        if juara.get("momen_jenis") in ("live", "agen"):
+            peringatan.append(
+                "Momen bencana SEDANG berlangsung: cek status terbaru di sumber resmi sebelum naskah & rilis."
+            )
+        elif juara.get("momen_nama") and "peringatan" in juara["momen_nama"].lower():
+            peringatan.append(
+                f"Momen peringatan ({juara['momen_nama'].split('(')[0].strip()}): hormati korban & penyintas; "
+                "fokus sains dan kesiapsiagaan, bukan dramatisasi."
+            )
     if juara["keyakinan"] < 0.5:
         peringatan.append(
             "Keyakinan rendah: sebagian komponen belum berdata (jalankan riset online atau lengkapi data agen)."
@@ -155,7 +208,18 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
                 "keyakinan": round(r["keyakinan"], 2),
                 "sudut": (r.get("sudut") or [None])[0],
                 "momen": r.get("momen_nama"),
+                **({"catatan": _catatan_juara_skor(r, hari_ini, siap_min)} if r is top else {}),
             }
+        )
+    daftar_alasan = alasan(juara)
+    if juara is not top:  # transparan: kenapa juara SKOR tidak dipilih
+        sisa = sisa_momen(juara, hari_ini, siap_min)
+        daftar_alasan.insert(
+            0,
+            f"Didahulukan dari {top['tema']} (peluang {top['v7_peluang']:.1f}; selisih "
+            f"{top['v7_peluang'] - juara['v7_peluang']:.1f} <= 8 poin): momen "
+            f"{(juara.get('momen_nama') or '').split('(')[0].strip()} {juara['momen_tanggal']} tinggal {sisa} hari "
+            "dan masih terkejar jeda produksi - kesempatan yang tidak datang dua kali (aturan 2).",
         )
     return Keputusan(
         tema=juara["tema"],
@@ -167,7 +231,7 @@ def putuskan(rows: list[dict[str, Any]], k: kanal_mod.Kanal, hari_ini: dt.date) 
         status=juara["status"],
         sudut=(juara.get("sudut") or [None])[0],
         hook=juara.get("hook", []),
-        alasan=alasan(juara),
+        alasan=daftar_alasan,
         peringatan=peringatan,
         alternatif=alt,
         seri=juara.get("seri", []),

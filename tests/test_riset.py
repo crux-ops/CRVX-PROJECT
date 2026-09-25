@@ -189,3 +189,146 @@ def test_mesin_agen(tmp_path):
     top = {r["tema"]: r for r in h.baris}["pelangi"]
     assert top["wiki"]["views60"] > 0 and top["frasa_sensitif"] == ["kenapa pelangi jadi lambang lgbt"]
     assert d.sumber_topik(d.topik("pelangi")["id"])[0]["kredibel"]
+
+
+@pytest.mark.parametrize(
+    ("tema", "frasa", "harap"),
+    [
+        ("gua", "kenapa gua bisa terbentuk", True),  # gua batu (konteks "terbentuk")
+        ("gua", "kenapa gua susah tidur", False),  # "gua" = aku (bahasa gaul) -> tanpa konteks
+        ("gua", "kenapa goa gelap", True),  # ejaan lain + konteks
+        ("angin & badai", "kenapa angin tidak terlihat", True),
+        ("angin & badai", "kenapa angin duduk bisa terjadi", False),  # nama awam penyakit, bukan cuaca
+        ("ai", "kenapa ai butuh air", True),
+        ("ai", "kenapa air laut asin", False),  # kata utuh: "air" bukan "ai"
+        ("ai", "kenapa ai hoshino bisa hamil", False),  # tokoh anime
+        ("deja vu", "kenapa sering dejavu", True),  # alias satu kata (YouTube)
+        ("laut", "kenapa lautan lebih luas dari daratan", True),
+        ("laut", "kenapa lautaro martinez tidak main", False),
+        ("atlantis", "kenapa atlantis land surabaya sepi", False),  # taman rekreasi
+        ("planet mars", "kenapa marselino tidak dipanggil timnas", False),
+        ("planet mars", "kenapa mars disebut planet merah", True),
+    ],
+)
+def test_relevan_homonim_konteks_alias(tema, frasa, harap):
+    from kliktahu.tema import TEMA, relevan
+
+    assert relevan(frasa, TEMA[tema]) is harap
+
+
+def test_wiki_judul_kanonik_ikuti_alihan(k):
+    from kliktahu.riset import fixture
+    from kliktahu.tema import TEMA
+
+    kl = H.KlienRiset(k, transport=fixture.transport_uji(HARI), pakai_cache=False, tidur=lambda s: None)
+    assert SB.wiki_kanonik(kl, "Astronaut") == "Antariksawan"  # alihan diikuti
+    assert SB.wiki_kanonik(kl, "Otak") == "Otak" and SB.wiki_kanonik(kl, "Tidak_Ada") is None
+    assert SB.urai_kanonik("<html>") is None
+    # registri memakai judul KANONIK (pageview halaman alihan hampir nol: Astronaut 13/bulan vs Antariksawan 250)
+    lama = {"Astronaut", "Kehidupan_luar_Bumi", "Deja_vu", "Cicak", "Oven_gelombang_mikro"}
+    assert not lama & {t.wiki for t in TEMA.values()}
+
+
+def test_kata_agama_sensitif_tidak_lolos_ke_metadata(k):
+    from kliktahu import teks
+
+    for f in (
+        "kenapa bersin harus mengucapkan alhamdulillah",
+        "kenapa anjing najis",
+        "kenapa anjing menggonggong saat adzan",
+        "kenapa cicak kalau dibunuh dapat pahala",
+    ):
+        assert teks.sensitif(f, k.aturan.sensitif), f
+    assert not teks.sensitif("kenapa lebah mati setelah menyengat", k.aturan.sensitif)
+
+
+def _baris(tema, peluang, **kw):
+    from kliktahu.tema import TEMA
+
+    r = {
+        "tema": tema,
+        "slug": tema.replace(" ", "_"),
+        "pilar": TEMA[tema].pilar,
+        "status": "segar",
+        "v7_peluang": peluang,
+        "keyakinan": 0.64,
+        "v5_views": 50.0,
+        "sinyal": {"jml": 10.0, "yt": 5.0, "frasa": []},
+        "komponen": {"permintaan": 0.6, "celah": 0.5, "waktu": kw.pop("waktu", 0.0)},
+    }
+    r.update(kw)
+    return r
+
+
+def test_keputusan_aturan2_transparan_dan_bencana_hormat(k):
+    from kliktahu.riset import keputusan as KP
+
+    gunung = _baris(
+        "gunung berapi",
+        67.9,
+        waktu=0.7,
+        momen_nama="Erupsi beruntun gunung api Indonesia",
+        momen_tanggal="2026-09-04",
+        momen_selesai="2026-09-25",  # terakhir terverifikasi hari ini; tayang paling cepat 27 Sep
+        momen_jenis="agen",
+    )
+    tsunami = _baris(
+        "tsunami",
+        65.7,
+        waktu=0.95,
+        momen_nama="Peringatan 8 tahun gempa & tsunami Palu-Donggala 2018 (bahas sains dengan hormat)",
+        momen_tanggal="2026-09-28",
+        momen_jenis="statis",
+    )
+    kep = KP.putuskan([gunung, tsunami], k, HARI)
+    assert kep.tema == "tsunami" and kep.tayang_paling_lambat == "2026-09-27"
+    assert kep.alasan[0].startswith("Didahulukan dari gunung berapi (peluang 67.9; selisih 2.2")
+    assert "terakhir terverifikasi 2026-09-25" in kep.alternatif[0]["catatan"]
+    assert any("korban jiwa" in p and "BMKG" in p for p in kep.peringatan)  # dulu: tanpa peringatan sama sekali
+    assert any(p.startswith("Momen peringatan") for p in kep.peringatan)
+
+
+def test_keputusan_momen_berlangsung_dan_momen_tak_terkejar(k):
+    from kliktahu.riset import keputusan as KP
+
+    otak = _baris("otak", 70.0)
+    gunung = _baris(
+        "gunung berapi",
+        65.0,
+        waktu=0.7,
+        momen_nama="Erupsi",
+        momen_tanggal="2026-09-04",
+        momen_selesai="2026-10-31",
+        momen_jenis="agen",
+    )
+    assert KP.putuskan([otak, gunung], k, HARI).tema == "gunung berapi"  # masih berlangsung saat bisa tayang
+    hari_ini = _baris("galaksi", 66.0, waktu=1.0, momen_nama="X", momen_tanggal=HARI.isoformat(), momen_jenis="statis")
+    besok = _baris("astronot", 66.0, waktu=0.99, momen_nama="Y", momen_tanggal="2026-09-26", momen_jenis="statis")
+    assert KP.putuskan([otak, hari_ini, besok], k, HARI).tema == "otak"  # jeda produksi 2 hari: tak terkejar
+    assert KP.sisa_momen(besok, HARI, 2) is None and KP.sisa_momen(gunung, HARI, 2) == 0
+
+
+def test_sudut_sadar_momen_dan_hook_hormat_bencana(k):
+    r = {
+        "tema": "tsunami",
+        "momen": 0.95,
+        "momen_nama": "Peringatan 8 tahun gempa & tsunami Palu-Donggala 2018 (bahas sains dengan hormat)",
+        "sinyal": {
+            "frasa": [
+                "kenapa tsunami bisa terjadi",
+                "kenapa tsunami aceh bisa terjadi",
+                "kenapa tsunami",
+                "kenapa tsunami surut dulu",
+                "kenapa bisa terjadinya tsunami",
+                "kenapa tsunami palu bisa terjadi",
+            ]
+        },
+    }
+    r["sudut"] = mesin._sudut(r, k)
+    assert r["sudut"][0] == "kenapa tsunami palu bisa terjadi"  # menyambung momen 28 Sep
+    assert "kenapa tsunami bisa terjadi" not in r["sudut"] and "kenapa bisa terjadinya tsunami" not in r["sudut"]
+    hook = mesin._hook(r, k)
+    assert hook[0] == "Kenapa tsunami Palu bisa terjadi? Ini penjelasan ilmiahnya."
+    assert not any("seru" in h or "kamu kira" in h for h in hook)
+    biasa = {"tema": "pelangi", "sinyal": {"frasa": ["kenapa pelangi melengkung"]}}
+    assert mesin._hook(biasa, k) == ["Kenapa pelangi melengkung? Jawabannya lebih seru dari yang kamu kira."]

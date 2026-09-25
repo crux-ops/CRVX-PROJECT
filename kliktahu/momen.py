@@ -188,5 +188,14 @@ def skor_tema(nama_tema: str, daftar: list[Momen], hari_ini: dt.date, jendela: i
     return best
 
 
+def nama_pendek(nama: str, maks: int = 40) -> str:
+    """nama momen ringkas untuk judul: bagian sebelum ':'/'(' dan dipotong di BATAS KATA (<= maks karakter)."""
+    n = (nama or "").split(":")[0].split("(")[0].strip()
+    if len(n) <= maks:
+        return n
+    potong = n[: maks + 1].rsplit(" ", 1)[0] if " " in n[: maks + 1] else n[:maks]
+    return potong.rstrip(" -&,;")
+
+
 def ke_tema(m: Momen) -> list[str]:
     return [n for n, t in TEMA.items() if cocok(m, t)]
