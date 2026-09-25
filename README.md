@@ -26,6 +26,18 @@ Render dilakukan di sandbox/komputer lokal (`tools/render_lokal.sh`), BUKAN di G
 | `python3 -m kliktahu dasbor --png` | dasbor kanal: terminal + `laporan/DASBOR.md` + `laporan/dasbor.png` |
 | `python3 -m kliktahu kanal` / `db` / `skema` / `sinkron` | cek pengaturan, basis data (ekspor/impor JSONL), turunan skema, cermin Bolt Database/Supabase |
 
+## Cara mesin memutuskan (ringkas)
+- **Data sama untuk semua tema**: autocomplete Google + YouTube ("kenapa <kata inti>") + pageview Wikipedia (judul kanonik).
+  Frasa dihitung hanya bila MEMBAHAS tema (kata utuh, alias, tolak homonim, kata ambigu butuh konteks); topik diblokir
+  dibuang dari data, kata sensitif tidak pernah masuk judul/tag/hook.
+- **Skor v7** 0-100 (permintaan, minat, momentum, celah, kecocokan, momen, kesegaran, bukti) + **keyakinan** = porsi data nyata.
+- **Momen yang tidak datang dua kali** didahulukan bila selisih <= 8 poin DAN masih terkejar jeda produksi; bila juara
+  skor dilewati, alasannya ditulis di `laporan/RISET.md`.
+- **Tema bencana** (gempa, tsunami, gunung api, badai) selalu mode hormat: tanpa kata sensasi, info resmi BMKG/PVMBG di
+  deskripsi, lint menolak nada sensasi.
+- **Kalender**: keputusan riset = slot Shorts pertama, lalu tenggat momen terdekat dulu (tidak pernah sesudah event).
+- **Gerbang render**: `METADATA.md` harus lulus lint (tema dibaca dari `content.json` -> disclaimer kesehatan & nada bencana).
+
 ## Struktur singkat
 | Bagian | File |
 |---|---|

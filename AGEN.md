@@ -4,9 +4,11 @@
 > Spesifikasi lengkap dari pemilik: `PROMPT_KLIKTAHU.txt` (sumber kebenaran; file ini ringkasan + status).
 
 ## 0. Status singkat
-- Fase: **mesin SELESAI + UPGRADE 2026-09 (U1-U3) lulus uji**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
-- Riset real-time terakhir (25-09-2026, data nyata mode agen): rekomendasi Ep50 = **gunung berapi** (sudut "kenapa gunung
-  meletus ada petir") - BELUM dipesan pemilik. Lihat `laporan/RISET.md` + `laporan/draf/METADATA_gunung_berapi.md`.
+- Fase: **mesin SELESAI + UPGRADE 2026-09 (U1-U4) lulus uji**, menunggu perintah episode. Berikutnya: **Ep50** (Shorts), **Long03**.
+- Riset real-time terakhir (25-09-2026 run #2, data nyata mode agen, SEMUA 44 tema segar/long terukur): rekomendasi
+  Ep50 = **tsunami** (sudut "kenapa tsunami Palu bisa terjadi", momen peringatan 8 tahun tsunami Palu 28 Sep; slot Sen
+  28 Sep 11.30 WIB), lalu Ep51 **gunung berapi** (juara skor 67.9, erupsi berlangsung - cek MAGMA dulu). BELUM dipesan
+  pemilik. Lihat `laporan/RISET.md`, `laporan/KALENDER.md`, `laporan/draf/METADATA_tsunami.md` & `METADATA_gunung_berapi.md`.
 - Jangan membuat video episode sebelum pemilik memberi perintah.
 
 | Tahap | Isi | Status |
@@ -22,6 +24,7 @@
 | U1 | fondasi data: kanal.toml, skema tunggal (SQLite/Postgres-Bolt/JSON/TS), DAL, klien Bolt, rumus v3-v7 + TS, astronomi | SELESAI (pytest, paritas TS 760 kasus) |
 | U2 | riset real-time v7 + keputusan + metadata (gerbang render) + pustaka + perencana (ICS) + dasbor + CLI | SELESAI (38 tes, ruff, mypy) |
 | U3 | riset NYATA (mode agen) + perbaikan dari data nyata (derau, relevansi, penyusutan tren, momen berlangsung) | SELESAI (CI 3.11 + 3.14) |
+| U4 | sapuan lengkap 44 tema + relevansi homonim + judul wiki kanonik + keputusan sadar jeda produksi & transparan + mode hormat bencana + perencana EDF | SELESAI (61 tes, CI) |
 
 ## 1. Identitas channel (tetap)
 - KlikTahu, bahasa Indonesia, pilar fakta sains & misteri.
@@ -132,6 +135,28 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   - CI Python 3.14: angka libm (tanh/log10) beda digit terakhir antar platform -> cek fixture paritas pakai toleransi;
     mypy jangan dipin python_version (stub numpy 2.5 memakai sintaks 3.12+). Log CI dibaca lewat fetch_page URL blob.
   - Jangan push beruntun: kumpulkan perbaikan CI dalam satu push (2026-09-25 sempat 2 push berjarak 4 menit).
+- UPGRADE U4 (2026-09-25, sapuan 27 tema tambahan):
+  - TABRAKAN AWALAN autocomplete: "kenapa ai" -> 10/10 "kenapa AIR ...", "kenapa mars" -> Marselino/Marshanda. Aturan: bila
+    >= 50% saran hanya berawalan kata inti, ambil ulang dengan SPASI di akhir ("kenapa ai ") dan simpan di kunci tanpa spasi.
+  - HOMONIM tidak bisa diatasi autocomplete: "gua" = gua batu / "aku" (gaul), "angin duduk"/"masuk angin" (penyakit awam),
+    "atlantis land", "kampung gajah", "ai hoshino" -> `TOLAK` & `KONTEKS` per tema di kliktahu/tema.py (bukan derau global:
+    "masuk angin" bisa jadi topik tubuh kelak). YouTube menulis "dejavu" satu kata -> ALIAS.
+  - Judul Wikipedia di registri WAJIB kanonik: "Astronaut" (alihan) 13 tayangan/bulan vs "Antariksawan" ~250. API pageview
+    tidak mengikuti alihan & tidak gagal -> angka kecil diam-diam. Cek via API MediaWiki `action=query&redirects=1`
+    (mode online kini otomatis).
+  - Kata agama baru di autocomplete: alhamdulillah, najis, adzan, pahala -> ditambahkan ke `sensitif`.
+  - Aturan 2 keputusan dulu memakai tanggal MULAI momen -> momen berlangsung tidak pernah didahulukan, dan momen hari ini
+    dianggap terkejar padahal produksi butuh 2 hari. Kini: `sisa_momen()` sadar jeda produksi; bila juara skor dilewati,
+    alasannya DITULIS di laporan dan juara skor diberi catatan penjadwalan.
+  - Peringatan nada bencana dulu hanya untuk momen live -> keputusan tsunami (momen peringatan Palu) TANPA peringatan dan
+    hook "Jawabannya lebih seru dari yang kamu kira". Kini tema `BENCANA` selalu mode hormat: hook "Ini penjelasan
+    ilmiahnya.", templat sensasional dibuang, baris info resmi (BMKG/InaTEWS, PVMBG/MAGMA), lint GALAT kata sensasi.
+  - Gerbang render (`metadata cek`) dulu tidak tahu tema/pilar -> disclaimer kesehatan TIDAK ditegakkan di gerbang. Kini
+    tema dibaca dari content.json di folder episode.
+  - Perencana dulu mengurutkan momen menurut skor -> tsunami (event 28 Sep) jatuh 29 Sep. Kini: KEPUTUSAN di slot pertama +
+    EDF (tenggat terdekat dulu), momen bertanggal tidak pernah dijadwalkan sesudah event.
+  - JANGAN `rm data/kliktahu.db` begitu saja: nomor run mulai lagi dari #1 dan arsip `RISET_<tgl>_<mode>_run1.md` tertimpa.
+    DB baru -> `python3 -m kliktahu db impor` (ekspor yang di-commit) DULU, baru riset (run berikutnya bernomor lanjut).
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -162,6 +187,12 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - 2026-09-25: VERIFIKASI - pasang bersih venv baru (requirements-dev.txt + npm ci) -> tools/uji_semua.sh LULUS; render
   regresi demo_langit penuh (render_lokal.sh) dengan dependensi baru -> QC MP4 LULUS identik (15.23 s, 12.6 MB, korelasi
   1.0000, isi hilang 0 ms, 0.24-0.28 s/frame); gerbang METADATA diuji 3 kasus (tidak ada/gagal lint = exit 4, lulus = render).
+- 2026-09-25: UPGRADE U4 - sapuan data nyata 27 tema tambahan (44 tema: 46 kueri Google, 44 YouTube, 42 pageview
+  Wikipedia + berita tsunami/BMKG) -> run #2 agen; relevansi TOLAK/KONTEKS/ALIAS, judul wiki kanonik (+ ikuti alihan
+  otomatis di mode online), kata sensitif agama, domain kredibel (esdm/bnpb/aps/agu/wiley/springer/pnas), keputusan sadar
+  jeda produksi + transparan, mode hormat tema bencana (hook/judul/deskripsi/lint), sudut sadar momen & tolak sudut generik,
+  nama diri/singkatan di hook & judul, gerbang render membaca content.json, perencana KEPUTUSAN-dulu + EDF, dasbor
+  menampilkan jadwal keputusan; momen kurasi + peringatan tsunami Palu 28 Sep; 61 tes.
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -222,9 +253,15 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
 - Skor: rumus prompt v3-v6 (kliktahu/skor.py, satu implementasi, dipakai juga analisis/v3-v6) + v7 PELUANG 0-100 =
   26 permintaan + 12 minat + 14 momentum + 16 celah + 12 kecocokan + 10 momen + 5 kesegaran + 5 bukti; KEYAKINAN = porsi
   bobot berdata nyata. Tanpa kunci YouTube, celah netral -> keyakinan maks ~64%.
-- Hasil 25-09-2026 (run #1 agen): 1 gunung berapi 73.1 (momen erupsi beruntun Sep 2026 + pageview Wikipedia 3.1x) |
-  2 pesawat 65.2 | 3 pelangi 63.1 | 4 merinding 60.6 | 5 segitiga bermuda 60.4. Kalender usulan: Ep50 gunung berapi (Sen
-  28 Sep 11.30 WIB), Ep51 merinding, Ep52 pelangi, Ep53 segitiga bermuda; Long03 pesawat.
+- Hasil 25-09-2026 run #1 (17 tema): 1 gunung berapi 73.1 | 2 pesawat 65.2 | 3 pelangi 63.1 (arsip run1).
+- Hasil 25-09-2026 run #2 (SEMUA 44 tema segar/long; normalisasi permintaan ikut berubah): 1 gunung berapi 67.9 |
+  2 tsunami 65.7 | 3 otak 62.5 | 4 kuku 59.4 | 5 segitiga bermuda 57.7 | 6 pesawat 57.3 | 7 burung 56.7 | 8 darah 55.6.
+  KEPUTUSAN tsunami (aturan 2: momen Palu 28 Sep, selisih 2.2 <= 8 poin), sumber: Sassa & Takagawa 2019 (Landslides),
+  Ho dkk. 2021 (AGU), NOAA, BMKG InaTEWS. Kalender: Ep50 tsunami Sen 28/09 11.30 | Ep51 gunung berapi | Ep52 kuku |
+  Ep53 galaksi (Pekan Antariksa 4-10 Okt) | Ep54 segitiga bermuda | Long03 otak (Sab 3 Okt).
+- Metodologi agen (WAJIB sama untuk semua tema agar adil): "kenapa <kata inti>" di Google DAN YouTube + pageview bulanan
+  judul kanonik; aturan tabrakan awalan (lihat §7); sumber ilmiah tema terpilih dicatat ke DB SETELAH run
+  (`db.simpan_sumber`, kredibel dihitung dari domain) agar komponen bukti tetap netral bagi semua tema.
 
 ## 12. Tindakan untuk pemilik
 - (Selesai 2026-09-25) push tertunda tahap 5-7 sudah dipulihkan & di-push ulang (sandbox sempat reset ke commit awal).
