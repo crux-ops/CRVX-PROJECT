@@ -7,10 +7,11 @@
 - Fase: **PRODUKSI EPISODE**. Pemilik memerintahkan "Buat video shorts!" (25-09-2026) -> **Ep50 tsunami Palu**
   (`episodes/ep50_tsunami_palu`, sudut "Kenapa tsunami Palu bisa terjadi?", tayang Sen 28 Sep 2026 11.30 WIB =
   peringatan 8 tahun). Status: **RENDER SELESAI + QC MP4 LULUS (26-09-2026) -> SIAP UNGGAH**. MP4 147.48 s
-  (8849 frame @ 60 fps, 1080x1920, H.264 High BT.709, AAC 48 kHz), 121.7 MB, master -14.2 LUFS / true-peak -1.2 dBTP,
-  korelasi 1.0000, VO geser 0 ms & isi hilang 0 ms di 9 adegan, MD5 22ec6ce1. MP4 TIDAK di repo: ada di
+  (8849 frame @ 60 fps, 1080x1920, H.264 High BT.709, AAC 48 kHz), 121.8 MB, master -14.2 LUFS / true-peak -1.2 dBTP,
+  korelasi 1.0000, VO geser 0 ms & isi hilang 0 ms di 9 adegan. File rilis = render ulang penuh 26-09 02:05 UTC dari
+  kode d20af21 (MD5 e0810145c372117912b107da0baf0d07, 121759775 byte). MP4 TIDAK di repo: ada di
   `dist/KlikTahu_Ep50_Tsunami_Palu/` (sandbox; hilang bila reset) -> buat ulang: `tools/render_lokal.sh shorts
-  ep50_tsunami_palu` (hasil identik byte; ~35 menit, atau ~40 s bila potongan di `/home/user/potongan_render/` masih ada).
+  ep50_tsunami_palu` (~35-45 menit; QC wajib LULUS; MD5 bisa beda di mesin sandbox lain - lihat §7 RENDER Ep50).
   Berikutnya (HANYA atas perintah pemilik): Ep51 gunung berapi (cek MAGMA dulu; perbaiki perencana dulu - lihat §7
   RENDER Ep50), Long03 otak.
 - Keputusan pemilik 25-09-2026: **repo TETAP PUBLIK** (jangan minta diubah ke privat lagi); **analisis pesaing TIDAK
@@ -73,12 +74,12 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
 - Disk: frame PNG 1080x1920 berbutir ~3-5 MB/frame -> JANGAN simpan semua frame; render per potongan (chunk)
   langsung ke encoder (lihat tools/render_lokal.sh).
 - Folder `build/` dan `dist/` tidak ikut snapshot Arena (hilang bila sandbox reset) -> hasil penting segera diserahkan.
-- Sandbox DIBUAT ULANG setiap kali giliran dihentikan (3x pada 26-09-2026 dini hari): proses latar mati, HEAD kembali ke
+- Sandbox DIBUAT ULANG setiap kali giliran dihentikan (6x pada 26-09-2026 dini hari): proses latar mati, HEAD kembali ke
   commit awal dcdcc5a (working tree = snapshot giliran terakhir), paket pip & node_modules hilang. Pulihkan (~15 s):
   tambah refspec arena -> `git fetch` -> `git reset --mixed origin/arena/...` -> `pip install --break-system-packages -r
-  requirements-dev.txt` -> `npm ci --prefix skema/ts`. Render panjang: potongan disimpan di
-  `/home/user/potongan_render/<slug>/seg` (symlink dari `build/<slug>/seg`; di luar repo & bukan nama folder yang
-  dikecualikan snapshot -> mungkin tahan reset, BELUM terbukti).
+  requirements-dev.txt` -> `npm ci --prefix skema/ts`. File di luar repo (mis. `/home/user/potongan_render/`) dan
+  file yang diabaikan git (build/, dist/, data/kliktahu.db) TERBUKTI HILANG saat reset (26-09) -> potongan render
+  tidak bisa diselamatkan; perubahan working tree yang tidak diabaikan git tetap ada. Commit + push sedini mungkin.
 
 ## 5. Struktur repo
 Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
@@ -191,6 +192,14 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   - Demuxer concat ffmpeg: potongan hilang = galat tetapi kode keluar 0 -> video terpotong (20 s). Kini render_lokal
     memeriksa semua potongan + `.ok` sebelum gabung, potongan kosong dirender ulang; qc_mp4 tidak crash lagi bila
     frame contoh di luar video (cek baru "frame contoh terbaca").
+  - JANGAN jalankan `tools/uji_semua.sh` saat render berjalan: cek kecepatan mesin_fx ("cepat (< 400 ms @1080x1920)")
+    GAGAL karena CPU penuh (26-09: 7585 ms) - bukan regresi; semua cek fungsional tetap OK. Ulangi setelah render
+    selesai (CPU idle) dan baru laporkan LULUS.
+  - MD5 MP4 hanya pembanding di mesin yang SAMA: render ulang penuh di mesin sandbox lain (Xeon AVX-512, 0.24-0.31
+    s/frame) memberi MD5 e0810145 (render pertama 22ec6ce1; dugaan kuat: jalur SIMD numpy beda per CPU - render
+    pertama juga gabungan potongan dari beberapa tahap perbaikan, tanpa elemen yang diubah). Di satu mesin piksel
+    deterministik (uji 26-09: 30 frame f1, PYTHONHASHSEED 1 vs 987 -> md5 sama). Yang wajib: QC MP4 LULUS + lihat
+    frame perbaikan.
   - PERENCANA (ditemukan 26-09, BELUM diperbaiki; jangan commit KALENDER/DASBOR hasil `rencana` ulang dulu):
     (1) slot `terkunci` tidak tampil di KALENDER.md (tulis_md hanya menulis usulan) & pola jam 11.30/18.30 bergeser;
     (2) `rencana` pada 26-09 memindah gunung berapi (#1, peluang 67.9) dari 29/09 ke 09/10: momen erupsi (mulai 4 Sep)
@@ -238,6 +247,11 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   3.1/3.7 -> 5.6-6.6:1), label f3 di dalam panel -> check_layout BERSIH -> QC MP4 LULUS (147.48 s, 121.7 MB, -14.2 LUFS,
   TP -1.2 dBTP, korelasi 1.0000, isi hilang 0 ms, MD5 22ec6ce1; render ulang identik byte). Ketahanan: render_lokal
   cek potongan sebelum gabung, qc_mp4 tahan frame di luar video. PUSTAKA/DB: Ep50 status render, tayang 2026-09-28.
+- 2026-09-26 (lanjutan): reset sandbox #6 menghapus MP4 -> render ulang PENUH dari d20af21 (mesin lain, 43 menit) ->
+  QC MP4 LULUS dengan angka sama (147.48 s, korelasi 1.0000, puncak -1.13 dBFS, VO 0 ms / isi hilang 0 ms), 121.8 MB,
+  MD5 e0810145 (beda dari 22ec6ce1, dugaan kuat karena mesin berbeda; lihat §7). Frame perbaikan (M 7,5 /
+  MENCAIR / ~10 m / atau lebih) dicek di MP4 final. uji_semua LULUS (52 s, CPU idle). Catatan: jangan jalankan
+  uji_semua saat render.
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
