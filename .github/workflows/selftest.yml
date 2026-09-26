@@ -1,0 +1,17 @@
+name: selftest
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  uji:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - run: pip install -r requirements.txt
+      - run: python3 sfx.py
+      - run: python3 mesin_fx.py
+      - run: python3 process_audio.py ep50_cegukan && python3 build_timeline.py ep50_cegukan
+      - run: python3 check_layout.py ep50_cegukan
