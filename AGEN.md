@@ -55,6 +55,9 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
 ## 3. GitHub & keamanan
 - Render TIDAK di GitHub Actions. Actions hanya uji ringan (< 5 menit), `permissions: contents: read`, tanpa cron.
 - MP4 tidak pernah masuk repo/Releases. Video diserahkan sebagai file di workspace (`dist/`).
+  (Pengecualian keputusan pemilik 26-09-2026 untuk Ep51: MP4 diarsip TERBELAH 2 bagian < 100 MB di
+  `arsip_video/ep51_gunung_petir/` + README gabung, karena host unggah Releases/LFS tak terjangkau
+  dari sandbox; lihat log §8 "ARSIP Ep51".)
 - Satu commit bermakna per tahap; jangan push beruntun dalam hitungan menit.
 - Tidak pernah menyimpan token/password di file atau chat. `kanal.toml` hanya berisi NAMA variabel lingkungan
   (divalidasi: nilai yang tampak seperti kunci DITOLAK). Kunci tidak ikut kunci cache/log/snapshot (ada tesnya).
@@ -316,6 +319,13 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   Diserahkan: tautan unduh sementara (server statis port 8000, folder `dist/`) + pratinjau 720p
   `/home/user/VIDEO_Ep51/KlikTahu_Ep51_Gunung_Petir_720p.mp4`. PUSTAKA/DB: Ep51 status render -> rencana 'selesai',
   jadwal tayang Sen 29 Sep 2026 18.30 WIB. MP4 TIDAK masuk repo (gitignore `*.mp4`).
+- 2026-09-26 (ARSIP Ep51): pemilik "Taruh saja di github!" -> aturan lama digeser untuk Ep51. Dicoba dulu
+  `gh release create` + aset (gagal: uploads.github.com EOF/terblokir) dan LFS batch API (href S3
+  github-cloud/lfs.github.com tak terjangkau). Blob > 100 MB pasti ditolak push -> MP4 dibelah
+  `split -b 70M` jadi 2 bagian (73400320 + 52457422 byte) di `arsip_video/ep51_gunung_petir/` + README.md
+  cara gabung; concat diverifikasi identik (SHA-256 6cc2b9b2..., MD5 c53f3bf1...). Push 424dc96 diterima
+  (hanya peringatan GH001/50 MB, bukan penolakan). Halaman rilis Ep51 dibuat tanpa aset (dokumentasi +
+  tautan arsip): releases/tag/Ep51.
 
 ### 11c. Analisis mendalam (UPGRADE U5 - `kliktahu/analisis.py`)
 
