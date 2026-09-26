@@ -81,7 +81,7 @@ i=0
 for ((LO = 0; LO < TOTAL; LO += CHUNK)); do
   HI=$((LO + CHUNK < TOTAL ? LO + CHUNK : TOTAL))
   SEG="$SEGDIR/seg_$(printf %04d $i).mp4"
-  if [[ -f "$SEG.ok" && "$(cat "$SEG.ok")" == "$LO:$HI" ]]; then
+  if [[ -s "$SEG" && -f "$SEG.ok" && "$(cat "$SEG.ok")" == "$LO:$HI" ]]; then  # potongan kosong = render ulang
     log "   potongan $i [$LO:$HI] sudah ada - lewati"
   else
     rm -f "$SEG" "$SEG.ok"
@@ -103,6 +103,14 @@ for ((LO = 0; LO < TOTAL; LO += CHUNK)); do
   i=$((i + 1))
 done
 NSEG=$i
+# potongan bisa hilang/kosong (dihapus dari luar saat render berjalan, disk penuh). Demuxer concat ffmpeg hanya
+# mencetak galat lalu keluar dengan kode 0 -> video TERPOTONG. Periksa semua potongan + penanda .ok dulu.
+for ((k = 0; k < NSEG; k++)); do
+  SEGK="$SEGDIR/seg_$(printf %04d $k).mp4"
+  if [[ ! -s "$SEGK" || ! -f "$SEGK.ok" ]]; then
+    log "GAGAL: potongan $k hilang/kosong ($SEGK) - jalankan ulang (potongan lain dilanjutkan)"; exit 1
+  fi
+done
 
 log "4/6 gabung + mux audio"
 LIST="$SEGDIR/daftar.txt"

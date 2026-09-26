@@ -37,6 +37,8 @@ HIJAU_TUA = (31, 181, 122)
 MERAH = (229, 72, 77)
 ORANYE = (255, 107, 61)
 PANEL = (238, 233, 224)
+# keterangan kecil di atas pasir/tanah: D.MUTED hanya 3.1:1 (WCAG teks kecil butuh >= 4.5:1) -> abu tua ~5.6:1
+MUTED_TUA = D.gelap(D.MUTED, 0.4)
 ASPAL = (96, 96, 108)
 
 
@@ -287,7 +289,7 @@ def sc_sesar50(img, t, dur, sc):
     # kota Palu di ujung teluk
     _gedung(img, 561, 1405, 30, up)
     D.txt(img, "PALU", 561, 1452, 30, "B", D.INK, up, "ms")
-    D.txt(img, "Sulawesi Tengah (ilustrasi)", 126, 968, 24, "M", D.MUTED, D.seg(t, 0.37 * dur, 0.37 * dur + 0.4), "ls")
+    D.txt(img, "Sulawesi Tengah (ilustrasi)", 126, 968, 24, "M", MUTED_TUA, D.seg(t, 0.37 * dur, 0.37 * dur + 0.4), "ls")
     # pusat gempa + magnitudo
     if t > tE - 0.2:
         ue = D.eob(D.seg(t, tE - 0.15, tE + 0.3))
@@ -298,8 +300,9 @@ def sc_sesar50(img, t, dur, sc):
         D.circ(img, 285, 770, 7 * ue, D.PUTIH, 1.0)
         ub = D.eo(D.seg(t, tE, tE + 0.35))
         D.rrect(img, 150, 830, 400, 920, 26, D.PUTIH, 0.95 * ub, D.INK, 4)
-        D.txt(img, "M", 184, 896, 52, "B", MERAH, ub, "ls")
-        D.odometer(img, 7.5, 238, 875, 56, D.INK, ub, "l", "B", D.seg(t, tE + 0.1, tE + 1.3), desimal=1)
+        D.txt(img, "M", 207, 896, 52, "B", MERAH, ub, "ls")
+        # odometer: y = BASELINE (sama dengan "M"), isi "M 7,5" dipusatkan di kotak 150..400
+        D.odometer(img, 7.5, 261, 896, 56, D.INK, ub, "l", "B", D.seg(t, tE + 0.1, tE + 1.3), desimal=1)
     # label sesar
     if t > tS:
         ul = D.eo(D.seg(t, tS + 0.5, tS + 1.0))
@@ -531,7 +534,10 @@ def sc_likuefaksi50(img, t, dur, sc):
         _klip_selesai(img, kz)
         D.ring(img, cx, cy, R, 7, D.INK, 0.9 * uz)
         lab = "butir pasir + air" if t < tC + 0.3 else "butir terlepas: MENCAIR"
-        D.txt(img, lab, cx, cy + R + 50, 28, "SB", D.INK if t < tC + 0.3 else D.gelap(ak, 0.35), uz, "ms")
+        # label terpanjang (331 px) tetap DI DALAM panel: tepi kiri >= x0 + 26 (dulu keluar bingkai 11 px);
+        # kedua keadaan label memakai posisi yang sama (tidak melompat saat teks berganti)
+        lx = max(cx, x0 + 26 + D.txt_w("butir terlepas: MENCAIR", 28, "SB") / 2)
+        D.txt(img, lab, lx, cy + R + 50, 28, "SB", D.INK, uz, "ms")  # kontras 7.9:1 di atas TANAH
     # 9 lokasi longsoran pantai (skema teluk kecil)
     if t > tS - 0.3:
         us = D.eob(D.seg(t, tS - 0.3, tS + 0.1))
@@ -693,9 +699,9 @@ def sc_teluk50(img, t, dur, sc):
         for j in range(6):
             yy = 1402 - j * 384 / 5
             D.line(img, 196, yy, 212, yy, 3, D.INK, 0.8 * ue)
-        D.txt(img, "~", 222, 1040, 40, "B", D.INK, ue, "ls")
+        D.txt(img, "~", 222, 1022, 40, "B", D.INK, ue, "ls")  # pusat tinta "~" = pusat angka
         D.odometer(img, 10, 248, 1026, 44, D.INK, ue, "l", "B", lv, satuan=" m")
-        D.txt(img, "di beberapa titik", 222, 1076, 24, "M", D.MUTED, ue, "ls")
+        D.txt(img, "di beberapa titik", 222, 1076, 24, "M", MUTED_TUA, ue, "ls")
 
 
 # ================================================================== f6: pelajaran - evakuasi mandiri
@@ -751,7 +757,7 @@ def sc_selamat50(img, t, dur, sc):
         D.circ(img, 230, 830, 8 * ud, ak, ud)
         D.odometer(img, 20, 320, 862, 96, D.INK, ud, "l", "B", prog)
         D.txt(img, "DETIK", 440, 834, 34, "B", D.INK, ud, "ls")
-        D.txt(img, "atau lebih", 440, 868, 26, "M", D.MUTED, ud, "ls")
+        D.txt(img, "atau lebih", 440, 868, 26, "M", MUTED_TUA, ud, "ls")  # bagian pesan keselamatan: 6.6:1 (MUTED 3.7:1)
     # jangan tunggu sirene
     if t > tS - 0.2:
         us = D.eob(D.seg(t, tS - 0.2, tS + 0.2))

@@ -7,7 +7,7 @@ Mesin analisis membaca file ini + `pustaka/` untuk daftar topik SUDAH dibahas.
 
 | Ep | Status | Tanggal tayang | Topik | Judul terpilih | Folder |
 |---|---|---|---|---|---|
-| Ep50 | vo | - | tsunami | Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya | ep50_tsunami_palu |
+| Ep50 | render | 2026-09-28 | tsunami | Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya | ep50_tsunami_palu |
 
 ## Video panjang baru
 

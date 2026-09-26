@@ -6,8 +6,13 @@
 ## 0. Status singkat
 - Fase: **PRODUKSI EPISODE**. Pemilik memerintahkan "Buat video shorts!" (25-09-2026) -> **Ep50 tsunami Palu**
   (`episodes/ep50_tsunami_palu`, sudut "Kenapa tsunami Palu bisa terjadi?", tayang Sen 28 Sep 2026 11.30 WIB =
-  peringatan 8 tahun). Status: naskah + VO voice-00 + audio QC + visual (`mesin_v11_ep50.py`) + check_layout BERSIH +
-  METADATA/SIAP_TEMPEL lulus gerbang -> RENDER. Berikutnya: Ep51 gunung berapi (cek MAGMA dulu), Long03 otak.
+  peringatan 8 tahun). Status: **RENDER SELESAI + QC MP4 LULUS (26-09-2026) -> SIAP UNGGAH**. MP4 147.48 s
+  (8849 frame @ 60 fps, 1080x1920, H.264 High BT.709, AAC 48 kHz), 121.7 MB, master -14.2 LUFS / true-peak -1.2 dBTP,
+  korelasi 1.0000, VO geser 0 ms & isi hilang 0 ms di 9 adegan, MD5 22ec6ce1. MP4 TIDAK di repo: ada di
+  `dist/KlikTahu_Ep50_Tsunami_Palu/` (sandbox; hilang bila reset) -> buat ulang: `tools/render_lokal.sh shorts
+  ep50_tsunami_palu` (hasil identik byte; ~35 menit, atau ~40 s bila potongan di `/home/user/potongan_render/` masih ada).
+  Berikutnya (HANYA atas perintah pemilik): Ep51 gunung berapi (cek MAGMA dulu; perbaiki perencana dulu - lihat §7
+  RENDER Ep50), Long03 otak.
 - Keputusan pemilik 25-09-2026: **repo TETAP PUBLIK** (jangan minta diubah ke privat lagi); **analisis pesaing TIDAK
   perlu** (tanpa YOUTUBE_API_KEY; komponen celah tidak dipakai).
 - Jangan membuat video episode sebelum pemilik memberi perintah.
@@ -26,6 +31,7 @@
 | U2 | riset real-time v7 + keputusan + metadata (gerbang render) + pustaka + perencana (ICS) + dasbor + CLI | SELESAI (38 tes, ruff, mypy) |
 | U3 | riset NYATA (mode agen) + perbaikan dari data nyata (derau, relevansi, penyusutan tren, momen berlangsung) | SELESAI (CI 3.11 + 3.14) |
 | U4 | sapuan lengkap 44 tema + relevansi homonim + judul wiki kanonik + keputusan sadar jeda produksi & transparan + mode hormat bencana + perencana EDF | SELESAI (61 tes, CI) |
+| E50 | produksi Ep50 tsunami Palu: naskah, VO voice-00, visual mesin_v11_ep50, render lokal, QC MP4 | SELESAI 26-09-2026 (QC MP4 LULUS; siap unggah Sen 28/09 11.30 WIB) |
 
 ## 1. Identitas channel (tetap)
 - KlikTahu, bahasa Indonesia, pilar fakta sains & misteri.
@@ -67,6 +73,12 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
 - Disk: frame PNG 1080x1920 berbutir ~3-5 MB/frame -> JANGAN simpan semua frame; render per potongan (chunk)
   langsung ke encoder (lihat tools/render_lokal.sh).
 - Folder `build/` dan `dist/` tidak ikut snapshot Arena (hilang bila sandbox reset) -> hasil penting segera diserahkan.
+- Sandbox DIBUAT ULANG setiap kali giliran dihentikan (3x pada 26-09-2026 dini hari): proses latar mati, HEAD kembali ke
+  commit awal dcdcc5a (working tree = snapshot giliran terakhir), paket pip & node_modules hilang. Pulihkan (~15 s):
+  tambah refspec arena -> `git fetch` -> `git reset --mixed origin/arena/...` -> `pip install --break-system-packages -r
+  requirements-dev.txt` -> `npm ci --prefix skema/ts`. Render panjang: potongan disimpan di
+  `/home/user/potongan_render/<slug>/seg` (symlink dari `build/<slug>/seg`; di luar repo & bukan nama folder yang
+  dikecualikan snapshot -> mungkin tahan reset, BELUM terbukti).
 
 ## 5. Struktur repo
 Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
@@ -163,6 +175,28 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   - Statistik laporan harus menghitung kueri BERDATA: mode agen dulu menulis "autocomplete ok (610/610)" padahal hanya 90
     kueri berisi data (kombinasi benih lain memang tidak diambil). Kini "610 (90 berdata)". Sumber ilmiah yang dicatat ke DB
     ikut tersimpan di `data/ekspor/sumber_ilmiah.jsonl` -> `db impor` memulihkannya (tidak perlu dicatat ulang).
+- RENDER Ep50 (2026-09-26):
+  - WAJIB lihat frame RESOLUSI PENUH tiap adegan (`python3 render.py <slug> --times a,b,c --sheet /tmp/x.jpg`) sebelum
+    render panjang. check_layout (margin/HUD/kolom tombol) TIDAK mendeteksi: teks menabrak garis bingkai kotak, dan
+    kontras warna teks. Temuan Ep50 (semua diperbaiki sebelum rilis): `D.odometer()` memakai y = BASELINE (bukan
+    tengah) -> angka "7,5" naik 21 px & menempel bingkai; glyph "~" Poppins Bold bertinta -0.43..-0.23 em dari
+    baseline (sejajarkan pusat tinta dgn pusat angka); label emas gelap(aksen, 0.35) di atas tanah hanya 1.7:1;
+    keterangan D.MUTED di atas pasir 3.1:1 (pakai `MUTED_TUA` / D.INK, >= 4.5:1); label 331 px keluar bingkai panel.
+  - D.MUTED (128,122,114) hanya 3.5-4.25:1 di latar terang (putih/panel/langit). Episode berikutnya: pertimbangkan
+    MUTED global lebih gelap (>= 4.5:1) - ubah SEBELUM render, bukan di tengah (semua potongan berubah).
+  - Perbaikan di tengah render: render_lokal memanggil render.py BARU per potongan -> perbaikan adegan untuk potongan
+    yang BELUM dirender otomatis terpakai; potongan yang SUDAH jadi: hapus `seg_XXXX.mp4` + `.ok`, jalankan ulang.
+    Tentukan potongan terdampak dari WAKTU MUNCUL elemen (beat x durasi adegan timeline), lalu buktikan dengan
+    piksel MP4 final di batas potongan (tidak boleh ada lompatan warna).
+  - Demuxer concat ffmpeg: potongan hilang = galat tetapi kode keluar 0 -> video terpotong (20 s). Kini render_lokal
+    memeriksa semua potongan + `.ok` sebelum gabung, potongan kosong dirender ulang; qc_mp4 tidak crash lagi bila
+    frame contoh di luar video (cek baru "frame contoh terbaca").
+  - PERENCANA (ditemukan 26-09, BELUM diperbaiki; jangan commit KALENDER/DASBOR hasil `rencana` ulang dulu):
+    (1) slot `terkunci` tidak tampil di KALENDER.md (tulis_md hanya menulis usulan) & pola jam 11.30/18.30 bergeser;
+    (2) `rencana` pada 26-09 memindah gunung berapi (#1, peluang 67.9) dari 29/09 ke 09/10: momen erupsi (mulai 4 Sep)
+    keluar jendela momen -> dipasangkan ke Hari Pengurangan Risiko Bencana 13 Okt. Sebelum Ep51: cek MAGMA/PVMBG
+    terbaru, perbaiki perencana (tampilkan slot terkunci/episode render, momen berlangsung), baru buat ulang kalender.
+    Kalender 25-09 (Ep50 tsunami 28/09 11.30) tetap berlaku.
 
 ## 8. Log perubahan
 - 2026-09-25: Tahap 1 - struktur repo, requirements, fonts Poppins (via GitHub API), .gitignore, AGEN.md, PUSTAKA.md.
@@ -199,6 +233,11 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   jeda produksi + transparan, mode hormat tema bencana (hook/judul/deskripsi/lint), sudut sadar momen & tolak sudut generik,
   nama diri/singkatan di hook & judul, gerbang render membaca content.json, perencana KEPUTUSAN-dulu + EDF, dasbor
   menampilkan jadwal keputusan; momen kurasi + peringatan tsunami Palu 28 Sep; 61 tes.
+- 2026-09-26: RENDER Ep50 tsunami Palu (lokal, 2 vCPU, 0.17-0.23 s/frame, SS 1.5): 8849 frame @ 60 fps. Sebelum rilis:
+  label "M 7,5" (baseline + dipusatkan), "~10 m" (pusat tinta), kontras 4 label (MENCAIR 1.7 -> 7.9:1, keterangan
+  3.1/3.7 -> 5.6-6.6:1), label f3 di dalam panel -> check_layout BERSIH -> QC MP4 LULUS (147.48 s, 121.7 MB, -14.2 LUFS,
+  TP -1.2 dBTP, korelasi 1.0000, isi hilang 0 ms, MD5 22ec6ce1; render ulang identik byte). Ketahanan: render_lokal
+  cek potongan sebelum gabung, qc_mp4 tahan frame di luar video. PUSTAKA/DB: Ep50 status render, tayang 2026-09-28.
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -277,8 +316,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
   refspec arena, `git fetch`, `git reset --mixed origin/arena/...`, commit dibuat ulang dari working tree (mypy tanpa
   pin, apostrof ka'bah, catatan AGEN), paket dipasang ulang (`pip install -r requirements-dev.txt`, `npm ci`), uji LULUS.
 - (Diputuskan 25-09-2026) repo tetap PUBLIK; analisis pesaing / YOUTUBE_API_KEY TIDAK diperlukan.
-- Ep50: unggah `dist/KlikTahu_Ep50_Tsunami_Palu/` (MP4 + SIAP_TEMPEL.md) Sen 28 Sep 2026 11.30 WIB, lalu
-  `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
+- Ep50 (SIAP): unggah `KlikTahu_Ep50_Tsunami_Palu.mp4` (unduh dari pratinjau Arena / `dist/KlikTahu_Ep50_Tsunami_Palu/`)
+  Sen 28 Sep 2026 11.30 WIB; judul/deskripsi/tag/bab/komentar sematan dari `pustaka/Ep50_Tsunami/SIAP_TEMPEL.md`
+  (+ `METADATA.md`). Setelah tayang: `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
 - (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
   `python3 -m kliktahu pustaka impor-studio <file.csv>` -> bobot pilar menyesuaikan otomatis.
 - (Opsional) cermin awan Bolt Database/Supabase: jalankan `skema/postgres.sql`, set env URL+KEY, `python3 -m kliktahu sinkron dorong`.

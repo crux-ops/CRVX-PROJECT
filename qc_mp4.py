@@ -62,7 +62,9 @@ def audio_mp4(mp4):
 
 def frame_di(mp4, t, w, h):
     raw = subprocess.run([mu.ffmpeg_exe(), "-v", "error", "-ss", f"{t:.3f}", "-i", str(mp4), "-frames:v", "1",
-                          "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=True).stdout
+                          "-f", "rawvideo", "-pix_fmt", "rgb24", "-"], capture_output=True, check=False).stdout
+    if len(raw) < w * h * 3:
+        return None  # t di luar video (mis. video lebih pendek dari timeline) -> dilaporkan GAGAL oleh pemanggil
     return Image.frombytes("RGB", (w, h), raw[: w * h * 3])
 
 
@@ -141,9 +143,12 @@ def main():
     cek("VO tiap adegan utuh & mulai tepat", semua_vo)
     # frame contoh + audit margin
     tt = mu.preview_times(tl, 10)
-    imgs, labels, margin_buruk = [], [], []
+    imgs, labels, margin_buruk, tak_terbaca = [], [], [], []
     for t, lb in tt:
         im = frame_di(mp4, t, W, H)
+        if im is None:
+            tak_terbaca.append(f"{lb}@{t:.2f}s")
+            im = Image.new("RGB", (W, H), (0, 0, 0))
         imgs.append(im)
         labels.append(f"{lb} {t:.2f}s")
         if lb.endswith("isi"):
@@ -159,6 +164,7 @@ def main():
             px = int(dev[:, :m].sum() + dev[:, -m:].sum() + dev[-m:, :].sum())
             if px > 60:
                 margin_buruk.append(f"{lb}@{t:.2f}s:{px}px")
+    cek("frame contoh terbaca", not tak_terbaca, " ".join(tak_terbaca))
     cek("margin 40 px bersih pada frame isi", not margin_buruk, " ".join(margin_buruk))
     out = bdir / "qc_mp4.jpg"
     mu.sheet(imgs, labels, cols=5, lebar=300 if not a.long else 420, judul=f"QC {mp4.name}", path=out)
