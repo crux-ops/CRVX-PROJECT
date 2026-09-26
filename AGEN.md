@@ -296,6 +296,18 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
 - 2026-09-26 (lanjutan 2): pemilik "Mana videonya?" - sandbox baru di awal giliran menghapus `dist/` -> render ulang
   ke-3 (mesin lain lagi, 43 menit) -> QC MP4 LULUS angka sama, MD5 ab39da64 (121773203 byte); frame perbaikan dicek.
   Diserahkan lewat tautan unduh sementara (server statis port 8000) + pratinjau 720p di `/home/user/VIDEO_Ep50/`.
+- 2026-09-26 (Ep51): pemilik "buat 1 video shorts" -> Ep51 gunung berapi, sudut "kenapa gunung meletus ada petir"
+  (juara skor run #2, 67.9). Cek MAGMA/PVMBG NYATA: 69 gunung dipantau (42 Normal/22 Waspada/5 Siaga/0 Awas per
+  7 Sep); Anak Krakatau erupsi menerus 4 Sep 23.07 WIB-6 Sep 00.04 WIB (~25 jam), kolom 13-17 km (BRIN/BBC), Level III
+  Siaga radius 3 km. Fakta petir vulkanik terverifikasi: fractoemission, triboelektrik (Cimarelli 2014 Geology),
+  muatan es, LIVS (Genareau 2015 Geology), rekor Hunga Tonga 590.000 & Anak Krakatau 2018 340.000 (GLD360/Reuters).
+  Naskah 9 adegan 261 kata -> VO voice-00 (QC isi hilang 0 ms) -> timeline 153.4 s. `mesin_v11_ep51.py` 8 visual,
+  BEATS dikunci kata VO lewat alat BARU `tools/waktu_kata.py`. check_layout BERSIH; METADATA lint LULUS (bab dari
+  timeline, 7 sumber). Kontras: `diagrams.luminans/kontras/teks_terbaca` + stiker/chip_pop auto warna teks.
+- 2026-09-26 (perencana, PRASYARAT Ep51): dua bug §7 diperbaiki + uji regresi. (a) `momen.skor_momen`: momen live/agen
+  yang baru lewat <= 3 hari tetap skor penuh (dulu meluruh -> topik tergeser momen statis jauh/13 Okt). (b) kalender
+  kini menampilkan slot 'terkunci'/'selesai' (kolom status) lewat `perencana.baris_kunci`. DB: Ep50='selesai',
+  Ep51='terkunci' (tak direncanakan ulang) + ekspor ulang. pytest penuh 198 LULUS; ruff+mypy bersih.
 
 ### 11c. Analisis mendalam (UPGRADE U5 - `kliktahu/analisis.py`)
 
