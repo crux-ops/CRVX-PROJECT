@@ -1,0 +1,119 @@
+{
+ "title": "Kenapa Kamu Cegukan?",
+ "channel": "KlikTahu",
+ "header_badge": "TUBUH · REFLEKS",
+ "bg_element": "gelembung",
+ "lead_in": 0.6,
+ "tail_intro": 0.9,
+ "tail_fact": 0.9,
+ "tail_outro": 1.2,
+ "mesin": "v11",
+ "scenes": [
+  {
+   "id": "intro",
+   "type": "intro",
+   "visual": "intro_cegukan",
+   "accent": "#E4572E",
+   "shake": 1,
+   "lines": [
+    "KENAPA KAMU",
+    "CEGUKAN?"
+   ],
+   "vo": "Kenapa cegukan bisa datang tiba-tiba, padahal kamu tidak sedang melakukan apa-apa? Ternyata, itu ulah satu otot besar, dan satu saraf yang salah kirim sinyal.",
+   "speed": 1.0
+  },
+  {
+   "id": "f1",
+   "type": "fact",
+   "visual": "diafragma50",
+   "accent": "#2E86AB",
+   "trans": "zoomthru",
+   "badge": "OTOT KUBAH",
+   "hl": "DIAFRAGMA",
+   "vo": "Di bawah paru-paru ada otot lebar berbentuk kubah, namanya diafragma. Saat kamu menarik napas, otot ini turun, dan paru-paru mengembang. Cegukan terjadi saat diafragma berkontraksi mendadak, tanpa kamu perintah.",
+   "speed": 1.0
+  },
+  {
+   "id": "f2",
+   "type": "fact",
+   "visual": "pitasuara50",
+   "accent": "#7B2CBF",
+   "trans": "tinta",
+   "badge": "35 MILIDETIK",
+   "hl": "BUNYI HIK",
+   "vo": "Sekitar tiga puluh lima milidetik setelah kedutan itu, pita suara di tenggorokan menutup rapat. Udara yang sedang masuk terhenti seketika, dan itulah bunyi hik yang kamu dengar.",
+   "speed": 1.0
+  },
+  {
+   "id": "f3",
+   "type": "fact",
+   "visual": "refleks50",
+   "accent": "#F4A259",
+   "trans": "whip",
+   "badge": "BUSUR REFLEKS",
+   "hl": "SARAF VAGUS",
+   "vo": "Dalangnya adalah busur refleks. Saraf frenikus dan saraf vagus membawa sinyal ke batang otak, lalu batang otak memerintahkan diafragma untuk berkedut. Kalau jalur ini terusik, refleksnya menyala sendiri.",
+   "speed": 1.0
+  },
+  {
+   "id": "f4",
+   "type": "fact",
+   "visual": "pemicu50",
+   "accent": "#3A9D5D",
+   "trans": "split",
+   "badge": "PEMICU",
+   "hl": "SEPELE",
+   "vo": "Pemicunya sering sepele: makan terlalu cepat, minuman bersoda, lambung yang terlalu penuh, perubahan suhu mendadak, atau tertawa dan gugup. Semuanya mengusik saraf di sekitar lambung dan diafragma.",
+   "speed": 1.0
+  },
+  {
+   "id": "f5",
+   "type": "fact",
+   "visual": "janin50",
+   "accent": "#D7263D",
+   "trans": "iris",
+   "badge": "SEJAK 9 MINGGU",
+   "hl": "WARISAN PURBA",
+   "vo": "Yang mengejutkan, janin sudah cegukan di dalam kandungan sejak usia sekitar sembilan minggu. Peneliti University College London menduga, cegukan membantu otak bayi belajar mengatur otot pernapasan. Ada juga hipotesis bahwa refleks ini warisan dari leluhur amfibi kita, yang dulu bernapas dengan insang.",
+   "speed": 1.0
+  },
+  {
+   "id": "f6",
+   "type": "fact",
+   "visual": "rekor50",
+   "accent": "#1B998B",
+   "trans": "cahaya",
+   "badge": "68 TAHUN",
+   "hl": "REKOR DUNIA",
+   "vo": "Cara rumahan seperti menahan napas atau minum air dingin, bekerja dengan menaikkan karbon dioksida atau merangsang saraf vagus, sehingga refleksnya terputus. Rekor cegukan terlama dipegang Charles Osborne dari Amerika: enam puluh delapan tahun tanpa henti.",
+   "speed": 1.0
+  },
+  {
+   "id": "rangkuman",
+   "type": "fact",
+   "visual": "rangkuman50",
+   "accent": "#E4572E",
+   "trans": "rise",
+   "badge": "RANGKUMAN",
+   "hl": "48 JAM",
+   "vo": "Jadi, cegukan adalah kedutan diafragma yang disusul pita suara menutup, dipicu saraf yang terusik. Biasanya hilang sendiri dalam hitungan menit. Tapi kalau lebih dari empat puluh delapan jam, periksakan ke dokter, karena bisa jadi tanda masalah lain.",
+   "speed": 1.0
+  },
+  {
+   "id": "outro",
+   "type": "outro",
+   "accent": "#2E86AB",
+   "trans": "zoomthru",
+   "lines": [
+    "SEKARANG",
+    "KAMU TAHU"
+   ],
+   "cta": "IKUTI",
+   "foot": "Fakta sains & misteri, tiap hari",
+   "foot2": "Simpan video ini · bagikan ke teman",
+   "src": "Sumber: Mayo Clinic, Cleveland Clinic, NHS, UCL",
+   "vo": "Sekarang kamu tahu kenapa tubuhmu cegukan. Sumber: Mayo Clinic, Cleveland Clinic, NHS, dan University College London. Video ini bukan pengganti saran dokter. Ikuti KlikTahu, untuk fakta sains dan misteri, tiap hari.",
+   "speed": 1.0
+  }
+ ]
+}

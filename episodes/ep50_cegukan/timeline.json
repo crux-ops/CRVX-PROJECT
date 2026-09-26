@@ -1,0 +1,79 @@
+{
+  "fps": 60,
+  "total": 161.457,
+  "lead_in": 0.6,
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "start": 0.0,
+      "dur": 14.114,
+      "vo_dur": 12.614,
+      "vo_start": 0.6
+    },
+    {
+      "id": "f1",
+      "type": "fact",
+      "start": 14.114,
+      "dur": 17.135,
+      "vo_dur": 15.635,
+      "vo_start": 14.714
+    },
+    {
+      "id": "f2",
+      "type": "fact",
+      "start": 31.249,
+      "dur": 15.695,
+      "vo_dur": 14.195,
+      "vo_start": 31.849
+    },
+    {
+      "id": "f3",
+      "type": "fact",
+      "start": 46.944,
+      "dur": 16.229,
+      "vo_dur": 14.729,
+      "vo_start": 47.544
+    },
+    {
+      "id": "f4",
+      "type": "fact",
+      "start": 63.172,
+      "dur": 15.719,
+      "vo_dur": 14.219,
+      "vo_start": 63.772
+    },
+    {
+      "id": "f5",
+      "type": "fact",
+      "start": 78.892,
+      "dur": 23.591,
+      "vo_dur": 22.091,
+      "vo_start": 79.492
+    },
+    {
+      "id": "f6",
+      "type": "fact",
+      "start": 102.483,
+      "dur": 19.911,
+      "vo_dur": 18.411,
+      "vo_start": 103.083
+    },
+    {
+      "id": "rangkuman",
+      "type": "fact",
+      "start": 122.394,
+      "dur": 20.96,
+      "vo_dur": 19.46,
+      "vo_start": 122.994
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "start": 143.354,
+      "dur": 18.103,
+      "vo_dur": 16.303,
+      "vo_start": 143.954
+    }
+  ]
+}
