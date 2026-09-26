@@ -80,6 +80,13 @@ keringat & bau badan | 7 1 topik 1 arah, sumber kredibel, kesehatan: "bukan peng
   requirements-dev.txt` -> `npm ci --prefix skema/ts`. File di luar repo (mis. `/home/user/potongan_render/`) dan
   file yang diabaikan git (build/, dist/, data/kliktahu.db) TERBUKTI HILANG saat reset (26-09) -> potongan render
   tidak bisa diselamatkan; perubahan working tree yang tidak diabaikan git tetap ada. Commit + push sedini mungkin.
+- Sandbox juga BARU di awal setiap giliran (bukan hanya bila dihentikan): 26-09 giliran selesai normal pun `dist/`
+  hilang -> pemilik bertanya "Mana videonya?". PENYERAHAN MP4 (wajib, dalam giliran yang sama dengan render):
+  `dist/` & `*.mp4` di repo tidak ikut snapshot; MP4 asli ~122 MB + perubahan repo ~10 MB melewati batas snapshot
+  ~128 MB. Jadi: (1) tautan unduh SEMENTARA = server statis `python3 /tmp/unduh/server.py <folder> 8000` (start_process,
+  0.0.0.0; mencatat `TERKIRIM <file>` bila unduhan utuh) + halaman `index.html` (bukan aplikasi, tidak di-commit) ->
+  tunggu log TERKIRIM file asli sebelum mengakhiri giliran; (2) salinan pratinjau 720p ~40 MB di luar repo
+  `/home/user/VIDEO_Ep50/` (bukan nama folder yang dikecualikan) + present_file; (3) jangan simpan MP4 di repo/Releases.
 
 ## 5. Struktur repo
 Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
@@ -330,7 +337,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
   refspec arena, `git fetch`, `git reset --mixed origin/arena/...`, commit dibuat ulang dari working tree (mypy tanpa
   pin, apostrof ka'bah, catatan AGEN), paket dipasang ulang (`pip install -r requirements-dev.txt`, `npm ci`), uji LULUS.
 - (Diputuskan 25-09-2026) repo tetap PUBLIK; analisis pesaing / YOUTUBE_API_KEY TIDAK diperlukan.
-- Ep50 (SIAP): unggah `KlikTahu_Ep50_Tsunami_Palu.mp4` (unduh dari pratinjau Arena / `dist/KlikTahu_Ep50_Tsunami_Palu/`)
+- Ep50 (SIAP): unggah `KlikTahu_Ep50_Tsunami_Palu.mp4` (unduh lewat tautan unduh sementara saat agen menyerahkan;
+  file hilang dari sandbox setelah giliran selesai -> bila terlewat: minta render ulang, atau jalankan sendiri
+  `tools/render_lokal.sh shorts ep50_tsunami_palu` di komputer dengan Python 3.11+ & `pip install -r requirements.txt`)
   Sen 28 Sep 2026 11.30 WIB; judul/deskripsi/tag/bab/komentar sematan dari `pustaka/Ep50_Tsunami/SIAP_TEMPEL.md`
   (+ `METADATA.md`). Setelah tayang: `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
 - (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
