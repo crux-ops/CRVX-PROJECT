@@ -9,6 +9,7 @@ Pakai:
   python3 tools/waktu_kata.py <slug> [--long] [--kata kunci1,kunci2] [--json]
 Butuh: `python3 process_audio.py <slug>` lalu `python3 build_timeline.py <slug>` (audio_proc/ + timeline.json).
 """
+
 from __future__ import annotations
 
 import argparse
@@ -48,8 +49,9 @@ def utama() -> int:
         out = {}
         for sc, ts in zip(content["scenes"], tl["scenes"]):
             dur = ts["dur"]
-            out[sc["id"]] = [{"kata": w["kata"], "t": round(w["t0"], 3), "fraksi": round(w["t0"] / dur, 4)}
-                             for w in hasil[sc["id"]]]
+            out[sc["id"]] = [
+                {"kata": w["kata"], "t": round(w["t0"], 3), "fraksi": round(w["t0"] / dur, 4)} for w in hasil[sc["id"]]
+            ]
         print(json.dumps(out, ensure_ascii=False, indent=1))
         return 0
 
