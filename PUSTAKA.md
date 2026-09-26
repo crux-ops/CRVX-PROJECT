@@ -8,7 +8,7 @@ Mesin analisis membaca file ini + `pustaka/` untuk daftar topik SUDAH dibahas.
 | Ep | Status | Tanggal tayang | Topik | Judul terpilih | Folder |
 |---|---|---|---|---|---|
 | Ep50 | render | 2026-09-28 | tsunami | Kenapa Tsunami Palu Bisa Terjadi? Ini Jawaban Sainsnya | ep50_tsunami_palu |
-| Ep51 | produksi | (menunggu jadwal pemilik) | gunung berapi | Kenapa Gunung Meletus Ada Petir? Ini Jawaban Sainsnya | ep51_gunung_petir |
+| Ep51 | render | 2026-09-29 | gunung berapi | Kenapa Gunung Meletus Ada Petir? Ini Jawaban Sainsnya | ep51_gunung_petir |
 
 ## Video panjang baru
 

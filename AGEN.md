@@ -308,6 +308,14 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   yang baru lewat <= 3 hari tetap skor penuh (dulu meluruh -> topik tergeser momen statis jauh/13 Okt). (b) kalender
   kini menampilkan slot 'terkunci'/'selesai' (kolom status) lewat `perencana.baris_kunci`. DB: Ep50='selesai',
   Ep51='terkunci' (tak direncanakan ulang) + ekspor ulang. pytest penuh 198 LULUS; ruff+mypy bersih.
+- 2026-09-26 (RENDER Ep51): `tools/render_lokal.sh shorts ep51_gunung_petir` lokal 2 vCPU, 0.22-0.26 s/frame, SS 1.5,
+  9204 frame @ 60 fps dalam 2367 s (16 potongan x 600, semua OK sebelum digabung). QC MP4 LULUS: 153.400 s video /
+  153.408 s audio, BT.709, AAC 48 kHz, korelasi 0.99999 (delay 0.0 ms), puncak -1.16 dBFS, VO 9 adegan geser +0.0 ms
+  & isi hilang 0 ms, frame contoh terbaca, margin 40 px bersih. Master audio -14.10 LUFS / TP -1.20 dBTP / 73 SFX /
+  VO turun 0.00 dB / korelasi VO~mix 1.000. Hasil 125.9 MB (125857742 byte), MD5 c53f3bf172b0dcd9ce249d1ae5961d62.
+  Diserahkan: tautan unduh sementara (server statis port 8000, folder `dist/`) + pratinjau 720p
+  `/home/user/VIDEO_Ep51/KlikTahu_Ep51_Gunung_Petir_720p.mp4`. PUSTAKA/DB: Ep51 status render -> rencana 'selesai',
+  jadwal tayang Sen 29 Sep 2026 18.30 WIB. MP4 TIDAK masuk repo (gitignore `*.mp4`).
 
 ### 11c. Analisis mendalam (UPGRADE U5 - `kliktahu/analisis.py`)
 
@@ -458,6 +466,11 @@ tidak cukup - fixture tidak pernah melonjak, tidak pernah berisi jam, tidak pern
   `tools/render_lokal.sh shorts ep50_tsunami_palu` di komputer dengan Python 3.11+ & `pip install -r requirements.txt`)
   Sen 28 Sep 2026 11.30 WIB; judul/deskripsi/tag/bab/komentar sematan dari `pustaka/Ep50_Tsunami/SIAP_TEMPEL.md`
   (+ `METADATA.md`). Setelah tayang: `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
+- Ep51 (SIAP): unggah `KlikTahu_Ep51_Gunung_Petir.mp4` (tautan unduh sementara port 8000 saat agen menyerahkan;
+  bila sandbox sudah reset: minta render ulang atau jalankan `tools/render_lokal.sh shorts ep51_gunung_petir`)
+  Sen 29 Sep 2026 18.30 WIB; judul/deskripsi/tag/bab/komentar sematan dari `pustaka/Ep51_Gunung_Berapi/SIAP_TEMPEL.md`
+  (+ `METADATA.md`). Judul terpilih: "Kenapa Gunung Meletus Ada Petir? Ini Jawaban Sainsnya".
+  Setelah tayang: `python3 -m kliktahu pustaka status Ep51 rilis --youtube-id <id>`.
 - (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
   `python3 -m kliktahu pustaka impor-studio <file.csv>` -> bobot pilar menyesuaikan otomatis.
 - (Opsional, DISARANKAN) jalankan analisis NYATA di komputer dengan internet biasa (sandbox memblokir hampir semua
