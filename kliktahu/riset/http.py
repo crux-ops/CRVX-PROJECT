@@ -5,7 +5,8 @@
 * host yang tidak terjangkau (diblokir/offline) ditandai -> gagal cepat (Offline), mesin turun ke mode data lain
 * cache SQLite (data/cache_http.sqlite, TTL dari kanal.toml) -> jalankan ulang tidak memukul server lagi
 * transport bisa diganti (httpx.MockTransport) -> seluruh jalur HTTP diuji OFFLINE secara deterministik
-Kunci API tidak pernah ikut kunci cache, log, atau snapshot.
+Parameter rahasia, userinfo, dan fragment dibuang dari URL cache/log/snapshot.
+Retry-After di atas anggaran tunggu 30 detik menghentikan permintaan, bukan mencoba terlalu dini.
 """
 
 from __future__ import annotations
@@ -13,6 +14,7 @@ from __future__ import annotations
 import concurrent.futures as cf
 import hashlib
 import json
+import math
 import random
 import sqlite3
 import threading
@@ -21,9 +23,10 @@ import zlib
 from collections import Counter, defaultdict
 from collections.abc import Callable, Mapping
 from dataclasses import dataclass
+from email.utils import parsedate_to_datetime
 from pathlib import Path
 from typing import Any
-from urllib.parse import urlparse
+from urllib.parse import parse_qsl, urlencode, urlparse, urlsplit, urlunsplit
 
 import httpx
 
@@ -101,9 +104,27 @@ class Cache:
 
 
 def _url_aman(url: str, params: Mapping[str, Any] | None) -> str:
-    """URL untuk kunci cache/log TANPA parameter rahasia."""
-    p = {k: v for k, v in sorted((params or {}).items()) if k.lower() not in _RAHASIA}
-    return url + ("?" + "&".join(f"{k}={v}" for k, v in p.items()) if p else "")
+    """Sanitasi URL efektif HTTPX; pertahankan encoding dan parameter berulang."""
+    efektif = str(httpx.Request("GET", url, params=params).url)
+    bagian = urlsplit(efektif)
+    query = [(k, v) for k, v in parse_qsl(bagian.query, keep_blank_values=True) if k.lower() not in _RAHASIA]
+    return urlunsplit((bagian.scheme, bagian.netloc.rsplit("@", 1)[-1], bagian.path, urlencode(query), ""))
+
+
+def _retry_after(nilai: str, sekarang: float) -> float | None:
+    """Detik tunggu dari angka atau HTTP-date; None berarti header tidak valid."""
+    nilai = nilai.strip()
+    try:
+        detik = float(nilai)
+    except ValueError:
+        try:
+            tanggal = parsedate_to_datetime(nilai)
+            if tanggal.tzinfo is None:
+                return None
+            detik = max(0.0, tanggal.timestamp() - sekarang)
+        except (ValueError, TypeError, OverflowError):
+            return None
+    return detik if math.isfinite(detik) and detik >= 0 else None
 
 
 class KlienRiset:
@@ -198,9 +219,12 @@ class KlienRiset:
                     self._tidur(self._backoff(i))
                     continue
                 if r.status_code in (429, 500, 502, 503, 504) and i < percobaan - 1:
+                    tunggu = _retry_after(r.headers.get("retry-after", ""), time.time())
+                    if tunggu is not None and tunggu > 30.0:
+                        self._catat("gagal")
+                        raise GagalHTTP(r.status_code, aman)
                     self._catat("coba_ulang")
-                    ra = r.headers.get("retry-after", "")
-                    self._tidur(min(30.0, float(ra)) if ra.replace(".", "", 1).isdigit() else self._backoff(i))
+                    self._tidur(tunggu if tunggu is not None else self._backoff(i))
                     continue
                 dur = int((time.perf_counter() - t0) * 1000)
                 if r.status_code == 404 and terima_404:
