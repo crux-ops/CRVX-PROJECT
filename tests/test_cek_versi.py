@@ -45,8 +45,8 @@ def test_tanggal_dan_metadata_rusak_tidak_diterima():
 def test_marker_python_dan_pin_dari_pyproject(tmp_path):
     path = tmp_path / "pyproject.toml"
     path.write_text(
-        '[project]\ndependencies = ["numpy==1.0; python_version < \'3.12\'", '
-        '"numpy==2.0; python_version >= \'3.12\'"]\n'
+        "[project]\ndependencies = [\"numpy==1.0; python_version < '3.12'\", "
+        "\"numpy==2.0; python_version >= '3.12'\"]\n"
         '[project.optional-dependencies]\ndev = ["pytest==1.0"]\n',
         encoding="utf-8",
     )
@@ -72,9 +72,11 @@ def test_fetch_hanya_pypi_dan_status_error():
         data = V.ambil_pypi(client, "Demo_Package")
     assert "releases" in data
     assert seen == ["https://pypi.org/pypi/demo-package/json"]
-    with httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(503))) as client:
-        with pytest.raises(httpx.HTTPStatusError):
-            V.ambil_pypi(client, "demo")
+    with (
+        httpx.Client(transport=httpx.MockTransport(lambda _: httpx.Response(503))) as client,
+        pytest.raises(httpx.HTTPStatusError),
+    ):
+        V.ambil_pypi(client, "demo")
 
 
 def test_cli_laporan_tidak_mengubah_pin(tmp_path, monkeypatch, capsys):

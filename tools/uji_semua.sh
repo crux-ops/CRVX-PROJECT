@@ -20,9 +20,14 @@ done
 jalan python3 -m kliktahu kanal cek
 jalan python3 -m kliktahu skema cek
 jalan python3 -m pytest -q tests
+# --- lapisan analisis mendalam (tahap 1-12): rantai penuh mode uji + gerbang evaluasi
+jalan python3 -m kliktahu cari "kenapa gunung meletus" --maks 3
+jalan python3 -m kliktahu analisis "kenapa gunung meletus" --abaikan-pustaka
+jalan python3 -m kliktahu evaluasi
 if python3 -c "import ruff" 2>/dev/null || command -v ruff >/dev/null; then
-  jalan ruff check kliktahu tests
-  jalan ruff format --check kliktahu tests
+  jalan ruff check kliktahu tests tools
+  jalan ruff format --check kliktahu tests tools
+  jalan python3 tools/cek_versi.py --python-version 3.11
 fi
 if python3 -c "import mypy" 2>/dev/null; then
   jalan python3 -m mypy

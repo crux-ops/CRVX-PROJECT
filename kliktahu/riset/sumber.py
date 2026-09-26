@@ -17,6 +17,7 @@ import math
 import re
 import statistics
 import xml.etree.ElementTree as ET
+from collections.abc import Callable, Sequence
 from typing import Any
 from urllib.parse import quote, urlparse
 
@@ -507,30 +508,43 @@ def urai_eonet(teks: str) -> list[Momen]:
     return out
 
 
+def momen_usgs(k: KlienRiset, hari_ini: dt.date) -> list[Momen]:
+    return urai_usgs(
+        k.get("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson", ttl_jam=0.5).teks,
+        hari_ini,
+    )
+
+
+def momen_noaa(k: KlienRiset, hari_ini: dt.date) -> list[Momen]:
+    return urai_swpc(
+        k.get("https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json", ttl_jam=1).teks, hari_ini
+    )
+
+
+def momen_jpl(k: KlienRiset, hari_ini: dt.date) -> list[Momen]:
+    return urai_jpl(
+        k.get(
+            "https://ssd-api.jpl.nasa.gov/cad.api",
+            {"date-min": "now", "date-max": "+30", "dist-max": "0.02"},
+            ttl_jam=12,
+        ).teks
+    )
+
+
+def momen_eonet(k: KlienRiset, hari_ini: dt.date) -> list[Momen]:
+    return urai_eonet(
+        k.get("https://eonet.gsfc.nasa.gov/api/v3/events", {"status": "open", "days": "7"}, ttl_jam=3).teks
+    )
+
+
 def momen_live(k: KlienRiset, hari_ini: dt.date) -> tuple[list[Momen], list[str]]:
     """semua umpan live; sumber yang gagal dicatat, tidak menghentikan yang lain."""
-    tugas = {
+    tugas: dict[str, Callable[[], list[Momen]]] = {
         "bmkg": lambda: momen_bmkg(k, hari_ini),
-        "usgs": lambda: urai_usgs(
-            k.get(
-                "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/significant_week.geojson", ttl_jam=0.5
-            ).teks,
-            hari_ini,
-        ),
-        "swpc": lambda: urai_swpc(
-            k.get("https://services.swpc.noaa.gov/products/noaa-planetary-k-index-forecast.json", ttl_jam=1).teks,
-            hari_ini,
-        ),
-        "jpl": lambda: urai_jpl(
-            k.get(
-                "https://ssd-api.jpl.nasa.gov/cad.api",
-                {"date-min": "now", "date-max": "+30", "dist-max": "0.02"},
-                ttl_jam=12,
-            ).teks
-        ),
-        "eonet": lambda: urai_eonet(
-            k.get("https://eonet.gsfc.nasa.gov/api/v3/events", {"status": "open", "days": "7"}, ttl_jam=3).teks
-        ),
+        "usgs": lambda: momen_usgs(k, hari_ini),
+        "swpc": lambda: momen_noaa(k, hari_ini),
+        "jpl": lambda: momen_jpl(k, hari_ini),
+        "eonet": lambda: momen_eonet(k, hari_ini),
     }
     hasil = k.banyak(tugas)
     out, gagal = [], []
@@ -690,3 +704,128 @@ def web_cari(k: KlienRiset, q: str) -> dict[str, list[dict[str, str]]] | None:
 def skala_log(x: float, penuh: float) -> float:
     """0..1 logaritmik: x = penuh -> 1."""
     return 0.0 if x <= 1 else min(1.0, math.log10(x) / math.log10(penuh))
+
+
+# ================================================================================================ Crossref (DOI)
+def urai_crossref(teks: str) -> list[dict[str, Any]]:
+    """Crossref: metadata DOI - pengecekan silang bukti ilmiah yang tidak ada di OpenAlex/Europe PMC."""
+    try:
+        res = json.loads(teks)["message"]["items"]
+    except (ValueError, KeyError, TypeError):
+        return []
+    out = []
+    for it in res:
+        judul = (it.get("title") or [""])[0]
+        doi = it.get("DOI")
+        if not judul or not doi:
+            continue
+        tahun = None
+        for kk in ("issued", "published-print", "published-online"):
+            dp = (it.get(kk) or {}).get("date-parts") or [[]]
+            if dp and dp[0] and isinstance(dp[0][0], int):
+                tahun = int(dp[0][0])
+                break
+        penerbit = (it.get("container-title") or [""])[0] or it.get("publisher")
+        out.append(
+            {
+                "judul": judul.strip(),
+                "url": f"https://doi.org/{doi}",
+                "doi": doi,
+                "penerbit": penerbit or "Crossref",
+                "tahun": tahun,
+                "jenis": str(it.get("type", "jurnal")).replace("-", " "),
+                "kredibel": True,
+                "kutipan": it.get("is-referenced-by-count"),
+            }
+        )
+    return out
+
+
+def crossref(k: KlienRiset, q_en: str, maks: int = 5) -> list[dict[str, Any]]:
+    p = {
+        "query": q_en,
+        "rows": str(maks),
+        "select": "title,DOI,container-title,publisher,issued,URL,type,is-referenced-by-count",
+    }
+    mail = k.kanal.riset.rahasia(k.kanal.riset.env_openalex_mailto)
+    if mail:
+        p["mailto"] = mail
+    return urai_crossref(k.get("https://api.crossref.org/works", p, ttl_jam=168).teks)
+
+
+# ================================================================================================ Open-Meteo (cuaca)
+def urai_cuaca(teks: str, ambang_hujan: float = 20.0, ambang_angin: float = 40.0) -> dict[str, Any]:
+    """ramalan harian Open-Meteo -> hari ekstrem (hujan lebat / angin kencang) untuk momen cuaca.
+
+    Struktur respons: {"daily": {"time": [...], "precipitation_sum": [...], "wind_speed_10m_max": [...]}}.
+    """
+    try:
+        d = json.loads(teks)["daily"]
+    except (ValueError, KeyError, TypeError):
+        return {"hari": [], "ekstrem": []}
+    waktu = d.get("time", [])
+    hujan = d.get("precipitation_sum") or [0.0] * len(waktu)
+    angin = d.get("wind_speed_10m_max") or [0.0] * len(waktu)
+    hari: list[dict[str, Any]] = []
+    ekstrem: list[dict[str, Any]] = []
+    for i, t in enumerate(waktu):
+        h = float(hujan[i]) if i < len(hujan) and hujan[i] is not None else 0.0
+        a = float(angin[i]) if i < len(angin) and angin[i] is not None else 0.0
+        hari.append({"tanggal": t, "hujan_mm": round(h, 1), "angin_kmj": round(a, 1)})
+        if h >= ambang_hujan:
+            ekstrem.append({"tanggal": t, "jenis": "hujan lebat", "nilai": round(h, 1), "satuan": "mm"})
+        if a >= ambang_angin:
+            ekstrem.append({"tanggal": t, "jenis": "angin kencang", "nilai": round(a, 1), "satuan": "km/jam"})
+    return {"hari": hari, "ekstrem": ekstrem}
+
+
+def cuaca(k: KlienRiset, lintang: float, bujur: float, hari: int = 7) -> dict[str, Any]:
+    p = {
+        "latitude": f"{lintang:.4f}",
+        "longitude": f"{bujur:.4f}",
+        "daily": "temperature_2m_max,precipitation_sum,wind_speed_10m_max",
+        "timezone": "Asia/Jakarta",
+        "forecast_days": str(hari),
+    }
+    return urai_cuaca(k.get("https://api.open-meteo.com/v1/forecast", p, ttl_jam=3).teks)
+
+
+# ================================================================================================ Wikipedia teratas
+def _norm_artikel(s: str) -> str:
+    return re.sub(r"\s+", " ", s).strip().lower()
+
+
+_AWALAN_SISTEM = ("istimewa:", "berkas:", "halaman:", "pembicaraan:", "modul:", "templat:", "bantuan:")
+# halaman khusus yang tidak diawali titik dua ("Halaman Utama" = beranda Wikipedia)
+_JUDUL_SISTEM = {"halaman utama", "beranda"}
+
+
+def urai_wiki_top(teks: str, buang: Sequence[str] = ()) -> list[dict[str, Any]]:
+    """artikel Wikipedia bahasa Indonesia paling banyak dibaca hari itu (sinyal discovery nyata)."""
+    try:
+        art = json.loads(teks)["items"][0]["articles"]
+    except (ValueError, KeyError, IndexError, TypeError):
+        return []
+    out = []
+    for a in art:
+        judul = str(a.get("article", "")).replace("_", " ").strip()
+        n = _norm_artikel(judul)
+        if not judul or n.startswith(_AWALAN_SISTEM) or n in _JUDUL_SISTEM:
+            continue  # halaman sistem/berkas/beranda, bukan topik
+        if any(n.startswith(b) for b in buang):
+            continue
+        out.append({"judul": judul, "views": int(a.get("views") or 0), "peringkat": int(a.get("rank") or 0)})
+    return out
+
+
+def wiki_top(k: KlienRiset, hari: dt.date, bahasa: str = "id", maks: int = 200) -> list[dict[str, Any]]:
+    """peringkat artikel teratas per hari. Data hari ini sering belum lengkap -> mundur satu/dua hari bila kosong."""
+    for t in (hari - dt.timedelta(days=1), hari - dt.timedelta(days=2)):
+        url = f"https://wikimedia.org/api/rest_v1/metrics/pageviews/top/{bahasa}.wikipedia/all-access/{t:%Y/%m/%d}"
+        r = k.get(url, ttl_jam=24, terima_404=True)
+        if r.status == 404 or not r.teks.strip():
+            continue
+        out = urai_wiki_top(r.teks)
+        if out:
+            return out[:maks]
+    return []

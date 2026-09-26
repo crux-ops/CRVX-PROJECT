@@ -18,10 +18,12 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from rapidfuzz import fuzz
-
 from . import ROOT, teks
 from . import kanal as kanal_mod
+from .meta import deskripsi as D
+from .meta import hashtag as H
+from .meta import judul as J
+from .meta import tag as T
 from .tema import BENCANA, TEMA
 
 TAG_MAKS_KARAKTER = 60  # batas aman per tag (frasa long-tail <= ~8 kata); total tetap <= 500 cara YouTube
@@ -90,330 +92,43 @@ class Paket:
         }
 
 
-# ================================================================================================ bahan
 def _bersih(s: str) -> str:
-    return re.sub(r"[<>]", "", teks.ascii_saja(s)).strip()
+    """ASCII saja, tanpa tanda < > (ditolak YouTube)."""
+    return re.sub(r"[<>]", "", teks.ascii_saja(str(s))).strip()
 
 
-KATA_KORBAN = ("korban", "tewas", "meninggal", "mayat", "jenazah")  # topik bencana: tidak dijadikan judul/tag
-
-
-def frasa_layak(frasa: Sequence[str], k: kanal_mod.Kanal, tema: str = "") -> list[str]:
-    """frasa pencarian yang boleh dipakai di judul/tag: bersih, tidak diblokir, tidak sensitif, 2-8 kata, tanpa token
-    satu huruf yang tak bermakna ('kenapa tsunami pakai t'); topik bencana: tanpa kata korban (hormat)."""
-    out = []
-    for f in frasa:
-        f = teks.norm(f)
-        if not f or teks.diblokir(f, k.aturan.blokir) or teks.sensitif(f, k.aturan.sensitif):
-            continue
-        if teks.kena(f, k.aturan.hindari_hook) or not 2 <= len(f.split()) <= 8:
-            continue
-        if any(len(w) == 1 and not w.isdigit() for w in f.split()):
-            continue
-        if tema in BENCANA and any(w in KATA_KORBAN for w in f.split()):
-            continue
-        out.append(f)
-    return teks.unik_fuzzy(out, 0.92)
-
-
-def kata_kunci_utama(frasa: Sequence[str], inti: str) -> str:
-    inti_n = teks.norm(inti)
-    for awal in ("kenapa", "apakah", "bagaimana"):
-        for f in frasa:
-            if f.startswith(awal + " ") and inti_n in f and len(f.split()) <= 6:
-                return f
-    return next((f for f in frasa if inti_n in f), inti_n)
+# ================================================================================================ bahan
+KATA_KORBAN = J.KATA_KORBAN  # topik bencana: tidak dijadikan judul/tag (lihat meta/judul.py)
+frasa_layak = J.frasa_layak
+kata_kunci_utama = J.kata_kunci_utama
 
 
 # ================================================================================================ judul
-def skor_judul(j: str, kata_kunci: str, inti: str, format_: str, pesaing: Sequence[str], k: kanal_mod.Kanal) -> float:
-    if not j or len(j) > k.metadata.maks_judul or not j.isascii() or re.search(r"[<>]", j):
-        return -100.0
-    if teks.diblokir(j, k.aturan.blokir) or teks.sensitif(j, k.aturan.sensitif) or teks.kena(j, k.aturan.hindari_hook):
-        return -100.0
-    jn = teks.norm(j)
-    ideal = k.metadata.ideal_judul_shorts if format_ == "shorts" else k.metadata.ideal_judul_long
-    s = 2.0 if len(j) <= ideal else 2.0 - 0.08 * (len(j) - ideal)
-    if len(j) < 25:
-        s -= 1.0
-    if teks.norm(inti) in jn[:40]:
-        s += 2.0
-    kk = " ".join(teks.norm(kata_kunci).split()[:3])
-    if kk and jn.startswith(kk):
-        s += 1.5
-    if "?" in j or any(w in jn.split() for w in PENASARAN):
-        s += 1.0
-    if re.search(r"\d", j):
-        s += 0.3
-    kapital = [w for w in re.findall(r"[A-Za-z]{3,}", j) if w.isupper()]
-    s -= max(0, len(kapital) - 1) * 1.0
-    if any(u in j.lower() for u in UMPAN_BOHONG):
-        s -= 2.0
-    if pesaing:
-        _, mirip = teks.paling_mirip(j, list(pesaing))
-        s += -2.0 if mirip > 0.85 else (0.8 if mirip < 0.6 else 0.0)
-    return round(s, 3)
-
-
-def kandidat_judul(
-    frasa: Sequence[str],
-    inti: str,
-    format_: str,
-    momen: str | None = None,
-    tambahan: Sequence[str] = (),
-    pilar: str = "",
-    hormat: bool = False,
-) -> list[str]:
-    """hormat=True (topik bencana): templat sensasional tidak dipakai."""
-    I = teks.kapital_judul(inti)
-    out = [_bersih(x) for x in tambahan]
-
-    def pakai(daftar: list[str]) -> list[str]:
-        return [t for t in daftar if not (hormat and t in TEMPLAT_SENSASI)]
-
-    tanya = [f for f in frasa if f.split()[0] in ("kenapa", "apakah", "bagaimana")][:8] or list(frasa[:3])
-    for f in tanya:
-        F = teks.kapital_judul(f)
-        out += [t.format(F=F, I=I) for t in pakai(TEMPLAT["tanya"] + TEMPLAT[format_])]
-        if momen and len(f.split()) >= 4:  # judul momen hanya untuk pertanyaan SPESIFIK (bukan "{M}: Kenapa Tsunami?")
-            out += [t.format(M=teks.kapital_judul(momen), F=F) for t in TEMPLAT["momen"]]
-    out += [t.format(I=I) for t in pakai(TEMPLAT["inti"] + (TEMPLAT["misteri"] if pilar == "misteri" else []))]
-    return list(dict.fromkeys(_bersih(x) for x in out if x))
-
-
-def _inti_judul(j: str) -> str:
-    """bagian pertanyaan/inti judul - dua judul dengan inti sama = pilihan yang sama. Judul momen '{M}: {F}?' -> F
-    (pertanyaannya), selain itu bagian sebelum '?' atau ':'."""
-    if ":" in j:
-        kanan = j.split(":", 1)[1]
-        if "?" in kanan:
-            return teks.norm(kanan.split("?", 1)[0])
-    return teks.norm(re.split(r"[?:]", j, maxsplit=1)[0])
-
-
-_FUNGSI = {
-    "kenapa",
-    "mengapa",
-    "apakah",
-    "bagaimana",
-    "padahal",
-    "ada",
-    "bisa",
-    "keluar",
-    "terjadi",
-    "yang",
-    "itu",
-    "ini",
-    "sih",
-    "kok",
-    "jadi",
-    "di",
-    "ke",
-    "dan",
-    "dengan",
-    "saat",
-    "sama",
-    "punya",
-    "memiliki",
-    "tidak",
-    "gak",
-}
-
-
-_SINONIM = {
-    "kilat": "petir",
-    "halilintar": "petir",
-    "petirnya": "petir",
-    "barengan": "bersamaan",
-    "serentak": "bersamaan",
-    "apinya": "api",
-    "lahar": "lava",
-    "gatal": "gatal",
-    "menular": "menular",
-    "berwarna": "warna",
-}
-
-
-def _kata_sudut(j: str, inti: str) -> set[str]:
-    """kata PEMBEDA sudut sebuah judul: bagian pertanyaan tanpa kata inti & kata fungsi ('ada petir' = {'petir'})."""
-    buang = set(teks.norm(inti).split()) | _FUNGSI
-    return {_SINONIM.get(w, w) for w in _inti_judul(j).split() if w not in buang and len(w) > 2}
-
-
-def _mirip_judul(a: str, b: str, inti: str = "") -> float:
-    if _inti_judul(a) == _inti_judul(b):
-        return 1.0
-    ka, kb = _kata_sudut(a, inti), _kata_sudut(b, inti)
-    if (not ka and not kb and "?" in a and "?" in b) or (ka & kb):
-        return 1.0  # sudut sama walau kata kerjanya beda ("ada petir" vs "keluar petir")
-    return 0.6 * teks.mirip(a, b)
-
-
-def pilih_beragam(
-    kandidat: list[tuple[str, float]], n: int = 3, lam: float = 3.0, inti: str = ""
-) -> list[tuple[str, float]]:
-    """MMR: skor tinggi TAPI tidak mirip judul yang sudah terpilih (3 pilihan benar-benar berbeda sudutnya)."""
-    sisa = sorted([c for c in kandidat if c[1] > -50], key=lambda c: -c[1])
-    pilih: list[tuple[str, float]] = []
-    while sisa and len(pilih) < n:
-        terbaik = max(
-            sisa, key=lambda c: c[1] - lam * max((_mirip_judul(c[0], p[0], inti) for p in pilih), default=0.0)
-        )
-        pilih.append(terbaik)
-        sisa.remove(terbaik)
-    return pilih
+skor_judul = J.skor_judul
+kandidat_judul = J.kandidat_judul
+pilih_beragam = J.pilih_beragam
+duplikat_judul = J.duplikat
+_inti_judul = J._inti_judul
+TAG_MAKS_KARAKTER = T.MAKS_KARAKTER_PER_TAG
+PENASARAN = J.PENASARAN
+UMPAN_BOHONG = J.UMPAN_BOHONG
 
 
 # ================================================================================================ hashtag & tag
 def buat_hashtag(tema: str, inti: str, format_: str, k: kanal_mod.Kanal) -> list[str]:
-    out = list(k.metadata.hashtag_wajib)
-    for h in (teks.hashtag(inti), teks.hashtag(tema.replace("&", " ")) if "&" not in tema else ""):
-        if h and h.lower() not in (x.lower() for x in out) and len(h) <= 30:
-            out.append(h)
-    if format_ == "shorts":
-        out.append(k.metadata.hashtag_shorts)
-    return out[: k.metadata.maks_hashtag]
+    return H.buat_hashtag(tema, inti, format_, k, blokir=k.aturan.blokir, sensitif=k.aturan.sensitif)[0]
 
 
 def buat_tag(
     kata_kunci: str, inti: str, tema: str, frasa: Sequence[str], k: kanal_mod.Kanal, tambahan: Sequence[str] = ()
 ) -> list[str]:
-    calon = [
-        kata_kunci,
-        inti,
-        tema.replace("&", "dan"),
-        *tambahan,
-        *frasa,
-        f"fakta {inti}",
-        f"{inti} menurut sains",
-        "fakta sains",
-        "sains indonesia",
-        k.nama.lower(),
-    ]
-    out: list[str] = []
-    for c in calon:
-        c = teks.norm(c)
-        if (
-            not c
-            or len(c) > TAG_MAKS_KARAKTER
-            or teks.diblokir(c, k.aturan.blokir)
-            or teks.sensitif(c, k.aturan.sensitif)
-        ):
-            continue
-        if any(fuzz.ratio(c, x) >= 92 for x in out):  # hampir identik saja (subset BUKAN duplikat)
-            continue
-        if teks.panjang_tag_youtube([*out, c]) <= k.metadata.maks_tag_karakter:
-            out.append(c)
-    return out
+    return T.buat_tag(kata_kunci, inti, tema, frasa, k, tambahan)[0]
 
 
 # ================================================================================================ deskripsi
-def _mmss(detik: float) -> str:
-    d = int(round(detik))
-    return f"{d // 3600}:{d % 3600 // 60:02d}:{d % 60:02d}" if d >= 3600 else f"{d // 60}:{d % 60:02d}"
-
-
-BAB_MIN_DETIK = 10.0  # syarat bab YouTube: tiap bab >= 10 detik, bab pertama 0:00, minimal 3 bab
-
-
-def bab_dari_timeline(konten: dict[str, Any], timeline: dict[str, Any]) -> list[tuple[float, str]]:
-    """bab/timestamp dari timeline. Label: field 'bab' adegan (bila ada) > badge/judul. Bab yang lebih pendek dari
-    10 detik digabung ke bab sebelumnya (YouTube menolak SEMUA bab bila ada yang < 10 detik)."""
-    lab = {}
-    n_fakta = 0
-    for sc in konten.get("scenes", []):
-        tp = sc.get("type")
-        if sc.get("bab"):
-            lab[sc["id"]] = str(sc["bab"])
-            if tp == "fact":
-                n_fakta += 1
-            continue
-        if tp == "intro":
-            lab[sc["id"]] = "Pertanyaan"
-        elif tp == "fact":
-            n_fakta += 1
-            lab[sc["id"]] = teks.kapital_judul((sc.get("badge") or sc.get("title") or f"Fakta {n_fakta}").lower())
-        elif tp == "outro":
-            lab[sc["id"]] = "Kesimpulan"
-        elif tp == "bab":
-            lab[sc["id"]] = teks.kapital_judul(sc.get("judul") or sc["id"])
-    out = []
-    for sc in timeline.get("scenes", []):
-        if sc.get("id") in lab:
-            out.append((float(sc["start"]), _bersih(lab[sc["id"]])))
-    if out:
-        out[0] = (0.0, out[0][1])
-    total = float(timeline.get("total") or 0.0)
-    if total > 0:  # buang bab yang terlalu pendek (digabung ke bab sebelumnya)
-        rapi: list[tuple[float, str]] = []
-        for i, (t0, nama) in enumerate(out):
-            t1 = out[i + 1][0] if i + 1 < len(out) else total
-            if rapi and t1 - t0 < BAB_MIN_DETIK:
-                continue
-            rapi.append((t0, nama))
-        out = rapi
-    return out
-
-
-def sumber_dari_konten(konten: dict[str, Any]) -> list[dict[str, Any]]:
-    if isinstance(konten.get("sumber"), list):
-        return [s if isinstance(s, dict) else {"judul": str(s)} for s in konten["sumber"]]
-    for sc in konten.get("scenes", []):
-        if sc.get("src"):
-            return [{"judul": re.sub(r"(?i)^sumber:\s*", "", s).strip()} for s in sc["src"].split(";") if s.strip()]
-    return []
-
-
-def _baris_sumber(s: dict[str, Any]) -> str:
-    bag = [s.get("penerbit"), s.get("judul"), f"({s['tahun']})" if s.get("tahun") else None, s.get("url")]
-    return "- " + _bersih(" - ".join(str(b) for b in bag[:2] if b) + " " + " ".join(str(b) for b in bag[2:] if b))
-
-
-def buat_deskripsi(
-    kata_kunci: str,
-    inti: str,
-    tema: str,
-    format_: str,
-    k: kanal_mod.Kanal,
-    hook: str | None = None,
-    ringkas: str | None = None,
-    bab: Sequence[tuple[float, str]] = (),
-    sumber: Sequence[dict[str, Any]] = (),
-    hashtag: Sequence[str] = (),
-) -> str:
-    kk = teks.kalimat(kata_kunci)
-    baris = [kk + ("?" if kk.split()[0].lower() in ("kenapa", "apakah", "bagaimana") and not kk.endswith("?") else "")]
-    bencana = BENCANA.get(tema)
-    if hook and "?" in hook and teks.norm(hook.split("?", 1)[0]) == teks.norm(baris[0]):
-        hook = hook.split("?", 1)[1].strip()  # hook mengulang pertanyaan baris 1 -> ambil sisanya saja
-    if hook:
-        baris.append(_bersih(hook))
-    elif bencana:  # korban jiwa nyata -> tanpa "lebih seru"
-        baris.append("Ini penjelasan sainsnya - pengetahuan yang membantu kita lebih siap.")
-    else:
-        baris.append("Jawabannya ada di sains - dan lebih seru dari yang kamu kira.")
-    baris += [
-        "",
-        _bersih(ringkas)
-        if ringkas
-        else (
-            f"Di video ini {inti} dijelaskan dari nol: apa yang sebenarnya terjadi, kenapa bisa begitu, "
-            + ("dan apa yang perlu kita tahu agar lebih siap." if bencana else "dan fakta yang jarang diketahui.")
-            + " Animasi sederhana, tanpa ribet."
-        ),
-    ]
-    baris += ["", "Bab:"]
-    baris += [f"{_mmss(t)} {lab}" for t, lab in bab] if bab else ["0:00 (timestamp diisi dari timeline.json)"]
-    baris += ["", "Sumber:"]
-    baris += (
-        [_baris_sumber(s) for s in sumber] if sumber else ["- (diisi saat riset: NASA/ESA/NOAA/NHS/Mayo Clinic/jurnal)"]
-    )
-    if bencana:
-        baris += ["", f"Info resmi & peringatan dini: {bencana}. Ikuti arahan petugas setempat."]
-    if TEMA.get(tema) and TEMA[tema].pilar in k.aturan.pilar_kesehatan:
-        baris += ["", k.aturan.disclaimer_kesehatan]
-    baris += ["", k.metadata.cta, "", " ".join(hashtag)]
-    return "\n".join(_bersih(b) if b else "" for b in baris).strip() + "\n"
+BAB_MIN_DETIK = D.BAB_MIN_DETIK
+bab_dari_timeline = D.bab_dari_timeline
+sumber_dari_konten = D.sumber_dari_konten
 
 
 # ================================================================================================ rakit
@@ -432,38 +147,48 @@ def buat(
     judul_tambahan: Sequence[str] = (),
     ringkas: str | None = None,
     final: bool = False,
+    sudut: Sequence[str] = (),
+    bukti: Sequence[Any] | None = None,
+    tanggal_riset: str | None = None,
+    status_sumber: str | None = None,
 ) -> Paket:
+    """rakit satu Paket metadata. Tahap 7-10: judul (sudut + bukti), deskripsi (setia bukti + provenance),
+    hashtag (relevan, aturan platform), tag (variasi pencarian nyata, batas 500 karakter)."""
     k = k or kanal_mod.muat()
     t = TEMA.get(tema)
     inti = t.inti if t else tema
+    hormat = tema in BENCANA
     fr = frasa_layak(frasa, k, tema)
     if not kata_kunci and konten and konten.get("kata_kunci"):
         kata_kunci = str(konten["kata_kunci"])
     kk = teks.norm(kata_kunci) if kata_kunci else kata_kunci_utama(fr, inti)
     tetap = [_bersih(j) for j in (konten or {}).get("judul", []) if isinstance(j, str) and j.strip()]
-    if len(tetap) >= 3:  # episode: 3 judul dipilih agen SESUAI ISI video (tetap dinilai & di-lint)
-        pilih = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in tetap[:3]]
-    else:
-        calon = kandidat_judul(fr, inti, format_, momen, judul_tambahan, t.pilar if t else "", hormat=tema in BENCANA)
-        bernilai = [(j, skor_judul(j, kk, inti, format_, pesaing_judul, k)) for j in calon]
-        pilih = pilih_beragam(bernilai, 3, inti=inti)
-    tagar = buat_hashtag(tema, inti, format_, k)
+    judul, skor, peringatan_judul = J.buat(
+        fr, inti, format_, k, kk, pesaing_judul, momen, t.pilar if t else "", hormat, sudut, tetap, bukti
+    )
+    tagar, peringatan_tagar = H.buat_hashtag(tema, inti, format_, k, blokir=k.aturan.blokir, sensitif=k.aturan.sensitif)
     bab = bab_dari_timeline(konten, timeline) if konten and timeline else []
     src = list(sumber) or (sumber_dari_konten(konten) if konten else [])
-    desk = buat_deskripsi(kk, inti, tema, format_, k, hook, ringkas, bab, src, tagar)
-    p = Paket(
-        format_,
-        tema,
+    desk = D.buat_deskripsi(
         kk,
-        [j for j, _ in pilih],
-        desk,
-        tagar,
-        buat_tag(kk, inti, tema, fr, k),
+        inti,
+        tema,
+        format_,
+        k,
+        hook,
+        ringkas,
+        bab,
         src,
-        [s for _, s in pilih],
+        tagar,
+        tanggal_riset,
+        status_sumber,
+        pilar=t.pilar if t else None,
     )
+    tag, peringatan_tag = T.buat_tag(kk, inti, tema, fr, k, hashtag=tagar)
+    p = Paket(format_, tema, kk, judul, desk, tagar, tag, src, skor)
     p.final = final
-    p.galat, p.peringatan = lint(p, k, final=final, pilar=t.pilar if t else None)
+    g, w = lint(p, k, final=final, pilar=t.pilar if t else None)
+    p.galat, p.peringatan = g, [*peringatan_judul, *peringatan_tagar, *peringatan_tag, *w]
     return p
 
 
@@ -499,80 +224,21 @@ def lint(p: Paket, k: kanal_mod.Kanal, final: bool = True, pilar: str | None = N
 
 
 def lint_deskripsi(d: str, format_: str, k: kanal_mod.Kanal, final: bool, pilar: str | None, judul1: str) -> list[str]:
-    g = []
-    if not d.strip():
-        return ["deskripsi kosong"]
-    if not d.isascii():
-        g.append("deskripsi tidak ASCII")
-    if len(d) > k.metadata.maks_deskripsi:
-        g.append(f"deskripsi > {k.metadata.maks_deskripsi} karakter")
-    if re.search(r"[<>]", d):
-        g.append("deskripsi memuat < atau > (ditolak YouTube)")
-    if teks.diblokir(d, k.aturan.blokir):
-        g.append("deskripsi memuat topik DIBLOKIR")
-    baris1 = d.strip().splitlines()[0]
-    kata1 = {w for w in teks.norm(baris1).split() if len(w) >= 4}
-    if judul1 and not kata1 & {w for w in teks.norm(judul1).split() if len(w) >= 4}:
-        g.append("baris pertama deskripsi harus kata kunci utama (tidak nyambung dengan judul 1)")
-    ts = [ln for ln in d.splitlines() if re.match(r"^\d{1,2}:\d{2}(:\d{2})? \S", ln)]
-    if final:
-        if "(timestamp diisi" in d:
-            g.append("bab/timestamp belum diisi dari timeline.json")
-        det = [_detik(ln.split()[0]) for ln in ts]
-        if not det or det[0] != 0:
-            g.append("bab harus dimulai 0:00")
-        if det != sorted(det) or len(set(det)) != len(det):
-            g.append("timestamp bab harus naik berurutan")
-        min_bab = 3 if format_ == "long" else 2
-        if len(det) < min_bab:
-            g.append(f"minimal {min_bab} bab/timestamp")
-        if format_ == "long" and any(b - a < 10 for a, b in zip(det, det[1:])):
-            g.append("bab video panjang minimal berjarak 10 detik (syarat chapter YouTube)")
-        if "(diisi saat riset" in d:
-            g.append("sumber belum diisi")
-    if not re.search(r"(?im)^sumber:", d):
-        g.append("deskripsi wajib memuat bagian 'Sumber:'")
-    if pilar and pilar in k.aturan.pilar_kesehatan and k.aturan.disclaimer_kesehatan.lower() not in d.lower():
-        g.append(f"topik kesehatan wajib memuat: '{k.aturan.disclaimer_kesehatan}'")
-    return g
+    return D.lint_deskripsi(d, format_, k, final, pilar, judul1)
 
 
 def _detik(s: str) -> int:
-    bag = [int(x) for x in s.split(":")]
-    return bag[0] * 3600 + bag[1] * 60 + bag[2] if len(bag) == 3 else bag[0] * 60 + bag[1]
+    return D._detik(s)
 
 
-def lint_hashtag(h: Sequence[str], format_: str, k: kanal_mod.Kanal, w: list[str]) -> list[str]:
-    g = []
-    if not 1 <= len(h) <= k.metadata.maks_hashtag:
-        g.append(f"hashtag harus 1..{k.metadata.maks_hashtag} (ada {len(h)})")
-    for x in h:
-        if not re.match(r"^#[A-Za-z0-9]{2,40}$", x):
-            g.append(f"hashtag tidak sah: '{x}' (ASCII huruf/angka tanpa spasi)")
-        if teks.diblokir(x, k.aturan.blokir) or teks.sensitif(x, k.aturan.sensitif):
-            g.append(f"hashtag terlarang: '{x}'")
-    rendah = [x.lower() for x in h]
-    for x in k.metadata.hashtag_wajib:
-        if x.lower() not in rendah:
-            g.append(f"hashtag wajib hilang: {x}")
-    if format_ == "shorts" and k.metadata.hashtag_shorts.lower() not in rendah:
-        w.append(f"Shorts tanpa {k.metadata.hashtag_shorts}")
-    return g
+def lint_hashtag(
+    h: Sequence[str], format_: str, k: kanal_mod.Kanal, w: list[str], konteks: Sequence[str] = ()
+) -> list[str]:
+    return H.lint(h, format_, k, w, konteks)
 
 
 def lint_tag(tag: Sequence[str], k: kanal_mod.Kanal) -> list[str]:
-    g = []
-    if not tag:
-        g.append("tag kosong")
-    n = teks.panjang_tag_youtube(tag)
-    if n > k.metadata.maks_tag_karakter:
-        g.append(f"tag {n} karakter (hitungan YouTube) > {k.metadata.maks_tag_karakter}")
-    for t in tag:
-        if not t.isascii() or re.search(r"[<>,]", t):
-            g.append(f"tag tidak sah: '{t}'")
-        if teks.diblokir(t, k.aturan.blokir) or teks.sensitif(t, k.aturan.sensitif):
-            g.append(f"tag terlarang: '{t}'")
-    return g
+    return T.lint(tag, k)
 
 
 # ================================================================================================ berkas MD

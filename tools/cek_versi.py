@@ -121,7 +121,9 @@ def main(argv: list[str] | None = None) -> int:
         return 2
     hasil = []
     exit_code = 0
-    with httpx.Client(timeout=20.0, follow_redirects=False, headers={"User-Agent": "KlikTahu-VersionAudit/1.0"}) as client:
+    with httpx.Client(
+        timeout=20.0, follow_redirects=False, headers={"User-Agent": "KlikTahu-VersionAudit/1.0"}
+    ) as client:
         for nama, pin in pins:
             row: dict[str, Any] = {"paket": nama, "pin": pin, "sumber": f"https://pypi.org/pypi/{nama}/json"}
             try:

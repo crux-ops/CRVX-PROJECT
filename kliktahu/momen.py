@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from dataclasses import asdict, dataclass, field
 from pathlib import Path
 
@@ -190,7 +191,10 @@ def skor_tema(nama_tema: str, daftar: list[Momen], hari_ini: dt.date, jendela: i
 
 def nama_pendek(nama: str, maks: int = 40) -> str:
     """nama momen ringkas untuk judul: bagian sebelum ':'/'(' dan dipotong di BATAS KATA (<= maks karakter)."""
-    n = (nama or "").split(":")[0].split("(")[0].strip()
+    # ':' dan '(' dipakai untuk membuang penjelasan di belakang nama, TETAPI titik dua di dalam
+    # JAM ("erupsi 08:21 WIB") bukan pemisah - dulu ini menghasilkan "Gunung Semeru erupsi 08".
+    n = re.split(r":(?!\d{2}\b)", nama or "")[0]
+    n = re.split(r"[(,]", n)[0].strip()
     if len(n) <= maks:
         return n
     potong = n[: maks + 1].rsplit(" ", 1)[0] if " " in n[: maks + 1] else n[:maks]

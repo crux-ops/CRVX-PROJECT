@@ -5,6 +5,9 @@ db        init | status | ekspor | impor | bersihkan-blokir
 skema     tulis | cek                        turunan skema (SQLite, Postgres/Bolt, JSON Schema, TypeScript)
 riset     [--mode online|agen|uji] [--agen FILE] [--tema a,b]      riset real-time + keputusan + metadata
 putuskan                                     tampilkan keputusan riset terakhir
+cari     <kueri>                             pencarian multi-sumber real-time (semua sumber, kuota & cadangan)
+analisis <kueri> [--mode online|agen|uji]    analisis mendalam -> niche/topik -> judul, deskripsi, hashtag, tag
+evaluasi [--live --izin-live]                nilai rantai atas kumpulan kasus (offline bawaan, live opt-in)
 metadata  buat ... | cek FILE                generator & lint METADATA.md
 pustaka   daftar | cari | tambah | status | sinkron | impor-studio | duplikat
 rencana   [--minggu 4] | kunci TGL JAM FORMAT   kalender konten + ICS
@@ -214,6 +217,128 @@ def cmd_metadata(a: argparse.Namespace) -> int:
         return 0 if p.lulus else 1
 
 
+def _pencari_untuk_cli(a: argparse.Namespace, hari: dt.date):
+    """bangun pencari untuk perintah `cari`/`analisis` (mode online | uji | agen)."""
+    from . import analisis
+    from . import kanal as K
+
+    k = K.muat()
+    return analisis._pencari(a.mode, k, hari, getattr(a, "agen", None), None)
+
+
+def cmd_cari(a: argparse.Namespace) -> int:
+    """pencarian multi-sumber real-time (satu kueri ke semua sumber)."""
+    hari = _tgl(a.tanggal) or dt.datetime.now(dt.UTC).date()
+    pencari, _klien = _pencari_untuk_cli(a, hari)
+    jenis = [j.strip() for j in a.jenis.split(",")] if a.jenis else None
+    sumber = [s.strip() for s in a.sumber.split(",")] if a.sumber else None
+    lap = pencari.cari(a.kueri, jenis, sumber)
+    if a.json:
+        print(
+            json.dumps(
+                {
+                    "kueri": lap.kueri,
+                    "mode": a.mode,
+                    "ringkas": pencari.ringkas(),
+                    "status": [s.baris() for s in lap.status],
+                    "catatan": [c.baris() for c in lap.catatan],
+                    "hasil": [
+                        {
+                            "sumber": h.sumber,
+                            "jenis": h.jenis,
+                            "judul": h.judul,
+                            "url": h.url,
+                            "metrik": h.metrik,
+                            "satuan": h.satuan,
+                            "status": h.status,
+                        }
+                        for h in lap.hasil[: a.maks]
+                    ],
+                },
+                ensure_ascii=False,
+                indent=1,
+            )
+        )
+        return 0
+    print(f"[cari] {a.kueri!r} - {lap.ringkas()} ({a.mode})")
+    for st in lap.status:
+        print(f"  status  {st}")
+    for c in lap.catatan:
+        if not c.ok:
+            print(f"  GAGAL   {c.sumber}: {c.alasan}")
+    for h in lap.hasil[: a.maks]:
+        print(f"  - {h.ringkas()[:150]}")
+    return 0
+
+
+def cmd_analisis(a: argparse.Namespace) -> int:
+    """analisis mendalam: cari -> temukan -> buktikan -> nilai -> putuskan -> metadata."""
+    from . import analisis
+    from . import kanal as K
+
+    k = K.muat()
+    hari = _tgl(a.tanggal) or dt.datetime.now(dt.UTC).date()
+    sudah: list[str] = []
+    if not a.abaikan_pustaka:
+        from . import pustaka
+        from .db import DB
+
+        with DB(a.db) as db:
+            sudah = pustaka.daftar_sudah(db)
+    h = analisis.jalankan(
+        kueri=a.kueri,
+        mode=a.mode,
+        hari=hari,
+        tema=a.tema,
+        kanal=k,
+        agen=getattr(a, "agen", None),
+        sudah=sudah,
+        log=print,
+    )
+    if a.json:
+        print(json.dumps(h, ensure_ascii=False, indent=1, default=str))
+        return 0
+    md = h["metadata"]
+    print("\nKEPUTUSAN:", h["topik"], f"({h['pilar']})", "- skor", h["skor"]["skor"] if h["skor"] else "-")
+    for x in h["alasan"][:8]:
+        print(f"  {x if x.startswith('-') else '- ' + x}")
+    for x in h["peringatan"][:6]:
+        print("  !", x)
+    if h["sampingan"]:
+        print("  sinyal lain di luar kueri:", ", ".join(f"{s['nama']} {s['skor']:.0f}" for s in h["sampingan"][:5]))
+    print("\nJudul:", *[f"\n  {i}. {j}" for i, j in enumerate(md["judul"], 1)])
+    print("Hashtag:", " ".join(md["hashtag"]))
+    print(f"Tag ({md['tag_karakter']}/500):", ", ".join(md["tag"]))
+    print("Laporan:", h["laporan"])
+    return 0
+
+
+def cmd_evaluasi(a: argparse.Namespace) -> int:
+    """evaluasi offline (bawaan) / live (izin khusus) atas kumpulan kasus."""
+    from . import evaluasi as E
+
+    kasus = E.muat_kasus(a.kasus) if a.kasus else None
+    if a.live:
+        if not a.izin_live:
+            print("[GAGAL] mode live butuh --izin-live (dan env KLIKTAHU_LIVE=1) - menyentuh layanan publik")
+            return 2
+        metrik, ringkasan = E.jalankan_live(kasus, a.kasus, izin=True, log=print)
+        judul = "Evaluasi live (opt-in)"
+    else:
+        metrik, ringkasan = E.jalankan_offline(kasus, a.kasus, log=print)
+        judul = "Evaluasi offline (mode uji, tanpa jaringan)"
+    for m in metrik:
+        print(
+            f"{m.kasus} relevansi {m.relevansi:.2f} dukungan {m.dukungan_klaim:.2f} "
+            f"kesegaran {m.kesegaran:.2f} kelengkapan {m.kelengkapan:.2f} -> "
+            + ("LULUS" if m.lulus else "GAGAL: " + "; ".join(m.gagal()))
+        )
+    keluar = a.keluar or str(ROOT / "laporan" / "EVALUASI.md")
+    print("laporan:", E.tulis_laporan(metrik, keluar, judul))
+    print("ringkasan:", ringkasan)
+    return 0 if ringkasan.get("lulus") == ringkasan.get("n") else 1
+
+
 def cmd_pustaka(a: argparse.Namespace) -> int:
     from . import pustaka
     from .db import DB
@@ -395,6 +520,30 @@ def parser() -> argparse.ArgumentParser:
     p.add_argument("--tema", default=None, help="subset tema, pisah koma")
     p.add_argument("--tanggal", default=None)
     s("putuskan", cmd_putuskan, "keputusan riset terakhir")
+    p = s("cari", cmd_cari, "pencarian multi-sumber real-time")
+    p.add_argument("kueri")
+    p.add_argument("--mode", default="uji", choices=["online", "uji", "agen"])
+    p.add_argument("--agen", default=None, help="berkas data agen (mode agen)")
+    p.add_argument(
+        "--jenis", default=None, help="jenis sumber, pisah koma (saran,wiki,berita,tren,ilmiah,momen,cuaca,web,pesaing)"
+    )
+    p.add_argument("--sumber", default=None, help="id sumber tertentu, pisah koma (mis. saran_google,ilmiah_crossref)")
+    p.add_argument("--maks", type=int, default=25)
+    p.add_argument("--tanggal", default=None)
+    p.add_argument("--json", action="store_true")
+    p = s("analisis", cmd_analisis, "analisis mendalam + metadata dari hasil riset")
+    p.add_argument("kueri", nargs="?", default="", help="pertanyaan/topik yang dianalisis")
+    p.add_argument("--mode", default="uji", choices=["online", "uji", "agen"])
+    p.add_argument("--agen", default=None, help="berkas data agen (mode agen)")
+    p.add_argument("--tema", default=None, help="tema registri untuk kueri turunan (opsional)")
+    p.add_argument("--tanggal", default=None)
+    p.add_argument("--abaikan-pustaka", action="store_true", help="jangan pakai daftar topik yang sudah dibahas")
+    p.add_argument("--json", action="store_true")
+    p = s("evaluasi", cmd_evaluasi, "evaluasi offline (live butuh --izin-live)")
+    p.add_argument("--kasus", default=None, help="berkas JSONL kasus (bawaan data/evaluasi/kasus.jsonl)")
+    p.add_argument("--keluar", default=None, help="berkas laporan (bawaan laporan/EVALUASI.md)")
+    p.add_argument("--live", action="store_true", help="jalankan dengan internet sungguhan (tidak untuk CI)")
+    p.add_argument("--izin-live", action="store_true", help="saya mengerti: ini menyentuh layanan publik")
     p = s("metadata", cmd_metadata, "generator & lint metadata")
     p.add_argument("aksi", choices=["buat", "cek"])
     p.add_argument("file", nargs="?")

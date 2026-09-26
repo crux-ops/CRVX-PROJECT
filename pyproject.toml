@@ -28,11 +28,12 @@ dev = ["pytest==9.1.1", "ruff==0.16.9", "mypy==2.3.1"]
 kliktahu = "kliktahu.__main__:main"
 
 [tool.setuptools]
-packages = ["kliktahu", "kliktahu.riset"]
+packages = ["kliktahu", "kliktahu.meta", "kliktahu.riset"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 addopts = "-q"
+markers = ["live: butuh internet sungguhan (tidak pernah jalan di CI; butuh --izin-live & KLIKTAHU_LIVE=1)"]
 
 [tool.ruff]
 line-length = 120

@@ -103,6 +103,16 @@ class Riset:
 
 
 @dataclass(frozen=True)
+class Analisis:
+    maks_kandidat: int
+    dalam_maks: int
+    batas_selisih: float
+    permintaan_kosong: float
+    tulis_audit: bool
+    ambang: dict[str, float]
+
+
+@dataclass(frozen=True)
 class Kanal:
     nama: str
     bahasa: str
@@ -118,6 +128,7 @@ class Kanal:
     jadwal: Jadwal
     metadata: MetaAturan
     riset: Riset
+    analisis: Analisis
     sumber_kredibel: tuple[str, ...]
     path: Path = field(default=ROOT / "kanal.toml")
 
@@ -165,6 +176,7 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
     md = _bagian(data, "metadata")
     r = _bagian(data, "riset")
     sk = _bagian(data, "sumber_kredibel")
+    an = _bagian(data, "analisis")
 
     pilar: dict[str, float] = {}
     for nama, bobot in p.items():
@@ -281,6 +293,35 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
     if riset.jeda_min_detik < 0.1:
         raise KanalError("[riset] jeda_min_detik minimal 0.1 detik (jangan membanjiri server)")
 
+    ambang = an.get("ambang_evaluasi", {})
+    if not isinstance(ambang, dict):
+        raise KanalError("[analisis] ambang_evaluasi harus tabel {nama = angka 0..1}")
+    ambang_bersih: dict[str, float] = {}
+    for nama, nilai in ambang.items():
+        if not isinstance(nilai, (int, float)) or isinstance(nilai, bool) or not 0 <= float(nilai) <= 1:
+            raise KanalError(f"[analisis.ambang_evaluasi] '{nama}' harus angka 0..1")
+        ambang_bersih[str(nama)] = float(nilai)
+    analisis = Analisis(
+        maks_kandidat=int(an.get("maks_kandidat", 18)),
+        dalam_maks=int(an.get("dalam_maks", 6)),
+        batas_selisih=float(an.get("batas_selisih", 8.0)),
+        permintaan_kosong=float(an.get("permintaan_kosong", 0.15)),
+        tulis_audit=bool(an.get("tulis_audit", True)),
+        ambang=ambang_bersih,
+    )
+    if not 3 <= analisis.maks_kandidat <= 60:
+        raise KanalError("[analisis] maks_kandidat harus 3..60")
+    if not 1 <= analisis.dalam_maks <= 20:
+        raise KanalError("[analisis] dalam_maks harus 1..20 (batas kuota pencarian mendalam)")
+    if not 0 <= analisis.batas_selisih <= 25:
+        raise KanalError("[analisis] batas_selisih harus 0..25 poin")
+    if not 0 <= analisis.permintaan_kosong <= 0.5:
+        raise KanalError("[analisis] permintaan_kosong harus 0..0.5 (0.5 = netral)")
+    if ambang_bersih and not {"relevansi", "dukungan_klaim", "kesegaran", "kelengkapan"} <= set(ambang_bersih):
+        raise KanalError(
+            "[analisis.ambang_evaluasi] harus memuat relevansi, dukungan_klaim, kesegaran, dan kelengkapan"
+        )
+
     return Kanal(
         nama=_ambil(k, "kanal", "nama", str),
         bahasa=_ambil(k, "kanal", "bahasa", str),
@@ -296,6 +337,7 @@ def dari_dict(data: dict[str, Any], path: Path | None = None) -> Kanal:
         jadwal=jadwal,
         metadata=meta,
         riset=riset,
+        analisis=analisis,
         sumber_kredibel=tuple(x.lower() for x in _daftar_str(sk, "sumber_kredibel", "domain")),
         path=path or ROOT / "kanal.toml",
     )
@@ -355,6 +397,12 @@ def ringkas(k: Kanal) -> list[tuple[str, str]]:
             f"hashtag <= {k.metadata.maks_hashtag}: {' '.join(k.metadata.hashtag_wajib)}",
         ),
         ("Merek", f"{k.merek.font}, CREAM {k.merek.cream}, INK {k.merek.ink}, aksen {' '.join(k.merek.aksen)}"),
+        (
+            "Analisis mendalam",
+            f"{k.analisis.maks_kandidat} kandidat, {k.analisis.dalam_maks} diukur mendalam, "
+            f"momen boleh mendahului bila selisih <= {k.analisis.batas_selisih:.0f} poin, "
+            f"audit {'aktif' if k.analisis.tulis_audit else 'mati'}",
+        ),
         (
             "Kunci API (env)",
             f"{k.riset.env_youtube_key}: "

@@ -11,7 +11,8 @@ basis data, riset topik 12 sumber, keputusan niche/topik, generator metadata, pe
 ```bash
 pip install -r requirements-dev.txt     # versi terbaru per 25-09-2026, dipin persis (render cukup 3 paket inti)
 npm ci --prefix skema/ts                # opsional: uji tipe TypeScript + paritas rumus skor
-bash tools/uji_semua.sh                 # SEMUA uji (11 selftest mesin + pytest + ruff + mypy + TypeScript), tanpa render
+bash tools/uji_semua.sh                 # SEMUA uji: 11 selftest mesin + cari/analisis/evaluasi + pytest + ruff +
+                                       # mypy + cek_versi + TypeScript (tanpa render)
 ```
 
 Render dilakukan di sandbox/komputer lokal (`tools/render_lokal.sh`), BUKAN di GitHub Actions. Actions hanya uji ringan.
@@ -20,13 +21,35 @@ Render dilakukan di sandbox/komputer lokal (`tools/render_lokal.sh`), BUKAN di G
 | Perintah | Isi |
 |---|---|
 | `python3 -m kliktahu riset --mode online\|agen\|uji` | riset real-time v7 -> papan peluang, keputusan niche/topik, draf metadata, `laporan/RISET.md` |
+| `python3 -m kliktahu cari <kueri>` | pencarian multi-sumber real-time (semua sumber, kuota + rantai cadangan + status kesegaran) |
+| `python3 -m kliktahu analisis <kueri>` | analisis mendalam: cari -> temukan -> buktikan -> nilai niche -> putuskan topik -> judul/deskripsi/hashtag/tag + jejak audit |
+| `python3 -m kliktahu evaluasi` | nilai rantai analisis atas kumpulan kasus (offline bawaan; live butuh `--izin-live`, tidak untuk CI) |
 | `python3 -m kliktahu metadata buat --episode <slug> --tulis` / `metadata cek <file>` | 3 judul, deskripsi (bab dari timeline + sumber), hashtag, tag <= 500; lint (gerbang render) |
 | `python3 -m kliktahu pustaka daftar\|cari\|tambah\|status\|impor-studio\|duplikat` | perpustakaan episode (SQLite + FTS5), impor CSV YouTube Studio |
 | `python3 -m kliktahu rencana` / `momen` / `astro` | kalender konten (`laporan/KALENDER.md` + `kalender.ics`), momen (kurasi + astronomi + live) |
 | `python3 -m kliktahu dasbor --png` | dasbor kanal: terminal + `laporan/DASBOR.md` + `laporan/dasbor.png` |
 | `python3 -m kliktahu kanal` / `db` / `skema` / `sinkron` | cek pengaturan, basis data (ekspor/impor JSONL), turunan skema, cermin Bolt Database/Supabase |
 
-## Cara mesin memutuskan (ringkas)
+## Cara mesin menganalisis (ringkas, `kliktahu analisis <kueri>`)
+
+1. **Kumpulkan**: satu kueri dikirim ke banyak sumber sekaligus - autocomplete Google & YouTube, Wikipedia (judul
+   kanonik, pageview, artikel teratas harian), berita (Google News/GDELT), Google Trends, jurnal (OpenAlex,
+   Crossref, Europe PMC), momen live (BMKG, USGS, NOAA, JPL, EONET, cuaca Open-Meteo), web (Brave/SearXNG), dan
+   pesaing YouTube bila kuncinya diisi. Tiap sumber punya kuota, batas waktu, dan rantai cadangan; satu sumber
+   gagal tidak menghentikan yang lain.
+2. **Sahikan & segarkan**: semua input lewat `validasi.py` (tipe, rentang, URL, waktu berzona; kredibilitas TIDAK
+   pernah bawaan True) lalu distempel status kesegarannya (live / cache / kedaluwarsa / offline / fixture).
+3. **Temukan**: kandidat topik dari pertanyaan nyata dan sinyal live, dinamai memakai nama kanonik registri bila
+   cocok. Kandidat di luar registri tetap ditampilkan dengan keterangan bahwa sinyal rincinya belum tersedia.
+4. **Buktikan**: klaim dipetakan ke bukti; fakta, inferensi, dan sinyal minat dibedakan; konflik angka antar sumber
+   kredibel ditandai untuk dicek manusia.
+5. **Nilai & putuskan**: skor niche 0-100 yang bisa dijelaskan per komponen, plus keyakinan dan rentang - posisi
+   relatif hari ini, BUKAN peluang tayangan. Hanya kandidat dalam cakupan kueri yang ikut memutuskan; sisanya
+   dilaporkan sebagai "sinyal lain".
+6. **Tulis**: 3 judul berbeda sudut, deskripsi setia bukti (bab dari timeline bila sudah ada, sumber ber-provenance,
+   tanggal riset), hashtag relevan, tag dari variasi pencarian nyata - lalu jejak audit tanpa rahasia.
+
+## Cara mesin memutuskan (ringkas, `kliktahu riset`)
 - **Data sama untuk semua tema**: autocomplete Google + YouTube ("kenapa <kata inti>") + pageview Wikipedia (judul kanonik).
   Frasa dihitung hanya bila MEMBAHAS tema (kata utuh, alias, tolak homonim, kata ambigu butuh konteks); topik diblokir
   dibuang dari data, kata sensitif tidak pernah masuk judul/tag/hook.
@@ -50,4 +73,5 @@ Render dilakukan di sandbox/komputer lokal (`tools/render_lokal.sh`), BUKAN di G
 | Data & riset (baru) | `kliktahu/` - `db.py`, `skema.py`, `skor.py`, `astro.py`, `momen.py`, `riset/`, `metadata.py`, `pustaka.py`, `perencana.py`, `dasbor.py`, `sinkron.py` |
 | Skema & tipe | `skema/sqlite.sql`, `skema/postgres.sql`, `supabase/migrations/`, `skema/json/`, `skema/ts/` (TypeScript + paritas) |
 | Analisis lama (rumus prompt) | `analisis/v3_sapuan.py` ... `analisis/v6_strategi.py` (memakai `kliktahu/skor.py`) |
+| Analisis mendalam (baru) | `kliktahu/analisis.py` (orkestrator), `cari.py`, `validasi.py`, `kesegaran.py`, `penemuan.py`, `klaim.py`, `niche.py`, `evaluasi.py`, `observabilitas.py`, `meta/` (judul, deskripsi, hashtag, tag) |
 | Uji | `tests/` (pytest), selftest `--uji` tiap modul, `.github/workflows/uji.yml` (Python 3.11 + 3.14, Node 24) |

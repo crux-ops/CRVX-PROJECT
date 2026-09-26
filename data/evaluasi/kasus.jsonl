@@ -1,0 +1,11 @@
+# Dataset evaluasi OFFLINE kliktahu/analisis.py (mode uji, tanpa jaringan).
+# Dipakai: python3 -m kliktahu evaluasi  ->  laporan/EVALUASI.md
+# Tiap baris: {"id","kueri","tema_diharapkan","frasa_wajar","catatan"}
+# Catatan: data mode uji berasal dari riset/fixture.py (deterministik), BUKAN data pasar nyata.
+# Karena itu kasus ini menguji RANTAI (cari -> temukan -> nilai -> metadata), bukan ramalan tayangan.
+{"id": "k01", "kueri": "kenapa gunung meletus", "tema_diharapkan": ["gunung berapi"], "frasa_wajar": ["kenapa gunung meletus"], "catatan": "topik bencana: nada hormat & info resmi wajib"}
+{"id": "k02", "kueri": "kenapa tsunami bisa terjadi", "tema_diharapkan": ["tsunami"], "frasa_wajar": ["kenapa tsunami bisa terjadi"], "catatan": "topik bencana: tanpa kata sensasi"}
+{"id": "k03", "kueri": "kenapa pelangi melengkung", "tema_diharapkan": ["pelangi"], "frasa_wajar": ["kenapa pelangi melengkung"], "catatan": "topik bumi, evergreen"}
+{"id": "k04", "kueri": "kenapa bintang berkedip", "tema_diharapkan": ["bintang"], "frasa_wajar": ["kenapa bintang berkedip"], "catatan": "topik antariksa"}
+{"id": "k05", "kueri": "kenapa cegukan tidak berhenti", "tema_diharapkan": ["cegukan"], "frasa_wajar": ["kenapa cegukan"], "catatan": "pilar kesehatan: wajib disclaimer"}
+{"id": "k06", "kueri": "kenapa uban muncul", "tema_diharapkan": ["uban & rambut"], "frasa_wajar": ["kenapa uban"], "catatan": "topik tubuh, nama registri memakai '&'"}

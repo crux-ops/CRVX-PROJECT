@@ -34,6 +34,7 @@
 | U3 | riset NYATA (mode agen) + perbaikan dari data nyata (derau, relevansi, penyusutan tren, momen berlangsung) | SELESAI (CI 3.11 + 3.14) |
 | U4 | sapuan lengkap 44 tema + relevansi homonim + judul wiki kanonik + keputusan sadar jeda produksi & transparan + mode hormat bencana + perencana EDF | SELESAI (61 tes, CI) |
 | E50 | produksi Ep50 tsunami Palu: naskah, VO voice-00, visual mesin_v11_ep50, render lokal, QC MP4 | SELESAI 26-09-2026 (QC MP4 LULUS; siap unggah Sen 28/09 11.30 WIB) |
+| U5 | tahap 1-12 rencana upgrade: validasi, kesegaran, pencarian multi-sumber (+3 sumber baru), penemuan topik, verifikasi klaim, niche, meta/ (judul, deskripsi, hashtag, tag), evaluasi offline, observabilitas, orkestrator `analisis.py` | SELESAI (194 tes, ruff+mypy+TS, `uji_semua` 65 s) |
 
 ## 1. Identitas channel (tetap)
 - KlikTahu, bahasa Indonesia, pilar fakta sains & misteri.
@@ -95,6 +96,10 @@ Lihat PROMPT_KLIKTAHU.txt §4. Konvensi tambahan:
 - Long: `build/long/<slug>/`.
 - Hasil serah: `dist/<OUT_NAME>/` (MP4 + METADATA.md + SIAP_TEMPEL.md [+ thumbnail.jpg]).
 - `pratinjau/` = gambar pratinjau untuk ditunjukkan ke pemilik (diabaikan git).
+- UPGRADE U5: `kliktahu/validasi.py`, `kesegaran.py`, `cari.py`, `penemuan.py`, `klaim.py`, `niche.py`,
+  `meta/` (judul, deskripsi, hashtag, tag), `evaluasi.py`, `observabilitas.py`, `analisis.py` (orkestrator);
+  `data/evaluasi/kasus.jsonl` (dataset evaluasi, di-commit); `data/audit/` (jejak JSONL, DIABAIKAN git);
+  `laporan/EVALUASI.md` & `laporan/_uji/` (hasil generate, DIABAIKAN git); bagian `[analisis]` di `kanal.toml`.
 - UPGRADE: `kanal.toml` (pengaturan kanal), `kliktahu/` (paket data/riset/metadata/perencana/dasbor, CLI
   `python3 -m kliktahu`), `skema/` (SQL SQLite+Postgres, JSON Schema, TypeScript `skema/ts/`), `supabase/migrations/`,
   `tests/` (pytest), `data/ekspor/*.jsonl` (isi basis data, DI-COMMIT; `data/kliktahu.db` diabaikan git -> pulihkan dengan
@@ -184,6 +189,22 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   - Statistik laporan harus menghitung kueri BERDATA: mode agen dulu menulis "autocomplete ok (610/610)" padahal hanya 90
     kueri berisi data (kombinasi benih lain memang tidak diambil). Kini "610 (90 berdata)". Sumber ilmiah yang dicatat ke DB
     ikut tersimpan di `data/ekspor/sumber_ilmiah.jsonl` -> `db impor` memulihkannya (tidak perlu dicatat ulang).
+- UPGRADE U5 (2026-09-26):
+  - `ruff format` mengubah baris sebelum `edit`/`replace` dijalankan -> SELALU cek teks terkini (grep) sebelum
+    patch "replace + assert"; skrip patch yang gagal di tengah TIDAK menulis berkas (semua perbaikan hilang).
+  - Kandidat topik dari artikel/momen yang tidak terkait kueri bisa menang hanya karena momennya kuat -> kandidat
+    harus dibatasi CAKUPAN kueri (yang benar-benar disebut hasil autocomplete), sisanya jadi "sinyal lain".
+  - Nama kandidat non-kanonik ("gunung meletus") kehilangan aturan topik (BENCANA/hormat) -> kanonisasi ke nama
+    registri SEBELUM dinilai, bukan setelah metadata dibuat.
+  - Dua tema cocok pada satu frasa ("gunung meletus TIDUR"): pilih kata kunci TERPANJANG, bukan semua yang cocok.
+  - `bool` adalah subclass `int` di Python -> validator angka wajib menolak `True/False` secara eksplisit.
+  - `max()` atas generator kosong melempar -> periksa `any(...)` dulu sebelum mencari nilai maksimum bersyarat.
+  - mypy menolak `S.bukti(n)[0] if ada else None` -> simpan hasil fungsi yang bisa None ke variabel dulu.
+  - Status FIXTURE (data uji) punya pengali keyakinan 0.3: metrik kesegaran evaluasi OFFLINE harus memakai
+    `anggap_fixture_segar=True`, bila tidak semua kasus selalu gagal tanpa alasan yang benar.
+  - `analisis.jalankan()` mengembalikan KAMUS (bukan objek) -> `evaluasi` menerima kamus maupun objek
+    (`_nama_kandidat`, `_status_objek`, `nilai_kelengkapan`) supaya rantai bisa dinilai tanpa impor balik.
+
 - RENDER Ep50 (2026-09-26):
   - WAJIB lihat frame RESOLUSI PENUH tiap adegan (`python3 render.py <slug> --times a,b,c --sheet /tmp/x.jpg`) sebelum
     render panjang. check_layout (margin/HUD/kolom tombol) TIDAK mendeteksi: teks menabrak garis bingkai kotak, dan
@@ -260,9 +281,36 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   MD5 e0810145 (beda dari 22ec6ce1, dugaan kuat karena mesin berbeda; lihat §7). Frame perbaikan (M 7,5 /
   MENCAIR / ~10 m / atau lebih) dicek di MP4 final. uji_semua LULUS (52 s, CPU idle). Catatan: jangan jalankan
   uji_semua saat render.
+- 2026-09-26 (UPGRADE U5): 12 tahap rencana upgrade 2026-09 (RENCANA_UPGRADE_2026_09.md) diimplementasikan:
+  validasi input & provenance (kredibilitas tidak pernah bawaan True); status & kesegaran sumber (live/cache/
+  kedaluwarsa/offline/fixture + TTL per jenis); lapisan pencarian multi-sumber `cari.py` (21 adaptor, kuota,
+  rantai cadangan, dedup, isolasi kegagalan) + 3 sumber baru terverifikasi (Crossref, Open-Meteo, Wikipedia
+  teratas); penemuan topik dengan kanonisasi nama registri & laporan batas registri; verifikasi klaim
+  (fakta/inferensi/sinyal minat, konflik angka, kemandirian penerbit); skor niche 0-100 + keyakinan + rentang
+  (bukan peluang sukses) dengan komponen biaya produksi; paket `meta/` untuk judul (sudut + bukti + uji bahasa),
+  deskripsi (setia bukti, provenance, tanggal riset), hashtag (relevan, aturan platform), tag (variasi nyata,
+  batas 500); evaluasi offline 6 kasus LULUS + uji live opt-in yang tidak pernah jalan di CI; jejak audit
+  `observabilitas.py` (run id, tahap, status, kuota, galat, TANPA rahasia); orkestrator `analisis.py` + CLI
+  `cari`/`analisis`/`evaluasi`; pengaturan dipindah ke `[analisis]` di kanal.toml; 106 tes baru (total 194);
+  ruff kini menyertakan `tools/` (2 pelanggaran lama diperbaiki).
 - 2026-09-26 (lanjutan 2): pemilik "Mana videonya?" - sandbox baru di awal giliran menghapus `dist/` -> render ulang
   ke-3 (mesin lain lagi, 43 menit) -> QC MP4 LULUS angka sama, MD5 ab39da64 (121773203 byte); frame perbaikan dicek.
   Diserahkan lewat tautan unduh sementara (server statis port 8000) + pratinjau 720p di `/home/user/VIDEO_Ep50/`.
+
+### 11c. Analisis mendalam (UPGRADE U5 - `kliktahu/analisis.py`)
+
+- `python3 -m kliktahu cari "<kueri>" [--jenis saran,ilmiah] [--sumber <id>] [--json]` - satu kueri ke semua sumber
+  (mode `uji`/`agen` bila internet sandbox terblokir; `online` di komputer biasa).
+- `python3 -m kliktahu analisis "<kueri>" [--mode online|agen|uji] [--tema <tema registri>]` - rantai penuh:
+  kumpulkan -> sahikan -> temukan -> buktikan -> nilai -> putuskan -> metadata -> jejak. Hasil:
+  `laporan/ANALISIS.md` (+ `laporan/_uji/` pada mode uji) dan jejak `data/audit/analisis_<tanggal>.jsonl`.
+- `python3 -m kliktahu evaluasi` - nilai rantai atas `data/evaluasi/kasus.jsonl` (relevansi, dukungan klaim,
+  kesegaran, kelengkapan, biaya) -> `laporan/EVALUASI.md`. Live hanya dengan `--live --izin-live` + env
+  `KLIKTAHU_LIVE=1`, TIDAK pernah di CI/cron.
+- Jebakan yang sudah diatasi: kandidat dari artikel/momen yang tidak disebut kueri dikeluarkan dari keputusan
+  ("kenapa bintang berkedip" tidak dijawab "gempa bumi"); "gunung meletus" disatukan ke "gunung berapi" supaya
+  aturan topik bencana berlaku; kata kunci terpanjang menang saat dua tema cocok satu frasa ("gunung meletus
+  TIDUR" bukan topik mimpi & tidur); judul berita tidak dijadikan nama topik (bising).
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
@@ -335,6 +383,58 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
   judul kanonik; aturan tabrakan awalan (lihat §7); sumber ilmiah tema terpilih dicatat ke DB SETELAH run
   (`db.simpan_sumber`, kredibel dihitung dari domain) agar komponen bukti tetap netral bagi semua tema.
 
+### 11d. Analisis dengan data NYATA (26-09-2026) - jawaban untuk "jalankan analisis di GitHub"
+
+**Riset online TIDAK boleh dijalankan di GitHub Actions.** Aturan §3 di atas dan PROMPT §3: Actions hanya uji
+ringan (< 5 menit, `contents: read`, tanpa cron, tanpa scraping). Menjalankan riset Google/YouTube/Wikipedia
+dari Actions persis pola yang membuat akun lama pemilik di-flag. Yang BOLEH dan SUDAH jalan di GitHub:
+`.github/workflows/uji.yml` menjalankan `tools/uji_semua.sh` (offline, fixture) setiap push ke `arena/**`.
+
+Jalur untuk data nyata adalah **mode agen** (§11b), dan sudah dipakai penuh pada 26-09-2026:
+
+1. Agen mengambil data sendiri dengan `fetch_page` / `web_search` (bukan data karangan).
+2. Data ditulis ke `analisis/data/agen/riset_20260926.json` (ter-commit, bisa diaudit siapa pun).
+3. `python3 -m kliktahu analisis "kenapa gunung meletus" --mode agen --agen analisis/data/agen/riset_20260926.json
+   --tema "gunung berapi"` -> mesin memprosesnya dengan RUMUS YANG SAMA persis seperti mode online.
+
+Sumber yang TERBUKTI bisa diakses agen (dicek 26-09-2026): `suggestqueries.google.com/complete/search`
+(+`&ds=yt`), `wikimedia.org/api/rest_v1/metrics/pageviews/...`, `api.crossref.org`,
+`data.bmkg.go.id/DataMKG/TEWS/autogempa.xml`, `trends.google.com/trending/rss?geo=ID`, `web_search`.
+Yang GAGAL: `export.arxiv.org/api/query` (HTTP 500) - jangan dipakai.
+**Jebakan:** `sort=published&order=desc` di Crossref mengembalikan jurnal predator ber-tahun 2109/2121.
+Pakai urutan relevansi (bawaan), lalu saring tahun.
+
+**Hasil run data nyata 26-09-2026 (5 tema, 15 kueri autocomplete, 5 judul Wikipedia, 12 DOI):**
+
+| kueri | topik | skor | momentum | catatan |
+|---|---|---|---|---|
+| kenapa gunung meletus | gunung berapi (bumi) | **87.3** (yakin 92%) | 1.00 | pageview 813 (Agu) -> 2202 (Sep, hari ke-26) |
+| kenapa kuku | kuku (tubuh) | 72.4 | 0.64 | stabil |
+| kenapa otak | otak (tubuh) | 72.3 | 0.54 | stabil |
+| kenapa pelangi | pelangi (bumi) | 67.9 | 0.35 | menurun |
+| kenapa aurora | aurora (antariksa) | 65.0 | 0.42 | autocomplete tercemar (aurora = pemain esports) |
+
+Konteks lonjakan gunung berapi (nyata, bukan angka kosong): Semeru erupsi 26 Sep 08:21 WIB (kolom ±700 m),
+rangkaian erupsi 22.00-24.00 WIB malam sebelumnya, G. Ibu & Ili Lewotolok berulang, Anak Krakatau Level III
+(Siaga) sejak 2 Juli 2026. Peringatan bencana otomatis aktif: arahkan ke PVMBG/MAGMA Indonesia.
+
+**5 bug yang BARU terlihat saat data asli dipakai** (semua diperbaiki + uji regresi; ini sebabnya fixture
+tidak cukup - fixture tidak pernah melonjak, tidak pernah berisi jam, tidak pernah punya berita nyata):
+
+1. `PencariAgen` mengabaikan bagian `wiki` & `berita` -> laporan mengatakan "momentum 0.50 (tanpa data)"
+   padahal datanya ada. Sekarang dibaca, dan `ringkas()` melaporkan sumber yang terpakai (dulu selalu "0/0").
+2. Lonjakan Wikipedia tidak pernah masuk rumus momentum (argumen di-hardcode `None`) - berlaku juga untuk
+   mode online. Sekarang `lonjakan_z` dipakai: pada run ini momentum gunung berapi 0.50 -> 1.00, skor 79.3 -> 87.3.
+3. Tema momen live diisi dari **nama kandidat** (bukan dari sumber momen) -> lingkaran yang menguatkan diri:
+   momen Semeru diklaim kandidat "gunung erebus di antartika semburkan" hanya karena sama-sama ada kata
+   "gunung", dan kandidat itu MEMENANGKAN keputusan. Sekarang tema diambil dari `mentah` sumber atau isi
+   judulnya sendiri, dan klaim momen butuh >= 2 kata isi.
+4. Gerbang cakupan kueri lolos dengan satu kata umum ("hari") -> kandidat momen kalender ikut memutuskan
+   jawaban atas kueri yang tidak menyebutnya. Sekarang butuh kecocokan frasa utuh (atau >= 2 kata isi).
+5. Pencatat `pencari.pakai` (kumulatif) dicatat dua kali -> laporan menulis "203 permintaan" padahal 111;
+   dan `nama_pendek` memotong jam: "Gunung Semeru erupsi 08:21 WIB" jadi "Gunung Semeru erupsi 08",
+   memicu peringatan palsu "angka 08 tidak ditemukan di teks bukti".
+
 ## 12. Tindakan untuk pemilik
 - (Selesai 2026-09-25) push tertunda tahap 5-7 sudah dipulihkan & di-push ulang (sandbox sempat reset ke commit awal).
 - (Selesai 2026-09-25 15.20 UTC) push tertunda 13.00 UTC dipulihkan: sandbox reset lagi ke commit awal -> tambah
@@ -348,6 +448,9 @@ Long: `python3 long/render_long.py --slug <slug> --sheet auto`.
   (+ `METADATA.md`). Setelah tayang: `python3 -m kliktahu pustaka status Ep50 rilis --youtube-id <id>`.
 - (Opsional) loop performa: ekspor CSV YouTube Studio (Analytics > Advanced mode > Export) lalu
   `python3 -m kliktahu pustaka impor-studio <file.csv>` -> bobot pilar menyesuaikan otomatis.
+- (Opsional, DISARANKAN) jalankan analisis NYATA di komputer dengan internet biasa (sandbox memblokir hampir semua
+  host riset): `python3 -m kliktahu analisis "kenapa <topik>" --mode online` lalu `python3 -m kliktahu evaluasi
+  --live --izin-live` (butuh env `KLIKTAHU_LIVE=1`) - ini satu-satunya cara membuktikan rantai terhadap data pasar.
 - (Opsional) cermin awan Bolt Database/Supabase: jalankan `skema/postgres.sql`, set env URL+KEY, `python3 -m kliktahu sinkron dorong`.
 - Bila ingin sapuan autocomplete nyata: jalankan `python3 analisis/v3_sapuan.py` di komputer dengan internet biasa,
   commit snapshot `analisis/data/hasil_mendalam_*.json`.

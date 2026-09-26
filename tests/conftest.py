@@ -37,3 +37,15 @@ def riset_uji(tmp_path_factory: pytest.TempPathFactory):
     d = DB(tmp / "riset.db")
     h = mesin.jalankan("uji", HARI, db=d, folder_laporan=tmp / "lap", ekspor=False, log=lambda s: None)
     return h, d, tmp
+
+
+@pytest.fixture()
+def pencari_uji():
+    """Pencari mode uji (transport palsu deterministik) untuk kliktahu/cari.py."""
+    from kliktahu.cari import Pencari
+    from kliktahu.riset.fixture import transport_uji
+    from kliktahu.riset.http import KlienRiset
+
+    k = kanal.muat()
+    kl = KlienRiset(k, transport=transport_uji(HARI), pakai_cache=False, tidur=lambda s: None)
+    return Pencari(kl, k, HARI, "uji")

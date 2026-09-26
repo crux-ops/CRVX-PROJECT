@@ -97,3 +97,21 @@ domain = ["nasa.gov", "esa.int", "eso.org", "noaa.gov", "nhs.uk", "mayoclinic.or
           "smithsonianmag.com", "iau.org", "imo.net", "kemkes.go.id", "ac.id", "edu", "ac.uk",
           # otoritas bencana RI + penerbit jurnal bereputasi (BUKAN doi.org: semua DOI termasuk jurnal predator lolos)
           "esdm.go.id", "bnpb.go.id", "aps.org", "agu.org", "onlinelibrary.wiley.com", "springer.com", "pnas.org"]
+
+# =====================================================================================================
+# ANALISIS MENDALAM (kliktahu/analisis.py - tahap 1-12 rencana upgrade 2026-09)
+# Orkestrator: cari multi-sumber -> sahikan & segarkan -> temukan kandidat -> buktikan klaim ->
+#              nilai niche -> putuskan topik -> tulis metadata -> catat jejak audit
+# =====================================================================================================
+[analisis]
+maks_kandidat = 18          # kandidat topik yang dinilai (di luar itu dilaporkan sebagai sinyal lain)
+dalam_maks = 6              # kandidat "dalam cakupan kueri" yang diukur dengan kuerinya sendiri (kuota)
+batas_selisih = 8.0         # momen boleh mendahului juara skor bila selisihnya <= ini (poin 0-100)
+permintaan_kosong = 0.15    # nilai permintaan kandidat yang TIDAK disebut hasil pencarian (bukan netral 0.5)
+tulis_audit = true          # jejak audit JSONL ke data/audit/ (abaikan-git; TIDAK pernah berisi rahasia)
+
+[analisis.ambang_evaluasi]  # ambang lulus `python3 -m kliktahu evaluasi` (0..1)
+relevansi = 0.70            # topik terpilih mendekati topik yang diharapkan kasus
+dukungan_klaim = 0.60       # porsi klaim fakta yang didukung bukti kredibel
+kesegaran = 0.80            # porsi sumber yang masih di dalam TTL
+kelengkapan = 1.00          # metadata 4 blok & lint draf bersih

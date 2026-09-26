@@ -166,6 +166,27 @@ def transport_uji(hari_ini: dt.date) -> httpx.MockTransport:
         if h.endswith("wikipedia.org") and p == "/w/api.php":
             t = next((t for t in DAFTAR if q.get("search", "").lower() in (t.nama, *t.kata)), None)
             return js([q.get("search"), [t.wiki.replace("_", " ")] if t else [], [""], [""]])
+        if h == "wikimedia.org" and "/pageviews/top/" in p:
+            rr = _rr(p)
+            nama = [t.wiki.replace("_", " ") for t in DAFTAR]
+            return js(
+                {
+                    "items": [
+                        {
+                            "project": "id.wikipedia",
+                            "access": "all-access",
+                            "articles": [
+                                {"article": nama[(rr + i * 7) % len(nama)], "views": 9000 - i * 120, "rank": i + 1}
+                                for i in range(30)
+                            ]
+                            + [
+                                {"article": "Halaman_Utama", "views": 40000, "rank": 31},
+                                {"article": "Istimewa:Pencarian", "views": 3000, "rank": 32},
+                            ],
+                        }
+                    ]
+                }
+            )
         if h == "wikimedia.org" and "/pageviews/per-article/" in p:
             bag = p.split("/")
             judul, mulai, akhir = unquote(bag[-4]), bag[-2], bag[-1]
@@ -296,6 +317,38 @@ def transport_uji(hari_ini: dt.date) -> httpx.MockTransport:
                                 "citedByCount": 50,
                             }
                         ]
+                    }
+                }
+            )
+        if h == "api.crossref.org":
+            s = q.get("query", "")
+            return js(
+                {
+                    "message": {
+                        "items": [
+                            {
+                                "title": [f"Peer reviewed article about {s} ({i})"],
+                                "DOI": f"10.5555/{abs(_rr(s)) % 9999}.{i}",
+                                "container-title": ["Journal of Example Studies"],
+                                "issued": {"date-parts": [[2019 + i, 3, 4]]},
+                                "type": "journal-article",
+                                "is-referenced-by-count": 120 - i * 20,
+                            }
+                            for i in range(2)
+                        ]
+                    }
+                }
+            )
+        if h == "api.open-meteo.com":
+            rr = _rr(q.get("latitude", "0") + q.get("longitude", "0"))
+            hari = int(q.get("forecast_days", "7"))
+            return js(
+                {
+                    "daily": {
+                        "time": [(hari_ini + dt.timedelta(days=i)).isoformat() for i in range(hari)],
+                        "precipitation_sum": [float((rr >> (i + 1)) % 45) for i in range(hari)],
+                        "wind_speed_10m_max": [float(8 + (rr >> (i + 2)) % 55) for i in range(hari)],
+                        "temperature_2m_max": [float(28 + (rr >> (i + 3)) % 8) for i in range(hari)],
                     }
                 }
             )

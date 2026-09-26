@@ -1,0 +1,437 @@
+{
+  "diambil": "2026-09-26T12:05:00+07:00",
+  "alat": "Agen Arena: fetch_page (suggestqueries.google.com autocomplete google+youtube, Wikimedia pageviews id.wikipedia, api.crossref.org, data.bmkg.go.id autogempa.xml, trends.google.com/trending/rss?geo=ID) + web_search (verifikasi peristiwa PVMBG/Badan Geologi)",
+  "_catatan": "DATA NYATA, diambil langsung oleh agen pada 2026-09-26. Bukan fixture. Yang TIDAK tersedia dan karena itu sengaja DIKOSONGKAN (bukan nol): berita untuk tema selain gunung berapi, serta data pesaing YouTube (pesaing=false atas keputusan pemilik). 'berita.gunung berapi.n7/n28' adalah jumlah artikel yang DITEMUKAN agen di hasil pencarian (batas bawah), BUKAN sensus lengkap. 'tren_harian.traffic' adalah bucket Google Trends ('100+','500+','1000+') yang ditulis sebagai angka. 'tanya' diisi dari autocomplete Google/YouTube (kueri nyata), bukan People-Also-Ask. Rentang wiki September 2026 masih berjalan (hari ke-26), jadi angkanya belum final.",
+
+  "saran": {
+    "google": {
+      "kenapa gunung meletus": [
+        "kenapa gunung meletus",
+        "kenapa gunung meletus ada petir",
+        "kenapa gunung meletus ada kilat",
+        "kenapa gunung meletus menurut islam",
+        "kenapa gunung meletus barengan",
+        "kenapa gunung meletus secara bersamaan",
+        "kenapa gunung meletus ada petir nya",
+        "kenapa gunung meletus berbahaya",
+        "kenapa gunung meletus keluar petir",
+        "kenapa gunung meletus ada apinya"
+      ],
+      "apakah gunung meletus": [
+        "apakah gunung meletus dapat mengakibatkan gempa bumi",
+        "apakah gunung meletus sama dengan erupsi",
+        "apakah gunung meletus",
+        "apakah gunung meletus termasuk fenomena alam",
+        "apakah gunung meletus disebabkan oleh manusia",
+        "apakah gunung meletus bisa dicegah",
+        "apakah gunung meletus bisa menyebabkan tsunami",
+        "apakah gunung meletus hari ini",
+        "apakah gunung meletus bersamaan",
+        "apakah gunung meletus pertanda kiamat"
+      ],
+      "bagaimana gunung meletus": [
+        "bagaimana gunung meletus",
+        "bagaimana gunung meletus bisa terjadi",
+        "bagaimana gunung meletus dapat mempengaruhi lingkungan sekitar",
+        "bagaimana gunung meletus dapat mengubah kenampakan permukaan bumi",
+        "bagaimana terjadinya gunung meletus",
+        "bagaimana proses gunung meletus",
+        "bagaimana bunyi gunung meletus",
+        "bagaimana cara mengatasi gunung meletus"
+      ],
+      "kenapa kuku": [
+        "kenapa kuku bergelombang",
+        "kenapa kuku kuning",
+        "kenapa kuku berwarna ungu",
+        "kenapa kuku kaki menghitam",
+        "kenapa kuku ada putih putihnya",
+        "kenapa kuku cepat panjang",
+        "kenapa kuku kaki kuning",
+        "kenapa kuku menghitam",
+        "kenapa kuku ada garis hitam",
+        "kenapa kuku kaki bergelombang"
+      ],
+      "apakah kuku": [
+        "apakah kuku yang lepas bisa tumbuh lagi",
+        "apakah kuku kaki yang lepas bisa tumbuh lagi",
+        "apakah kuku kucing boleh dipotong",
+        "apakah kuku termasuk tulang",
+        "apakah kuku cantengan bisa sembuh sendiri",
+        "apakah kuku bisa tumbuh lagi",
+        "apakah kuku palsu bisa untuk sholat",
+        "apakah kuku jempol kaki yang copot bisa tumbuh lagi"
+      ],
+      "bagaimana kuku": [
+        "bagaimana kuku bisa tumbuh",
+        "bagaimana kuku tumbuh",
+        "bagaimana kuku terbentuk",
+        "bagaimana kuku yang sehat",
+        "bagaimana kuku bisa panjang",
+        "bagaimana kuku cepat panjang"
+      ],
+      "kenapa aurora": [
+        "kenapa aurora bisa terjadi",
+        "kenapa aurora hanya terjadi di kutub",
+        "kenapa aurora borealis bisa terjadi",
+        "kenapa aurora tertidur",
+        "kenapa aurora tidak ada di indonesia",
+        "kenapa aurora berwarna hijau",
+        "kenapa aurora terjadi di kutub"
+      ],
+      "apakah aurora": [
+        "apakah aurora itu nyata",
+        "apakah aurora berbahaya",
+        "apakah aurora ada di indonesia",
+        "apakah aurora terjadi setiap hari",
+        "apakah aurora",
+        "apakah aurora termasuk fenomena alam",
+        "apakah aurora panas"
+      ],
+      "bagaimana aurora": [
+        "bagaimana aurora terjadi",
+        "bagaimana aurora terbentuk",
+        "bagaimana aurora borealis terjadi",
+        "bagaimana aurora borealis bisa terjadi",
+        "bagaimana aurora muncul",
+        "bagaimana aurora itu terjadi",
+        "bagaimana bentuk aurora",
+        "bagaimana terjadinya aurora di kutub bumi"
+      ],
+      "kenapa pelangi": [
+        "kenapa pelangi bisa muncul",
+        "kenapa pelangi muncul setelah hujan",
+        "kenapa pelangi warna warni",
+        "kenapa pelangi melengkung",
+        "kenapa pelangi tidak boleh ditunjuk",
+        "kenapa pelangi setengah lingkaran",
+        "kenapa pelangi memiliki banyak warna",
+        "kenapa pelangi jarang muncul",
+        "kenapa pelangi ada 7 warna"
+      ],
+      "apakah pelangi": [
+        "apakah pelangi hanya terjadi saat hujan",
+        "apakah pelangi ada ujungnya",
+        "apakah pelangi bisa disentuh",
+        "apakah pelangi bisa muncul di malam hari",
+        "apakah pelangi itu bidadari",
+        "apakah pelangi termasuk benda langit",
+        "apakah pelangi itu bulat",
+        "apakah pelangi bisa dipegang",
+        "apakah pelangi muncul setelah hujan"
+      ],
+      "bagaimana pelangi": [
+        "bagaimana pelangi terbentuk",
+        "bagaimana pelangi berbentuk",
+        "bagaimana pelangi dapat terjadi",
+        "bagaimana pelangi terbentuk jelaskan",
+        "bagaimana pelangi bisa muncul"
+      ],
+      "kenapa otak": [
+        "kenapa otak lemot",
+        "kenapa otak sering lupa",
+        "kenapa otak tidak bisa fokus",
+        "kenapa otak susah berpikir",
+        "kenapa otak kiri sakit",
+        "kenapa otak terasa sakit",
+        "kenapa otak terasa kosong",
+        "kenapa otak dan mulut tidak sinkron",
+        "kenapa otak kanan sakit",
+        "kenapa otak bisa mengecil"
+      ],
+      "apakah otak": [
+        "apakah otak bisa mengecil",
+        "apakah otak bisa didonorkan",
+        "apakah otak bisa merasakan sakit",
+        "apakah otak termasuk organ",
+        "apakah otak bisa beregenerasi",
+        "apakah otak laki laki dan perempuan sama"
+      ],
+      "bagaimana otak": [
+        "bagaimana otak bekerja",
+        "bagaimana otak dan sumsum tulang belakang bekerja sama",
+        "bagaimana otak membantu tubuh merespon perubahan",
+        "bagaimana otak manusia bekerja",
+        "bagaimana otak menyimpan memori",
+        "bagaimana otak kiri dan otak kanan bekerja"
+      ]
+    },
+    "youtube": {
+      "kenapa gunung meletus": [
+        "kenapa gunung meletus",
+        "kenapa gunung meletus keluar petir",
+        "kenapa gunung meletus ada petir",
+        "kenapa gunung bisa meletus",
+        "kenapa gunung semeru meletus",
+        "kenapa bisa terjadi gunung meletus",
+        "kenapa bisa ada gunung berapi",
+        "kenapa gunung merapi sering meletus"
+      ],
+      "kenapa kuku": [
+        "kenapa kuku jempol kaki rusak",
+        "kenapa kuku tangan rusak",
+        "kenapa kuku kaki hitam",
+        "kenapa kuku bisa tumbuh",
+        "kenapa kuku kaki berwarna kuning",
+        "kenapa kuku jempol kaki hitam",
+        "kenapa kuku bisa cantengan",
+        "kenapa kuku jempol kaki sakit"
+      ],
+      "kenapa aurora": [
+        "kenapa aurora bisa terjadi",
+        "kenapa bisa ada aurora",
+        "kenapa terjadi aurora"
+      ],
+      "kenapa pelangi": [
+        "kenapa pelangi tidak boleh ditunjuk",
+        "kenapa pelangi bisa muncul",
+        "kenapa pelangi gak boleh ditunjuk",
+        "kenapa pelangi ada dua",
+        "kenapa pelangi ada 2",
+        "kenapa pelangi warna warni",
+        "kenapa pelangi melengkung",
+        "kenapa pelangi muncul",
+        "kenapa pelangi bisa ada dua"
+      ],
+      "kenapa otak": [
+        "kenapa otak lemot",
+        "kenapa otak susah fokus",
+        "kenapa otak kita suka asmr",
+        "kenapa otak susah berpikir",
+        "kenapa otak sering lupa",
+        "kenapa otak terasa kosong",
+        "kenapa otak jadi lemot",
+        "kenapa otak bisa pusing",
+        "kenapa otak susah mengingat",
+        "kenapa otak saya tidak bisa berpikir"
+      ]
+    }
+  },
+
+  "wiki": {
+    "gunung berapi": {
+      "judul": "Gunung berapi",
+      "bulanan": {"2026-07": 801, "2026-08": 813, "2026-09": 2202},
+      "hari_bulan_ini": 26
+    },
+    "kuku": {
+      "judul": "Kuku",
+      "bulanan": {"2026-07": 297, "2026-08": 215, "2026-09": 264},
+      "hari_bulan_ini": 26
+    },
+    "aurora": {
+      "judul": "Aurora",
+      "bulanan": {"2026-07": 1006, "2026-08": 1338, "2026-09": 966},
+      "hari_bulan_ini": 26
+    },
+    "pelangi": {
+      "judul": "Pelangi",
+      "bulanan": {"2026-07": 1069, "2026-08": 1112, "2026-09": 647},
+      "hari_bulan_ini": 26
+    },
+    "otak": {
+      "judul": "Otak",
+      "bulanan": {"2026-07": 345, "2026-08": 364, "2026-09": 349},
+      "hari_bulan_ini": 26
+    }
+  },
+
+  "berita": {
+    "gunung berapi": {
+      "n7": 5,
+      "n28": 10,
+      "judul": [
+        "Gunung Semeru Meletus Pagi Ini, Muntahkan Abu Vulkanik 700 Meter ke Langit (iNews, 26/09/2026 08:21 WIB)",
+        "Semeru erupsi terus menerus pada Jumat malam, kolom 300-800 m (ANTARA, 26/09/2026)",
+        "Jejak Erupsi Merapi 2010 Terekam di Kerangka Motor Museum Geologi (26/09/2026)",
+        "Informasi letusan G. Ibu 22/09/2026 (MAGMA Indonesia)",
+        "Gunung Erebus di Antartika Semburkan 80 Gram Emas per Hari (26/09/2026)",
+        "Tiga Gunung Api Meletus Bersamaan (11/09/2026)",
+        "Gunung Api Indonesia Erupsi Bersamaan, Saling Terhubung? (IDN Times, 08/09/2026)",
+        "Daftar Gunung Api Indonesia yang Erupsi Hari Ini 6 September 2026 (Liputan6)",
+        "Ada Empat Gunung di Indonesia yang Erupsi pada 6 September 2026 (IDN Times)",
+        "Fenomena Erupsi Menerus Gunungapi Anak Krakatau 5 September 2026 (geologi.esdm.go.id)"
+      ]
+    }
+  },
+
+  "tren_harian": [
+    {"judul": "subuh hari ini", "traffic": 1000},
+    {"judul": "ksr", "traffic": 1000},
+    {"judul": "subuh", "traffic": 500},
+    {"judul": "atlante vs monterrey", "traffic": 500},
+    {"judul": "italy national football team vs belgium national football team standings", "traffic": 500},
+    {"judul": "unl", "traffic": 200},
+    {"judul": "tijuana vs atlas", "traffic": 100}
+  ],
+
+  "momen_live": [
+    {
+      "tanggal": "2026-09-26",
+      "nama": "Gunung Semeru erupsi 08:21 WIB, kolom letusan ±700 m di atas puncak, amplitudo 22 mm durasi 115 detik (PVMBG)",
+      "tema": ["gunung berapi"],
+      "urgensi": 0.8,
+      "sumber": "PVMBG/Badan Geologi via MAGMA Indonesia & iNews"
+    },
+    {
+      "tanggal": "2026-09-25",
+      "nama": "Semeru erupsi terus-menerus 22.00-24.00 WIB (lima letusan, kolom 300-800 m)",
+      "tema": ["gunung berapi"],
+      "urgensi": 0.7,
+      "sumber": "Pos Pengamatan Gunung Semeru via ANTARA"
+    },
+    {
+      "tanggal": "2026-09-22",
+      "nama": "G. Ibu dan G. Ili Lewotolok erupsi berulang (kolom abu 200-600 m)",
+      "tema": ["gunung berapi"],
+      "urgensi": 0.5,
+      "sumber": "MAGMA Indonesia"
+    },
+    {
+      "tanggal": "2026-09-02",
+      "nama": "G. Anak Krakatau status Level III (Siaga) sejak 2 Juli 2026, erupsi Strombolian berulang, abu sampai Banten/Jakarta/Jabar",
+      "tema": ["gunung berapi"],
+      "urgensi": 0.6,
+      "sumber": "Badan Geologi, geologi.esdm.go.id"
+    },
+    {
+      "tanggal": "2026-09-26",
+      "nama": "Gempa M4.9 kedalaman 9 km, laut 46 km utara Ruteng-Manggarai, dirasakan II-III MMI",
+      "tema": ["gempa bumi"],
+      "urgensi": 0.3,
+      "sumber": "BMKG autogempa.xml"
+    }
+  ],
+
+  "sumber_ilmiah": {
+    "gunung berapi": [
+      {
+        "judul": "Volcanic lightning: exploring the correlation between volcanic eruption, lightning and transient luminous events from 2009 to 2022",
+        "url": "https://doi.org/10.1007/s44195-025-00118-5",
+        "penerbit": "Terrestrial, Atmospheric and Oceanic Sciences",
+        "tahun": 2025
+      },
+      {
+        "judul": "Taal's eruption illuminates volcanic lightning for scientists",
+        "url": "https://doi.org/10.32858/temblor.076",
+        "penerbit": "Temblor",
+        "tahun": 2020
+      }
+    ],
+    "kuku": [
+      {
+        "judul": "Nail growth rate correlates with cuticle width",
+        "url": "https://doi.org/10.1093/bjd/ljag001",
+        "penerbit": "British Journal of Dermatology",
+        "tahun": 2026
+      },
+      {
+        "judul": "Relation Between Rate of Nail Growth in Pregnant Women and Estimated Previous General Growth Rate",
+        "url": "https://doi.org/10.1093/ajcn/19.5.436",
+        "penerbit": "The American Journal of Clinical Nutrition",
+        "tahun": 1966
+      }
+    ],
+    "aurora": [
+      {
+        "judul": "St. Patrick's Day 2015 Geomagnetic Storm: Sources of Perturbations",
+        "url": "https://doi.org/10.31401/ws.2024.proc.10",
+        "penerbit": "Sixteenth Workshop Solar Influences on the Magnetosphere, Ionosphere and Atmosphere",
+        "tahun": 2024
+      },
+      {
+        "judul": "Relationship between geomagnetic storm development and the solar wind parameter",
+        "url": "https://doi.org/10.12737/stp-74202104",
+        "penerbit": "Solar-Terrestrial Physics",
+        "tahun": 2021
+      },
+      {
+        "judul": "Substorm Activity During the Geomagnetic Storm on 25 August 2018",
+        "url": "https://doi.org/10.31401/ws.2020.proc.10",
+        "penerbit": "Workshop Solar Influences on the Magnetosphere, Ionosphere and Atmosphere",
+        "tahun": 2020
+      }
+    ],
+    "pelangi": [
+      {
+        "judul": "Physics of the Rainbow",
+        "url": "https://doi.org/10.1119/1.2350374",
+        "penerbit": "The Physics Teacher",
+        "tahun": 1974
+      },
+      {
+        "judul": "Physics in daily life: Over the rainbow",
+        "url": "https://doi.org/10.1051/epn/2009304",
+        "penerbit": "Europhysics News",
+        "tahun": 2009
+      },
+      {
+        "judul": "HOW TO INCLUDE RAINBOW FORMATION TO TEACHING OF PHYSICS AT HIGH SCHOOLS USING ICT?",
+        "url": "https://doi.org/10.48127/gu-nse/11.8.19b",
+        "penerbit": "Gamtamokslinis Ugdymas / Natural Science Education",
+        "tahun": 2011
+      }
+    ],
+    "otak": [
+      {
+        "judul": "Retrieval-induced versus context-induced forgetting: Can restudy preceded by context change simulate retrieval-induced forgetting?",
+        "url": "https://doi.org/10.1016/j.jml.2016.10.006",
+        "penerbit": "Journal of Memory and Language",
+        "tahun": 2017
+      },
+      {
+        "judul": "Within-Individual Retrieval-Induced Forgetting (WI-RIF) and Socially Shared Retrieval-Induced Forgetting (SS-RIF)",
+        "url": "https://doi.org/10.1007/978-3-030-93789-8_2-1",
+        "penerbit": "The Palgrave Encyclopedia of Memory Studies",
+        "tahun": 2025
+      },
+      {
+        "judul": "Memory systems and brain plasticity",
+        "url": "https://doi.org/10.4324/9781315849461-13",
+        "penerbit": "Neural Plasticity Across the Lifespan",
+        "tahun": 2015
+      }
+    ]
+  },
+
+  "tanya": {
+    "gunung berapi": [
+      "kenapa gunung meletus ada petir",
+      "kenapa gunung meletus barengan",
+      "apakah gunung meletus bisa menyebabkan tsunami",
+      "apakah gunung meletus dapat mengakibatkan gempa bumi",
+      "apakah gunung meletus bisa dicegah",
+      "bagaimana proses gunung meletus",
+      "kenapa gunung semeru meletus",
+      "kenapa gunung merapi sering meletus"
+    ],
+    "kuku": [
+      "kenapa kuku bergelombang",
+      "kenapa kuku ada garis hitam",
+      "kenapa kuku kaki menghitam",
+      "apakah kuku termasuk tulang",
+      "apakah kuku yang lepas bisa tumbuh lagi",
+      "bagaimana kuku bisa tumbuh"
+    ],
+    "aurora": [
+      "kenapa aurora hanya terjadi di kutub",
+      "kenapa aurora berwarna hijau",
+      "apakah aurora ada di indonesia",
+      "apakah aurora berbahaya",
+      "bagaimana aurora terbentuk"
+    ],
+    "pelangi": [
+      "kenapa pelangi melengkung",
+      "kenapa pelangi ada 7 warna",
+      "apakah pelangi ada ujungnya",
+      "apakah pelangi bisa disentuh",
+      "bagaimana pelangi terbentuk"
+    ],
+    "otak": [
+      "kenapa otak sering lupa",
+      "kenapa otak terasa kosong",
+      "kenapa otak tidak bisa fokus",
+      "apakah otak bisa beregenerasi",
+      "bagaimana otak menyimpan memori"
+    ]
+  }
+}

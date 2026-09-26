@@ -31,6 +31,15 @@ credentials*.json
 # data uji sementara analisis
 analisis/data/_uji*/
 
+# === Analisis mendalam (kliktahu/analisis.py) ===
+# jejak audit append-only (bisa berisi waktu run) & laporan evaluasi hasil generate
+data/audit/
+laporan/EVALUASI.md
+# laporan & snapshot analisis hasil generate (bukan sumber; isi ulang dengan `kliktahu analisis`)
+laporan/analisis_terakhir.json
+laporan/ANALISIS.md
+laporan/RISET.md
+
 # === Lapisan data/riset (kliktahu/) ===
 # basis data lokal & cache HTTP (data tahan-lama = data/ekspor/*.jsonl, di-commit)
 data/*.db

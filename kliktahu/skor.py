@@ -186,7 +186,7 @@ def bukti(n_kredibel: int | None) -> Nilai | None:
 
 
 def v7_peluang(
-    komponen: Mapping[str, Nilai | None], tanpa: Iterable[str] = ()
+    komponen: Mapping[str, Nilai | None], tanpa: Iterable[str] = (), bobot: Mapping[str, float] | None = None
 ) -> tuple[float, float, dict[str, float]]:
     """-> (peluang 0..100, keyakinan 0..1, x per komponen). Komponen tanpa data = netral 0.5, keyakinan 0.
     `tanpa` = komponen yang TIDAK DIPAKAI kanal (mis. 'celah' bila analisis pesaing dimatikan pemilik): bobotnya
@@ -195,7 +195,7 @@ def v7_peluang(
     buang = set(tanpa)
     x: dict[str, float] = {}
     total = yakin = wsum = 0.0
-    for nama, w in BOBOT_V7.items():
+    for nama, w in (bobot or BOBOT_V7).items():
         v = komponen.get(nama)
         xi, ci = (0.5, 0.0) if v is None else (_j(float(v[0])), _j(float(v[1])))
         x[nama] = 0.5 if nama in buang else xi
