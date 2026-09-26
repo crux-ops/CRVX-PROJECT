@@ -222,11 +222,17 @@ def _stiker_sprite(teks, px, bg, fg, ikon, ss):
     return out
 
 
-def stiker(img, teks, cx, cy, t, t0, size=46, warna="#FF6B3D", fg=PUTIH, rot=-5.0, ikon=None, a=1.0, goyang=True):
-    """stiker tebal (outline putih + bayangan keras) dengan pop overshoot + goyang."""
+def stiker(img, teks, cx, cy, t, t0, size=46, warna="#FF6B3D", fg=None, rot=-5.0, ikon=None, a=1.0, goyang=True):
+    """stiker tebal (outline putih + bayangan keras) dengan pop overshoot + goyang.
+
+    fg=None -> warna teks dipilih otomatis agar kontras >= 3.0 terhadap latar aksen (teks putih di atas aksen
+    terang pernah tidak terbaca; lihat AGEN.md §7 RENDER Ep50).
+    """
     tw = t - t0
     if tw <= 0 or a <= 0.01:
         return None
+    if fg is None:
+        fg = D.teks_terbaca(D.col(warna))
     s = D.eob(D.clamp(tw / 0.32), 2.2)
     r = rot + (7.5 * math.exp(-4.0 * tw) * math.sin(15 * tw) if goyang else 0) + 1.1 * math.sin(t * 2.2)
     spr = _stiker_sprite(teks, D.fpx(size), D.col(warna), D.col(fg), ikon, D.SS)
@@ -245,10 +251,13 @@ def stiker(img, teks, cx, cy, t, t0, size=46, warna="#FF6B3D", fg=PUTIH, rot=-5.
     return box
 
 
-def chip_pop(img, teks, cx, cy, t, t0, size=30, warna="#2F7BFF", fg=PUTIH):
+def chip_pop(img, teks, cx, cy, t, t0, size=30, warna="#2F7BFF", fg=None):
+    """chip label dengan pop. fg=None -> pilih PUTIH/INK otomatis (kontras >= 3.0 terhadap aksen)."""
     tw = t - t0
     if tw <= 0:
         return
+    if fg is None:
+        fg = D.teks_terbaca(D.col(warna))
     s = D.eob(D.clamp(tw / 0.3))
     a = D.clamp(tw / 0.12)
     tw_ = D.txt_w(teks, size)

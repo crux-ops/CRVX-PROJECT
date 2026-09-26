@@ -116,6 +116,29 @@ def gelap(c, u):
     return campur(c, INK, u)
 
 
+def luminans(c):
+    """luminans relatif WCAG 2.x (0..1) - untuk cek keterbacaan teks."""
+    a = col(c)
+
+    def _f(v):
+        v /= 255.0
+        return v / 12.92 if v <= 0.03928 else ((v + 0.055) / 1.055) ** 2.4
+
+    return 0.2126 * _f(a[0]) + 0.7152 * _f(a[1]) + 0.0722 * _f(a[2])
+
+
+def kontras(c1, c2):
+    """rasio kontras WCAG (1..21). Teks besar butuh >= 3.0, teks kecil >= 4.5."""
+    la, lb = luminans(c1), luminans(c2)
+    hi, lo = max(la, lb), min(la, lb)
+    return (hi + 0.05) / (lo + 0.05)
+
+
+def teks_terbaca(latar, batas=3.0):
+    """pilih warna teks (PUTIH/INK) yang paling terbaca di atas `latar` (chip/stiker berlatar aksen)."""
+    return PUTIH if kontras(latar, PUTIH) >= batas else INK
+
+
 def rng(*kunci):
     return np.random.default_rng(zlib.crc32(":".join(map(str, kunci)).encode()))
 

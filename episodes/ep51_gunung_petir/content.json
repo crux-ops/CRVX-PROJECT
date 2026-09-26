@@ -1,0 +1,187 @@
+{
+  "title": "Kenapa Gunung Meletus Ada Petir?",
+  "channel": "KlikTahu",
+  "topik": "gunung berapi",
+  "header_badge": "BUMI · GUNUNG API",
+  "bg_element": "partikel",
+  "lead_in": 0.6,
+  "tail_intro": 0.8,
+  "tail_fact": 0.9,
+  "tail_outro": 1.2,
+  "mesin": "v11",
+  "sumber": [
+    {
+      "penerbit": "Geophysical Research Letters (AGU) - Van Eaton dkk.",
+      "tahun": 2023,
+      "judul": "Lightning Rings and Gravity Waves: Insights Into the Giant Eruption Plume From Tonga's Hunga Volcano on 15 January 2022",
+      "url": "https://doi.org/10.1029/2022GL102341"
+    },
+    {
+      "penerbit": "Geology (GSA) - Cimarelli dkk.",
+      "tahun": 2014,
+      "judul": "Experimental generation of volcanic lightning",
+      "url": "https://doi.org/10.1130/G34802.1"
+    },
+    {
+      "penerbit": "Geology (GSA) - Genareau dkk.",
+      "tahun": 2015,
+      "judul": "Lightning-induced volcanic spherules (butiran kaca hasil sambaran petir vulkanik, 1-100 mikron)",
+      "url": "https://doi.org/10.1130/G36255.1"
+    },
+    {
+      "penerbit": "Reuters + jaringan deteksi petir global Vaisala GLD360",
+      "tahun": 2022,
+      "judul": "Analysing the volcanic lightning from the Tonga eruption (Hunga Tonga ~590.000 sambaran/3 hari; Anak Krakatau Des 2018 ~340.000 sambaran/minggu)",
+      "url": "https://www.reuters.com/graphics/TONGA-VOLCANO/LIGHTNING/zgpomjdbypd/"
+    },
+    {
+      "penerbit": "PVMBG - Badan Geologi, Kementerian ESDM",
+      "tahun": 2026,
+      "judul": "MAGMA Indonesia - tingkat aktivitas & rekomendasi gunung api (info resmi, diperbarui berkala)",
+      "url": "https://magma.esdm.go.id"
+    },
+    {
+      "penerbit": "Kementerian ESDM - Siaran Pers 050.Pers/04/SJI/2026",
+      "tahun": 2026,
+      "judul": "Aktivitas Anak Krakatau Terus Dipantau, PVMBG Pastikan Status Siaga Tetap Berlaku Usai Erupsi Menerus 25 Jam (4 Sep 23.07 WIB - 6 Sep 00.04 WIB; radius 3 km)",
+      "url": "https://www.esdm.go.id/id/media-center/arsip-berita/aktivitas-anak-krakatau-terus-dipantau-pvmbg-pastikan-status-siaga-tetap-berlaku-usai-erupsi-menerus-25-jam"
+    },
+    {
+      "penerbit": "BBC News Indonesia (kutipan BRIN - Erma Yulihastin)",
+      "tahun": 2026,
+      "judul": "Erupsi Gunung Anak Krakatau: ketinggian kolom erupsi 4 September 2026 diestimasi 13-17 km",
+      "url": "https://www.bbc.com/indonesia/articles/c5yj2x5lrd2o"
+    }
+  ],
+  "kata_kunci": "kenapa gunung meletus ada petir",
+  "judul": [
+    "Kenapa Gunung Meletus Ada Petir? Ini Jawaban Sainsnya",
+    "Petir Tanpa Awan Hujan: Rahasia Kolom Abu Gunung Api",
+    "Kenapa Gunung Meletus Bisa Menyalakan Petirnya Sendiri?"
+  ],
+  "scenes": [
+    {
+      "id": "intro",
+      "type": "intro",
+      "visual": "petir51",
+      "accent": "#8A5CF6",
+      "shake": 0.5,
+      "lines": [
+        "LANGITNYA CERAH",
+        "KOK ADA PETIR?"
+      ],
+      "hl": "PETIR?",
+      "vo": "Letusan gunung sering menyalakan petir, padahal langitnya cerah tanpa awan hujan. Jadi jelas bukan cuaca yang menyulutnya. Lalu dari mana listrik sebesar itu datang?",
+      "speed": 1.0,
+      "bab": "Petir tanpa awan hujan"
+    },
+    {
+      "id": "f1",
+      "type": "fact",
+      "visual": "badai51",
+      "accent": "#4E7BFF",
+      "trans": "tinta",
+      "badge": "BUKAN CUACA",
+      "title": "PETIR LAHIR DI KOLOM ABU",
+      "hl": "KOLOM ABU",
+      "vo": "Petir ini lahir di dalam kolom abu letusan, sampai ilmuwan menjulukinya badai kotor. Isinya bukan tetes air, tapi jutaan butir batu dan abu panas yang saling bertabrakan.",
+      "speed": 1.0,
+      "bab": "Badai kotor di dalam kolom abu"
+    },
+    {
+      "id": "f2",
+      "type": "fact",
+      "visual": "pecah51",
+      "accent": "#FF8A4C",
+      "trans": "slide",
+      "badge": "DI MULUT KAWAH",
+      "title": "BATU PECAH MELEPAS LISTRIK",
+      "hl": "PECAH",
+      "vo": "Sumber listrik pertama ada di mulut kawah. Magma yang naik dihancurkan jadi abu halus, dan setiap kali batu pecah, permukaan barunya melepas elektron. Pecahan itu langsung bermuatan listrik.",
+      "speed": 1.0,
+      "bab": "Sumber pertama: batu yang pecah"
+    },
+    {
+      "id": "f3",
+      "type": "fact",
+      "visual": "gesek51",
+      "accent": "#F5A623",
+      "trans": "rise",
+      "badge": "ABU BERGESEKAN",
+      "title": "ABU SALING BERTABRAKAN",
+      "hl": "BERTABRAKAN",
+      "vo": "Sumber kedua adalah gesekan. Jutaan butir abu saling bertabrakan di dalam pusaran panas, persis balon yang digosok ke rambut. Semakin banyak abu halus, semakin besar muatannya.",
+      "speed": 1.0,
+      "bab": "Sumber kedua: abu yang bergesekan"
+    },
+    {
+      "id": "f4",
+      "type": "fact",
+      "visual": "es51",
+      "accent": "#3FC0E8",
+      "trans": "iris",
+      "badge": "ES DI PUNCAK",
+      "title": "ES MENYALAKAN PUNCAK KOLOM",
+      "hl": "ES",
+      "vo": "Sumber ketiga baru muncul di ketinggian. Ketika kolom menembus udara yang jauh lebih dingin, uap air membeku dan butiran es saling bertabrakan, persis seperti di awan badai. Kolom letusan Anak Krakatau awal September ini menjulang sampai lima belas kilometer.",
+      "speed": 1.0,
+      "bab": "Sumber ketiga: es di puncak kolom"
+    },
+    {
+      "id": "f5",
+      "type": "fact",
+      "visual": "kaca51",
+      "accent": "#22C1A6",
+      "trans": "bands",
+      "badge": "BUKTINYA",
+      "title": "ABU MELELEH JADI KACA",
+      "hl": "KACA",
+      "vo": "Buktinya ada di tanah. Sambaran petir melelehkan abu menjadi butiran kaca bundar, lebih tipis dari sehelai rambut. Butiran ini jatuh bersama hujan abu, jadi sidik jari letusan yang bisa dibaca ilmuwan.",
+      "speed": 1.0,
+      "bab": "Bukti fisik: butiran kaca vulkanik"
+    },
+    {
+      "id": "f6",
+      "type": "fact",
+      "visual": "rekor51",
+      "accent": "#FF6E6E",
+      "trans": "zoom",
+      "badge": "REKOR",
+      "title": "SAMBARAN TERBANYAK YANG TEREKAM",
+      "hl": "TERBANYAK",
+      "vo": "Skalanya luar biasa. Letusan Hunga Tonga tahun dua ribu dua puluh dua memicu hampir lima ratus sembilan puluh ribu sambaran hanya dalam tiga hari. Anak Krakatau tahun dua ribu delapan belas tercatat tiga ratus empat puluh ribu sambaran dalam seminggu.",
+      "speed": 1.0,
+      "bab": "Rekor: Hunga Tonga dan Anak Krakatau"
+    },
+    {
+      "id": "rangkuman",
+      "type": "fact",
+      "visual": "tiga51",
+      "accent": "#9B7BFF",
+      "trans": "glint",
+      "badge": "RANGKUMAN",
+      "title": "TIGA SUMBER LISTRIKNYA",
+      "hl": "TIGA",
+      "vo": "Jadi ada tiga sumber listrik: batu yang pecah, abu yang bergesekan, dan es yang bertabrakan. Karena itu kini ilmuwan memakai petir untuk memantau erupsi dari kejauhan, bahkan saat satelit tertutup awan.",
+      "speed": 1.0,
+      "bab": "Rangkuman: tiga sumber listrik"
+    },
+    {
+      "id": "outro",
+      "type": "outro",
+      "accent": "#8A5CF6",
+      "trans": "cahaya",
+      "lines": [
+        "SEKARANG",
+        "KAMU TAHU"
+      ],
+      "cta": "IKUTI",
+      "foot": "Fakta sains & misteri, tiap hari",
+      "foot2": "Simpan video ini · bagikan ke teman",
+      "src": "Sumber: USGS 2023 · Geology · GLD360 · PVMBG",
+      "vo": "Sekarang kamu tahu, kenapa kolom abu bisa menyalakan petirnya sendiri. Ikuti KlikTahu untuk fakta sains tiap hari.",
+      "speed": 1.0,
+      "bab": "Penutup"
+    }
+  ]
+}
