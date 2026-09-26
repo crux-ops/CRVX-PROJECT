@@ -8,8 +8,9 @@
   (`episodes/ep50_tsunami_palu`, sudut "Kenapa tsunami Palu bisa terjadi?", tayang Sen 28 Sep 2026 11.30 WIB =
   peringatan 8 tahun). Status: **RENDER SELESAI + QC MP4 LULUS (26-09-2026) -> SIAP UNGGAH**. MP4 147.48 s
   (8849 frame @ 60 fps, 1080x1920, H.264 High BT.709, AAC 48 kHz), 121.8 MB, master -14.2 LUFS / true-peak -1.2 dBTP,
-  korelasi 1.0000, VO geser 0 ms & isi hilang 0 ms di 9 adegan. File rilis = render ulang penuh 26-09 02:05 UTC dari
-  kode d20af21 (MD5 e0810145c372117912b107da0baf0d07, 121759775 byte). MP4 TIDAK di repo: ada di
+  korelasi 1.0000, VO geser 0 ms & isi hilang 0 ms di 9 adegan. File rilis = render ulang penuh 26-09 03:01 UTC dari
+  kode df08bfc (MD5 ab39da6403d801c66758f32ccaeba5d4, 121773203 byte; diserahkan lewat tautan unduh sementara +
+  pratinjau 720p 39.7 MB di `/home/user/VIDEO_Ep50/`). MP4 TIDAK di repo: ada di
   `dist/KlikTahu_Ep50_Tsunami_Palu/` (sandbox; hilang bila reset) -> buat ulang: `tools/render_lokal.sh shorts
   ep50_tsunami_palu` (~35-45 menit; QC wajib LULUS; MD5 bisa beda di mesin sandbox lain - lihat §7 RENDER Ep50).
   Berikutnya (HANYA atas perintah pemilik): Ep51 gunung berapi (cek MAGMA dulu; perbaiki perencana dulu - lihat §7
@@ -259,6 +260,9 @@ Lihat PROMPT_KLIKTAHU.txt §11. Tambahan dari rebuild:
   MD5 e0810145 (beda dari 22ec6ce1, dugaan kuat karena mesin berbeda; lihat §7). Frame perbaikan (M 7,5 /
   MENCAIR / ~10 m / atau lebih) dicek di MP4 final. uji_semua LULUS (52 s, CPU idle). Catatan: jangan jalankan
   uji_semua saat render.
+- 2026-09-26 (lanjutan 2): pemilik "Mana videonya?" - sandbox baru di awal giliran menghapus `dist/` -> render ulang
+  ke-3 (mesin lain lagi, 43 menit) -> QC MP4 LULUS angka sama, MD5 ab39da64 (121773203 byte); frame perbaikan dicek.
+  Diserahkan lewat tautan unduh sementara (server statis port 8000) + pratinjau 720p di `/home/user/VIDEO_Ep50/`.
 
 ## 9. Cara uji cepat (semua harus LULUS)
 ```
