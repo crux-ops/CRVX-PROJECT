@@ -395,14 +395,16 @@ def cmd_rencana(a: argparse.Namespace) -> int:
         hari = _tgl(a.tanggal) or hari_ini_wib()
         rows = perencana.susun(db, hari, a.minggu)
         run = db.run_terakhir()
+        # slot terkunci/selesai milik pemilik tetap tampil (dulu hanya 'usulan' yang ditulis)
+        semua = perencana.baris_kunci(db) + rows
         md = perencana.tulis_md(
-            rows,
+            semua,
             ROOT / "laporan" / "KALENDER.md",
             hari,
             f"run riset #{run['id']} {run['tanggal']} ({run['mode']})" if run else "",
         )
-        ics = perencana.tulis_ics(rows, ROOT / "laporan" / "kalender.ics", hari, db.kanal.nama)
-        for r in rows[:14]:
+        ics = perencana.tulis_ics(semua, ROOT / "laporan" / "kalender.ics", hari, db.kanal.nama)
+        for r in semua[:14]:
             print(
                 f"{r['tanggal']} {r['jam']} {r['format']:<6} {r['episode_kode']:<7} {r['judul_kerja']:<22} {r['alasan']}"
             )

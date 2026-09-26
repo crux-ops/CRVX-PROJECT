@@ -249,22 +249,28 @@ def susun(db: DB, hari_ini: dt.date | None = None, minggu: int = 4, simpan: bool
     return rows
 
 
+def baris_kunci(db: DB) -> list[dict[str, Any]]:
+    """Slot milik pemilik (terkunci) + episode yang sudah dikerjakan (selesai) - selalu tampil di kalender."""
+    return db.daftar("rencana", "status IN ('terkunci', 'selesai')", urut="tanggal, jam")
+
+
 def tulis_md(rows: list[dict[str, Any]], path: Path, hari_ini: dt.date, run_ket: str = "") -> Path:
     L = [
         f"# KALENDER KONTEN KlikTahu - disusun {hari_ini}",
         "",
-        "Usulan perencana (status 'usulan'); kunci slot dengan `python3 -m kliktahu rencana kunci <tanggal> <jam> <format>`."
+        "Status: 'usulan' = saran perencana; 'terkunci' = slot pemilik; 'selesai' = episode sudah dikerjakan."
+        + " Kunci slot dengan `python3 -m kliktahu rencana kunci <tanggal> <jam> <format>`."
         + (f" Dasar peringkat: {run_ket}." if run_ket else ""),
         "",
-        "| tanggal | hari | jam WIB | format | kode | topik | alasan |",
-        "|---|---|---|---|---|---|---|",
+        "| tanggal | hari | jam WIB | format | kode | status | topik | alasan |",
+        "|---|---|---|---|---|---|---|---|",
     ]
     nama_hari = ["Sen", "Sel", "Rab", "Kam", "Jum", "Sab", "Min"]
-    for r in rows:
+    for r in sorted(rows, key=lambda x: (x["tanggal"], x["jam"])):
         d = dt.date.fromisoformat(r["tanggal"])
         L.append(
             f"| {r['tanggal']} | {nama_hari[d.weekday()]} | {r['jam']} | {r['format']} | {r['episode_kode']} | "
-            f"{r['judul_kerja']} | {r['alasan']} |"
+            f"{r.get('status', 'usulan')} | {r['judul_kerja']} | {r['alasan']} |"
         )
     path.parent.mkdir(parents=True, exist_ok=True)
     path.write_text("\n".join(L) + "\n", encoding="utf-8")

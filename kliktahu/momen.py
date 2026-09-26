@@ -22,6 +22,10 @@ from .tema import SINONIM_MOMEN, TEMA, Tema
 
 STATIS = ROOT / "analisis" / "momen.json"
 KOTA_HTB = ("Jakarta", "Bandung", "Semarang", "Yogyakarta", "Surabaya", "Denpasar", "Makassar", "Medan", "Pontianak")
+# Momen live/agen yang baru saja lewat tenggatnya (<= MOMEN_HANGAT_HARI) tetap diberi skor penuh agar
+# tidak kalah dari momen statis jauh yang skor v5-nya sedang (kasus 26-09: erupsi 4 Sep, verifikasi 25 Sep,
+# pada 26 Sep skornya meluruh lalu topik tergeser ke momen 13 Okt padahal erupsinya masih hangat).
+MOMEN_HANGAT_HARI = 3
 
 
 @dataclass
@@ -168,8 +172,8 @@ def skor_momen(m: Momen, hari_ini: dt.date, jendela: int = 45) -> float:
         if m.tanggal <= hari_ini <= akhir:  # sedang berlangsung -> penuh
             return round(m.urgensi, 3)
         lewat = (hari_ini - akhir).days
-        if 0 < lewat <= 3:  # baru lewat -> meluruh dalam 3 hari
-            return round(m.urgensi * (1 - lewat / 4), 3)
+        if 0 < lewat <= MOMEN_HANGAT_HARI:  # baru lewat / masih hangat -> penuh, tak kalah momen statis jauh
+            return round(m.urgensi, 3)
         if sisa > 0:  # prakiraan (mis. badai geomagnetik 2 hari lagi)
             return round(skor.v5_momen(sisa, jendela) * (0.5 + 0.5 * m.urgensi), 3)
         return 0.0

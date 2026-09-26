@@ -258,6 +258,35 @@ def test_perencana_keputusan_dulu_lalu_tenggat_terdekat(db, tmp_path, monkeypatc
     assert "momen" not in ts["alasan"] and ts["tanggal"] > "2026-09-28"  # diisi peringkat biasa, bukan "momen" telat
 
 
+def test_perencana_momen_berlangsung_tanpa_selesai_dan_slot_terkunci(db, tmp_path, monkeypatch):
+    from kliktahu import momen
+
+    def baris(nama, peluang, n):
+        return {"nama": nama, "v7_peluang": peluang, "peringkat": n, "status_topik": "segar", "sinyal": {}}
+
+    rank = [baris("gunung berapi", 67.9, 1), baris("otak", 62.5, 2)]
+    # erupsi mulai 4 Sep, TANPA tanggal selesai; hari ini 26 Sep -> masih berlangsung (<= BERLANGSUNG_HARI)
+    erupsi = momen.Momen(
+        dt.date(2026, 9, 4), "Erupsi Anak Krakatau", ["gunung berapi"], "agen", "uji", 0.7, dt.date(2026, 9, 25)
+    )
+    jauh = momen.Momen(dt.date(2026, 10, 13), "Hari Risiko Bencana", ["gunung berapi"], "statis", "uji")
+    monkeypatch.setattr(perencana, "_peringkat", lambda d: (rank, {"id": 7, "mode": "agen"}))
+    monkeypatch.setattr(perencana.momen, "semua", lambda *a, **kw: [erupsi, jauh])
+    monkeypatch.setattr(perencana, "LAPORAN", tmp_path)
+    h26 = dt.date(2026, 9, 26)
+    # momen berlangsung tanpa selesai tetap bernilai penuh & mengalahkan momen statis jauh
+    s, m = momen.skor_tema("gunung berapi", [erupsi, jauh], h26, 45)
+    assert m is erupsi and s >= 0.7
+    rows = perencana.susun(db, h26, 2)
+    g = next(r for r in rows if r["judul_kerja"] == "gunung berapi")
+    assert "Erupsi Anak Krakatau" in g["alasan"] and g["tanggal"] < "2026-10-13"
+    # slot terkunci milik pemilik tampil di KALENDER.md (dulu hanya 'usulan')
+    db.con.execute("UPDATE rencana SET status = 'terkunci' WHERE id = (SELECT MIN(id) FROM rencana)")
+    semua = perencana.baris_kunci(db) + perencana.susun(db, h26, 2)
+    md = perencana.tulis_md(semua, tmp_path / "K.md", h26).read_text()
+    assert "| status |" in md and "terkunci" in md
+
+
 def test_metadata_episode_bab_judul_tetap_tag_hormat(k, tmp_path):
     konten = {
         "judul": [
